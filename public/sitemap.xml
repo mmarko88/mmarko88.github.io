@@ -2,26 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://profdev.dev/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/</loc>
     <lastmod>2021-10-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://profdev.dev/post/java/victor_biggest_problem_for_java_devs/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/post/java/victor_biggest_problem_for_java_devs/</loc>
     <lastmod>2021-10-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://profdev.dev/post/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/post/</loc>
     <lastmod>2021-10-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://profdev.dev/about/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/post/java/teen_mistakes_java_devs/</loc>
+    <lastmod>2021-06-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mmarko88.github.io/mmarko88/post/java/how_do_i_become_proficient_with_fp_in_java/</loc>
+    <lastmod>2021-04-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mmarko88.github.io/mmarko88/about/</loc>
     <lastmod>2019-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://profdev.dev/categories/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/categories/</loc>
   </url><url>
-    <loc>https://profdev.dev/tags/index/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/tags/index/</loc>
   </url><url>
-    <loc>https://profdev.dev/search/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/search/</loc>
   </url><url>
-    <loc>https://profdev.dev/series/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/series/</loc>
   </url><url>
-    <loc>https://profdev.dev/tags/</loc>
+    <loc>https://mmarko88.github.io/mmarko88/tags/</loc>
   </url>
 </urlset>
