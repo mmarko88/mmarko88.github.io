@@ -8,7 +8,7 @@ const scaleImageClass = 'image-scale';
 const pageHasLoaded = 'DOMContentLoaded';
 const imageAltClass = 'img_alt'
 
-const baseURL = 'https://mmarko88.github.io/';
+const baseURL = 'https://mmarko88.github.io/mmarko88/';
 const searchFieldClass = '.search_field';
 const searchClass = '.search';
 const goBackClass = 'button_back';
