@@ -1,2 +1,0 @@
-## Professional Developer Personal Website
-
