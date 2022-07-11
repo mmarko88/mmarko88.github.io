@@ -21,6 +21,9 @@ jobs:
           hugo-version: 'latest'
           # extended: true
 
+      - name: asciidoctor-ghpages # add asciidoc
+        uses: manoelcampos/asciidoctor-ghpages-action@v2.2.4
+
       - name: Build
         run: hugo --minify
 
