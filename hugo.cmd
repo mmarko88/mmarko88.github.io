@@ -1,0 +1,1 @@
+docker run --rm  -v %cd%:/src -p 1313:1313 klakegg/hugo:ext-asciidoctor-onbuild
