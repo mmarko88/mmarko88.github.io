@@ -38,10 +38,8 @@ getenv = ["^HUGO_"]
 methods = ["(?i)GET|POST"]
 urls = [".*"]
 
-#[module]
-#  [[module.imports]]
-#    path = 'github.com/halogenica/beautifulhugo.git'
-
 [module]
 [[module.imports]]
-path = "github.com/yihui/hugo-xmin"
+path = 'github.com/halogenica/beautifulhugo'
+
+
