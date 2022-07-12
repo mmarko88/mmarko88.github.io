@@ -4,17 +4,11 @@ baseurl = "https://mmarko88.github.io/"  # Include trailing slash
 title = "Marko Milenkovic"  # Edit directly from config/_default/languages.toml # alternatively, uncomment this and remove `title` entry from the aforemention file.
 # canonifyurls = true
 paginate = 10
-#theme = "beautifulhugo"
 disqusShortname = ""
 
 usePageBundles = false
 
 DefaultContentLanguage = "en"
-# [languages]
-# config/_default/languages.toml
-
-# [menus]
-# config/_default/menus/menu.xx.toml
 
 #[taxonomies]
 #category = "categories"
@@ -40,6 +34,6 @@ urls = [".*"]
 
 [module]
 [[module.imports]]
-path = 'github.com/halogenica/beautifulhugo'
+path = 'github.com/chipzoller/hugo-clarity'
 
 
