@@ -21,8 +21,17 @@ jobs:
           hugo-version: '0.101.0'
           extended: true
 
-      - name: Build
-        run: hugo --minify
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+
+      - run: gem install asciidoctor
+      
+      - name: Run Hugo
+        run: |
+          alias asciidoctor="asciidoctor --attribute=experimental=true --attribute=icons=font"
+          hugo --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
