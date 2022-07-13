@@ -2,7 +2,7 @@
 title: 10 mistakes that java developers make that prevent them from being successful developers
 date: 2021-06-11
 draft: false
-usePageBundles = true
+usePageBundles: true
 ---
 
 ![10 mistakes](10-mistakes.png)
