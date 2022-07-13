@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "styles.css",
-	"sourceRoot": "/home/runner/work/mmarko88/mmarko88",
+	"sourceRoot": "/home/runner/work/mmarko88.github.io/mmarko88.github.io",
 	"sources": [
 		"/tmp/hugo_cache/modules/filecache/modules/pkg/mod/github.com/chipzoller/hugo-clarity@v0.0.0-20220630205727-829f6816d4b8/assets/sass/main.sass",
 		"../../../../../tmp/hugo_cache/modules/filecache/modules/pkg/mod/github.com/chipzoller/hugo-clarity@v0.0.0-20220630205727-829f6816d4b8/assets/sass/_variables.sass",
