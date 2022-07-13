@@ -3,7 +3,6 @@ title: "I Asked a Java Champion: What Is the Biggest Problem That Professional J
 date: 2021-10-26
 draft: false
 ---
-# I Asked a Java Champion: What Is the Biggest Problem That Professional Java Developers Are Facing Today?
 
 I have attended the workshop that is organized by the [ITKonekt](https://itkonekt.com/en/). The workshop was about efficient coding practices for best performance in Java. Java Champion [Victor Rentea](https://victorrentea.ro/) did a great job explaining all java internals, tools, hibernate, threads, collections, garbage collections, and much more. It was very enjoyable to learn from him, and I decided to ask him the question:
 

@@ -2,9 +2,10 @@
 title: 10 mistakes that java developers make that prevent them from being successful developers
 date: 2021-06-11
 draft: false
+usePageBundles = true
 ---
 
-![10 mistakes](https://theprofdev.files.wordpress.com/2021/06/10-mistakes.png?w=1024)
+![10 mistakes](10-mistakes.png)
 
 Based on my previous experience, I created a list of 10 mistakes that developers made, preventing them from being a great developer. Here is the list:
 

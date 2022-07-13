@@ -1,1 +1,1 @@
-docker build -t profdev --file hugoenv.dockerfile ../.
+docker build -t profdev --file hugoenv.dockerfile ../

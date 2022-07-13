@@ -1,1 +1,0 @@
-docker run --rm  -v %cd%/..:/src -p 1313:1313 profdev:latest  %*
