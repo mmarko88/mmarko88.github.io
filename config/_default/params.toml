@@ -39,7 +39,7 @@ fontsDir = "fonts/" # without a leading forward slash
 #fallBackOgImage = "images/thumbnail.png"
 
 # Logo image
-logo = "images/logo.png"
+logo = "images/logo1.png"
 
 # center logo on navbar
 centerLogo = false # Set to "true" for centering or "false" for left aligned.
