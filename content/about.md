@@ -1,7 +1,7 @@
 +++
 title = "About Me"
 description = "Personal blog website"
-date = "2019-02-28"
+date = "2022-07-10"
 aliases = ["about-us", "contact"]
 author = "Marko Milenkovic"
 [[resources]]
