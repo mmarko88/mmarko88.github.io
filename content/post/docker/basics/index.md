@@ -8,21 +8,27 @@ featureImageAlt: 'How do I become proficient with functional programming in Java
 shareImage: 'fp_in_java.png' # For SEO and social media snippets.
 ---
 
-# Docker intro
 
-## History
-* chroot system call (1979)
-  Way to protect password file. Literally have ony files that are available for that process.
-* Around 2000 jail FreeBSD 4.0 speed up process with isolation mechanics
-* Solaris Zones (2004) Solaris 10. Container. Better implementation.
-* Linux Containers - LXC (2008) 2.6.24 of the linux containers.
 
-How do we run untrusted code in our environments. Set the stage for the docker.
-* Talk set the industry on fire. What docker really did. They were for 5 years in linux. Very hard to work with. Very technical. Introduction of the image. Docker introduced images. Image format is what god everyone's attention. Repeatability, ability to scale and streamline are very big wins.
+# What is Docker?
+Docker is important for developers because it allows them to build and run their applications on a virtualized environment. This means that the applications are not tied to a specific machine and can be run on any machine that has the docker engine installed. While VM engines also allows us to do the same, docker accomplishes this in more efficient ways. 
 
-## What is Docker?
+You can imagine docker as a lightweight VM. Every docker container has its own process space, own network interface, you can get a shell on it, install packages and run stuff as root or regular user. VM creates virtual hardware layer, and then we can run additional OS on that software. Docker uses host kernel for executing processes, no virtual hardware is used. Because of that, Docker can run only OS that is compatible with a host kernel. If you want to run different OS than HOST, then Docker needs to use VM behind the scenes. There is exception for running Linux containers on Windows, Docker can be set up to use WSL (Windows Subsystem for Linux). The big win for Docker is that it runs applications directly on hardware by isolating the process on the host machine.
 
-High level approach: lightweight VM
+Containers are not very new, they exist in the linux kernel since 2008 (LXC), and in some OSes even before. The problem with containers those days was that containers were not easy to use. You need to install a lot of software to use them, and you need to know a lot about kernel in order to be able to set up a kernel for a new virtual environment. And the most important, it was hard to share and move them between machines.
+
+Docker simplified process of creating containers and running them. But, this is not the main feature why people started using Docker. People started using Docker because it introduced concept of images. Image format is what god everyone's attention. Repeatability, ability to scale and streamline are very big wins.
+
+
+
+### Docker architecture image.
+
+### Where to get docker
+
+## Docker basic building blocks
+### What is docker image?
+#### What is docker image layer?
+### What is docker container?
 
 What is a container
 
@@ -31,31 +37,7 @@ What is a container
 
 image::image-2022-03-23-11-18-37-322.png[arhitecture]
 
-* It "feels" like a VM
-- Own process space
-- own network interface
-- can run stuff as root
-- can install packages
-- can run services
-- can mess up routing, iptables ...
-
-* It's not quite like a VM:
-- Uses the host kernel
-- can't boot a different OS
-- can't have its own modules
-- doesn't need init as PID 1
-- doesn't need syslogd, cron...
-
 Each process is living in its own little world.
-
-Containers are not in the kernel.
-
-## Containers vs VM's
-* Containerisation platforms are not VM's.
-* VM creates virtual hardware layer, and then we can run additional OS on that software.
-* Containers are about process isolation and about resource management.
-* All the processes run on the same kernel.
-* You can run VM inside container and container inside vm.
 
 image::image-2022-03-23-19-19-19-677.png[containersvsvm]
 image::image-2022-03-23-19-20-23-342.png[whenweHaveVM]
