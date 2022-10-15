@@ -8,11 +8,11 @@ featureImageAlt: 'How do I become proficient with functional programming in Java
 shareImage: 'fp_in_java.png' # For SEO and social media snippets.
 ---
 # What is Docker?
-Docker is important for developers because it allows them to build and run their applications on a virtualized environment. This means that the applications are not tied to a specific machine and can be run on any machine that has the docker engine installed. While VM engines also allows us to do the same, docker accomplishes this in more efficient ways. 
+Docker is important for developers because it allows us to build and run applications on a virtualized environment. This means that the applications are not tied to a specific machine and can be run on any machine that has the docker engine installed. While VM engines also allows us to do the same, docker accomplishes this in more efficient ways. 
 
-You can imagine docker as a lightweight VM. Every docker container has its own process space, own network interface, you can get a shell on it, install packages and run stuff as root or regular user. VM creates virtual hardware layer, and then we can run additional OS on that software. Docker uses host kernel for executing processes, no virtual hardware is used. Because of that, Docker can run only OS that is compatible with a host kernel. If you want to run different OS than HOST, then Docker needs to use VM behind the scenes. There is exception for running Linux containers on Windows, Docker can be set up to use WSL (Windows Subsystem for Linux). The big win for Docker is that it runs applications directly on hardware by isolating the process on the host machine.
+You can imagine docker as a lightweight VM. Every docker container has its own process space, own network interface, you can get a shell on it, install packages and run stuff as root or regular user. VM creates virtual hardware layer, and then we can run additional OS on that software. Docker uses host kernel for executing processes, no virtual hardware is used. Because of that, Docker can run only OS that is compatible with a host kernel. If you want to run different OS, then Docker needs to use VM behind the scenes. There is exception for running Linux containers on Windows where Docker can be set up to use WSL (Windows Subsystem for Linux). The big win for Docker is that it runs applications directly on hardware by isolating the process on the host machine as process. This enables big resource savings, both memory and CPU.
 
-Containers are not very new, they exist in the linux kernel since 2008 (LXC), and in some OSes even before. The problem with containers those days was that containers were not easy to use. You need to install a lot of software to use them, and you need to know a lot about kernel in order to be able to set up a kernel for a new virtual environment. And the most important, it was hard to share and move them between machines.
+Containers are not very new, they exist in the linux kernel since 2008 (LXC), and in some OSes even before. The problem with containers those days was that containers were not easy to use. The user needed to install a lot of software in order to use them. User also needed to have technical knowledge about linux kernel in order to be able to set up new virtual environment. And the most important, it was hard to share and move containers between machines.
 
 Docker simplified process of creating containers and running them. But, this is not the main feature why people started using Docker. People started using Docker because it introduced concept of images. Image format is what god everyone's attention. Repeatability, ability to scale and streamline are very big wins.
 
@@ -22,6 +22,8 @@ From the image above, we can see that containers are more lightweight than virtu
 
 # How To Get Started With The Docker
 The best place to start with Docker is to go to the [official website](https://www.docker.com/) and download the latest version. Official website is also a good place to find more information about Docker. It contains video and text tutorials. 
+
+### Docker architecture image.
 
 Important to note that Docker is not only container engine. There is alternative tool called Podman, it has almost identical commands as Docker and you can check it out [here](https://podman.io/).
 
