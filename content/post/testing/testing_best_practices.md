@@ -3,10 +3,9 @@ title: "Testing best practices"
 date: 2022-09-09
 draft: true
 usePageBundles: true
-
-[//]: # (featureImage: 'fp_in_java.png' # Top image on post.)
-[//]: # (featureImageAlt: 'How do I become proficient with functional programming in Java' # Alternative text for featured image.)
-[//]: # (shareImage: 'fp_in_java.png' # For SEO and social media snippets.)
+featureImage: 'fp_in_java.png' # Top image on post.
+featureImageAlt: 'How do I become proficient with functional programming in Java' # Alternative text for featured image.
+shareImage: 'fp_in_java.png' # For SEO and social media snippets.
 ---
 
 1. A failing test should tell you exactly what is wrong quickly, without you having to spend a lot of time analyzing the failure.
