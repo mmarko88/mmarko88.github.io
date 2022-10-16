@@ -7,10 +7,10 @@ title = "Professional Developer"  # Edit directly from config/_default/languages
 # read more about it: https://gohugo.io/content-management/urls/#canonicalization
 # canonifyurls = true
 
+googleAnalytics = 'G-QMH75S45WQ'
+
 paginate = 10
 disqusShortname = ""
-
-usePageBundles = false
 
 DefaultContentLanguage = "en"
 

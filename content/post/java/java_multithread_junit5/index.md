@@ -79,7 +79,7 @@ Maven uses plugins for everything. This is also the case for running project tes
     </pluginManagement>
 </build>
 ```
-The ```XML`` is quite self-descriptive. We add new plugin that is in ```build->pluginManagement->plugins``` section of Maven ```pom.xml```. We import the newest version of the surefire plugin at the time of writing this article. You can check [this url](https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin/3.0.0-M7) for a newer version.
+The ```XML``` is quite self-descriptive. We add new plugin that is in ```build->pluginManagement->plugins``` section of Maven ```pom.xml```. We import the newest version of the surefire plugin at the time of writing this article. You can check [this url](https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin/3.0.0-M7) for a newer version.
 
 Now, when we have a newer version of the surefire plugin loaded, we can continue to configure Maven for multithreaded test execution. 
 
