@@ -6,6 +6,13 @@ usePageBundles: true
 featureImage: 'mvn_config.png' # Top image on post.
 featureImageAlt: 'Feature image - maven configuration example' # Alternative text for featured image.
 shareImage: 'mvn_config.png' # For SEO and social media snippets.
+tags: [
+    "java", "maven", "junit 5", "testing", "parallel tests", "concurrent tests", "junit testing", "java testing", "junit 5 testing"
+]
+categories: [
+    "java",
+    "testing",
+]
 ---
 
 # Introduction

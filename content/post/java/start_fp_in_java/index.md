@@ -6,6 +6,8 @@ usePageBundles: true
 featureImage: 'fp_in_java.png' # Top image on post.
 featureImageAlt: 'How do I become proficient with functional programming in Java' # Alternative text for featured image.
 shareImage: 'fp_in_java.png' # For SEO and social media snippets.
+tags: ["functional programming", "java", "learn functional programming", "getting started with functional programming in java"]
+categories: [ "java", "functional programming"]
 ---
 
 As a Java developer, I always look for ways to improve my coding skills. I heard about functional programming (FP) back when I was a student. Then, FP was not very popular and most developers considered code written using FP to be slow.
