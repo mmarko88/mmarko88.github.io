@@ -1,5 +1,5 @@
 ---
-title: Setting Up Junit 5 Parallel Test Execution With Maven
+title: Setting up Junit 5 Parallel Test Execution With Maven
 date: 2022-10-15
 draft: false
 usePageBundles: true
@@ -12,7 +12,7 @@ shareImage: 'mvn_config.png' # For SEO and social media snippets.
 We need fast-build pipelines. This is because we need fast feedback from our pipeline in order to be more productive. If something is wrong with our code, then we want our pipeline to fail fast. To accomplish that, you may decide to allow parallel test execution for tests in your project. This post describes how to do that with Maven and Junit 5.
 
 
-# Getting Started With Junit 5 And Maven
+# Getting Started With Junit 5 and Maven
 
 To get started with Junit 5, you need to import the following dependency into the project:
 
@@ -27,13 +27,13 @@ To get started with Junit 5, you need to import the following dependency into th
 ```
 At the time of writing this article, version *5.9.0* is the newest. You should check [maven repository](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine) for a new version. Notice, that we imported the library in *test* scope as there is no need for this library to be in production code because we only use it for running tests.
 
-# Running tests in parallel
+# Running Tests in Parallel
 Maven offers you two ways for running tests in parallel:
 
 1. By starting multiple JVM instances
 2. By using multiple threads in the same JVM instance
 
-## 1. By using the parallel parameter
+## 1. By Using the Parallel Parameter
 The setup for parallel test execution is straightforward. Include the following parameter:
 
 
@@ -52,7 +52,7 @@ The parameter ````forkCount```` has a fixed positive integer value which represe
 ```
 This configuration instructs Maven to create one fork for each core. If your CPU has two virtual threads per core, you can also enter ```2C```to use most CPU resources. Or if you don't want to use ```100%``` of your CPU, you can enter ```0.5C``` which will instruct Maven to create forks for the half of CPU cores. 
 
-## 2. By setting up Junit multi-thread execution
+## 2. By Setting up Junit Multi-Thread Execution
 Maven uses plugins for everything. This is also the case for running project tests. To run project tests, Maven uses the Surefire plugin. Unfortunately, it uses the old version of the plugin by default, which doesn't support Junit5 test execution. So, we need to import a newer version of this plugin to Maven. To include a newer version of this plugin, we need to configure Maven. We can do this by adding the following XML to the ````pom.xml````:
 
 ```xml
@@ -96,7 +96,7 @@ It is enough to set ``junit.jupiter.execution.parallel.enabled=true``` to allow 
 1. Junit can assume that all tests are sequential, and only ones that are annotated with ```@Execution(CONCURRENT)``` will be executed in parallel. You can use this annotation on a class or test method to enable parallel execution.
 2. You can set parameter ```junit.jupiter.execution.parallel.mode.default = concurrent```. Here, all tests will run in parallel by default except ones annotated with ```ExecutionMode.SAME_THREAD```.
 
-### How many threads Junit will use for parallel execution?
+### How Many Threads Junit Will Use for Parallel Execution?
 
 
 This is also configurable property ```junit.jupiter.execution.parallel.config.strategy=dynamic``` and it also has default value ```dynamic```. Strategy can be also ```fixed``` or ```custom```. If we set up ```fixed``` value for this property, then we also need to set up the value for the ```junit.jupiter.execution.parallel.config.fixed.parallelism=<positive integer>```. This is not a scalable solution, and we should use ```dynamic``` value to better utilize the hardware.
