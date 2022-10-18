@@ -3,11 +3,11 @@ title: Setting up Junit 5 Parallel Test Execution With Maven
 date: 2022-10-15
 draft: false
 usePageBundles: true
-featureImage: 'mvn_config.png' # Top image on post.
+featureImage: 'parralel_tests_maven_junit5.svg' # Top image on post.
 featureImageAlt: 'Feature image - maven configuration example' # Alternative text for featured image.
-shareImage: 'mvn_config.png' # For SEO and social media snippets.
+shareImage: 'parralel_tests_maven_junit5.svg' # For SEO and social media snippets.
 tags: [
-    "java", "maven", "junit 5", "testing", "parallel tests", "concurrent tests", "junit testing", "java testing", "junit 5 testing"
+    "java", "maven", "junit 5", "testing", "parallel tests", "concurrent tests", "junit testing", "java testing", "junit 5 testing", "multithreaded tests in java"
 ]
 categories: [
     "java",
