@@ -6,7 +6,6 @@ usePageBundles: true
 featureImage: 'soft_skills.jpg' # Top image on post.
 featureImageAlt: 'Soft skills' # Alternative text for featured image.
 shareImage: 'soft_skills.jpg' # For SEO and social media snippets.
-shareImage: 'parralel_tests_maven_junit5.png' # For SEO and social media snippets.
 tags: [
 "carrier"
 ]
