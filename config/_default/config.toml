@@ -10,7 +10,7 @@ title = "Professional Developer"  # Edit directly from config/_default/languages
 googleAnalytics = 'G-QMH75S45WQ'
 
 paginate = 10
-disqusShortname = ""
+disqusShortname = "professionaldev"
 
 DefaultContentLanguage = "en"
 
