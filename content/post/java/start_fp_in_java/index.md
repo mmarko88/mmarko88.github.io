@@ -63,4 +63,4 @@ To get familiar with FP, I studied and applied in practice FP concepts. The most
 
 Using FP in code doesn't prevent us, developers, from writing bad code. We still need to write unit tests, have a good understanding of our task and our codebase. We still need to apply all the best practices that we learned in the past. FP is promoting good practices and makes it easier for us developers to write good and maintainable code.
 
-I plan to further learn about FP and Java. I will continue to write posts on this subject. For updates, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/).
+I plan to further learn about FP and Java. I will continue to write posts on this subject. For updates, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
