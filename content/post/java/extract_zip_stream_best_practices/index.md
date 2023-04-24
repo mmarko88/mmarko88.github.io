@@ -6,6 +6,8 @@ usePageBundles: true
 featureImage: 'extract_zip.jpg' # Top image on post.
 featureImageAlt: 'Best practices that you should follow when extracting zip archive in Java' # Alternative text for featured image.
 shareImage: 'extract_zip.jpg' # For SEO and social media snippets.
+tags: ["zip", "java"]
+categories: [ "java"]
 ---
 Extracting archive files without controlling resource consumption is security-sensitive and can lead to denial of service.
 

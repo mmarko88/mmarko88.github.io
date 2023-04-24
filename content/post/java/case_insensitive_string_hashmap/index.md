@@ -1,11 +1,13 @@
 ---
-title: "How to use case insensitive string in hash map"
-date: 2023-20-04
+title: "How To Use Case Insensitive String in Hash Map"
+date: 2023-04-24
 draft: false
 usePageBundles: true
-featureImage: 'CaseSensitiveVsCaseInsensitiveHashMap.svg' # Top image on post.
+featureImage: 'case_sensitive_vs_case_insensitive_hash_map.svg' # Top image on post.
 featureImageAlt: 'Case sensitive vs case insensitive hash map' # Alternative text for featured image.
-shareImage: 'CaseSensitiveVsCaseInsensitiveHashMap.svg' # For SEO and social media snippets.
+shareImage: 'case_sensitive_vs_case_insensitive_hash_map.svg' # For SEO and social media snippets.
+tags: ["java", "hashMap"]
+categories: [ "java"]
 ---
 
 ## Introduction
@@ -62,7 +64,7 @@ public class GroupsService {
 ```
 
 
-## The problem
+## The Problem
 Since the database is case-insensitive, it will return all emails without considering the case of the input string. However, in Java, we use a HashMap to match incoming emails with emails from the database.
 The issue with this approach is that HashMap keys are case-sensitive, which means that some emails may not be found.
 
@@ -175,7 +177,7 @@ public class CiStringTest {
 ```
 
 
-## Other solutions: Baeldung
+## Other Solutions: Baeldung
 In this [article](https://www.baeldung.com/java-map-with-case-insensitive-keys), you can find a description of the problem we are discussing. The article also proposes several solutions to the problem, including the previously mentioned [Solution 1](#solution-1-use-treemap). In addition to that, the article suggests using Apache's `CaseInsensitiveMap` or Spring's `LinkedCaseInsensitiveMap` as alternative solutions. However, it is important to note that both of these solutions are based on lowercasing the keys, which may not be the desired behavior in certain scenarios.
 
 I'm active on Twitter and LinkedIn, and I'd love it if you could give me a follow.
