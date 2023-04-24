@@ -8,7 +8,7 @@ const scaleImageClass = 'image-scale';
 const pageHasLoaded = 'DOMContentLoaded';
 const imageAltClass = 'img_alt'
 
-const baseURL = 'https://www.professionaldev.pro/';
+const baseURL = 'www.professionaldev.pro/';
 const searchFieldClass = '.search_field';
 const searchClass = '.search';
 const goBackClass = 'button_back';
