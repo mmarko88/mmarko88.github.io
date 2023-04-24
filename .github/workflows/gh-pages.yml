@@ -28,13 +28,12 @@ jobs:
 
 #      - run: gem install asciidoctor
       
-#      - name: Run Hugo
-#        run: |
-#          alias asciidoctor="asciidoctor --attribute=experimental=true --attribute=icons=font"
-#          hugo --minify
+      - name: Run Hugo
+        run: |
+          hugo --minify
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3.7.3
+        uses: peaceiris/actions-gh-pages@v3.9.3
         if: github.ref == 'refs/heads/master'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
