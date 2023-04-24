@@ -1,11 +1,11 @@
 ---
 title: "How to use case insensitive string in hash map"
 date: 2023-20-04
-draft: true
+draft: false
 usePageBundles: true
-featureImage: '' # Top image on post.
-featureImageAlt: '' # Alternative text for featured image.
-shareImage: '' # For SEO and social media snippets.
+featureImage: 'CaseSensitiveVsCaseInsensitiveHashMap.svg' # Top image on post.
+featureImageAlt: 'Case sensitive vs case insensitive hash map' # Alternative text for featured image.
+shareImage: 'CaseSensitiveVsCaseInsensitiveHashMap.svg' # For SEO and social media snippets.
 ---
 
 ## Introduction
@@ -16,6 +16,7 @@ Generally, there are many situations where case-insensitive strings are necessar
 In the following, I will explain how case sensitivity can cause issues in code, and how and why using a case-insensitive hash map can provide a solution.
 
 ## Example
+Let's say:
 1. The `groups` API provides a service called `GroupsService` which accepts a list of user email addresses and creates a group with those users. 
 2. Each user's email address is unique in the EmailGroups database.
 3. Another API called `users` is used to create new users with their email addresses and store them in a database.
@@ -95,7 +96,7 @@ Map<String, String> mapping = new TreeMap(String::caseInsensitiveComparator);
 While TreeMap offers good performance, it may not be as fast as HashMap for large datasets. The query time increases with the size of the dataset. However, searching the data using TreeMap is similar to performing a binary search, so the access time doesn't drop linearly. Although TreeMap provides good performance, it can't match the nearly constant O(1) access time of HashMap.
 
 ## Solution 2: Use HashMap
-Unfortunately, hash maps only work based on object hash code and equals methods, and it doesn't allow for custom functions to be supplied at the constructor or in any other way. This can be limiting, and as a result, many programmers opt for TreeMap.
+Unfortunately, hash maps only work based on object `hashCode` and `equals` methods, and it doesn't allow for custom functions to be supplied at the constructor or in any other way. This can be limiting, and as a result, many programmers opt for TreeMap.
 
 However, as professional developers, we can create a better implementation for case-insensitive string equals and hash code methods. There are two main approaches:
 
@@ -136,6 +137,8 @@ public class CiString {
     }
 }
 ```
+Furthermore, if our intention is to use the CiString class only as keys in a hash map, and we calculate the hash code only once, we can remove the `private int hash` property from the class. This optimization can conserve memory space since the hash code is only necessary for determining the bucket location in the hash map, and not for any other tasks.
+
 
 As professional developers, it's important to write tests to ensure the correctness and reliability of our code. Here is an example of a test class for the case-insensitive string hash map implementation:
 
@@ -170,6 +173,10 @@ public class CiStringTest {
        }
 }
 ```
+
+
+## Other solutions: Baeldung
+In this [article](https://www.baeldung.com/java-map-with-case-insensitive-keys), you can find a description of the problem we are discussing. The article also proposes several solutions to the problem, including the previously mentioned [Solution 1](#solution-1-use-treemap). In addition to that, the article suggests using Apache's `CaseInsensitiveMap` or Spring's `LinkedCaseInsensitiveMap` as alternative solutions. However, it is important to note that both of these solutions are based on lowercasing the keys, which may not be the desired behavior in certain scenarios.
 
 I'm active on Twitter and LinkedIn, and I'd love it if you could give me a follow.
 You can find me on Twitter at [@mare_milenkovic](https://twitter.com/mare_milenkovic) and on LinkedIn at [mare-milenkovic](https://www.linkedin.com/in/mare-milenkovic/).
