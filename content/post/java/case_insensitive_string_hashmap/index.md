@@ -1,5 +1,5 @@
 ---
-title: "How To Use Case Insensitive String in Hash Map"
+title: "How to Use Case Insensitive String in Hash Map"
 date: 2023-04-24
 draft: false
 usePageBundles: true
