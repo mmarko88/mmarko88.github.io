@@ -1,5 +1,5 @@
 ---
-title: "How to Write Case Insensitive Equals and Hash Code in Java"
+title: "How to Write Classes With Multiple Case Insensitive Strings"
 date: 2023-05-13
 draft: false
 usePageBundles: true
