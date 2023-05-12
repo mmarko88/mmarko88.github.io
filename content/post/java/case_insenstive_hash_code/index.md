@@ -1,6 +1,6 @@
 ---
 title: "How to Write Classes With Multiple Case Insensitive Strings"
-date: 2023-05-13
+date: 2023-05-12
 draft: false
 usePageBundles: true
 featureImage: 'persons_case_insensitive.png' # Top image on post.
@@ -9,7 +9,6 @@ shareImage: 'persons_case_insensitive.png' # For SEO and social media snippets.
 tags: ["java", "hashMap", "strings"]
 categories: [ "java"]
 ---
-
 ## Introduction
 In a [previous article](../case_insensitive_string_hashmap), I discussed how to efficiently store strings in a hash map and search for them without worrying about case sensitivity. I explained how creating a custom wrapper class for `String` and overriding its `hashCode` and `equals` methods can achieve this goal, while ensuring good performance by minimizing the creation of additional strings.
 
