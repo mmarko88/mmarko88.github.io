@@ -6,7 +6,7 @@ usePageBundles: true
 featureImage: 'case_sensitive_vs_case_insensitive_hash_map.svg' # Top image on post.
 featureImageAlt: 'Case sensitive vs case insensitive hash map' # Alternative text for featured image.
 shareImage: 'case_sensitive_vs_case_insensitive_hash_map.svg' # For SEO and social media snippets.
-tags: ["java", "hashMap"]
+tags: ["java", "hashMap", "strings"]
 categories: [ "java"]
 ---
 
