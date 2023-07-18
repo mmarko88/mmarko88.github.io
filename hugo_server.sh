@@ -1,1 +1,0 @@
-docker run --rm -v $PWD:/src -p 1313:1313 profdev:latest server --bind 0.0.0.0
