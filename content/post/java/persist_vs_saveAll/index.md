@@ -1,11 +1,11 @@
 ---
-title: "Fastest way to insert the data in MS SQL server using Hibernate"
-date: 2023-10-04
-draft: true
+title: "Fastest way to insert the data in MS SQL - Part 1 Hibernate Batching"
+date: 2023-10-05
+draft: false
 usePageBundles: true
-featureImage: 'hibernate.png' # Top image on post.
-featureImageAlt: 'Fast insert' # Alternative text for featured image.
-shareImage: 'hibernate.png' # For SEO and social media snippets.
+featureImage: 'java_sending_data_to_mssql_server.jpg' # Top image on post.
+featureImageAlt: 'java sending data to mssql server' # Alternative text for featured image.
+shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 ---
@@ -26,7 +26,7 @@ hibernate.jdbc.batch_size=<batch size>
 ```
 
 You have the option to dynamically adjust the batch size by manipulating the 
-Session object. To illustrate, if you intend to configure a batch size of 50 
+`Session` object. To illustrate, if you intend to configure a batch size of 50 
 for a specific session, you can achieve this goal with the following code snippet:
 
 ```java
@@ -37,11 +37,12 @@ entityManager
 
 Once you have enabled Hibernate batching, you can start to see performance improvements in your application, especially if you are performing a large number of database operations.
 
-Here are some additional tips for using Hibernate batching:
+#### Here are some additional tips for using Hibernate batching:
 
 - A batch size that is too small will not provide much performance improvement, while a batch size that is too large can cause memory problems.
 - To enable Hibernate to batch all statements, you need to set the `hibernate.order_inserts` and `hibernate.order_updates` properties to `true`.
-- If you are using Spring Data JPA, you can enable batching by using prefix `spring.jpa.properties.hibernate.*`.
+- If you work wit
+- h Spring Boot application, you can enable batching by using prefix `spring.jpa.properties.hibernate.*`.
 
 ## Example
 Let's try to persist list of `Person` objects using Hibernate. Person object is defined as following:
@@ -55,16 +56,32 @@ Let's try to persist list of `Person` objects using Hibernate. Person object is 
 @Setter
 public final class Person {
     @Id
-    @Column(name = PERSON_ID, columnDefinition = PERSON_ID_COL_DEF)
+    @Column(name = "person_id", columnDefinition = "INT")
     private int personId;
-    @Column(name = USER_NAME, nullable = false, length = USERNAME_LENGTH, columnDefinition = USERNAME_COL_DEF)
+    @Column(name = "user_name", nullable = false, length = 30, columnDefinition = "NVARCHAR(30)")
     private String userName;
-    @Column(name = FIRST_NAME, nullable = false, length = FIRST_NAME_LENGTH, columnDefinition = FIRST_NAME_COL_DEF)
+    @Column(name = "first_name", nullable = false, length = 10, columnDefinition = "NVARCHAR(10)")
     private String firstName;
-    @Column(name = LAST_NAME, nullable = false, length = LAST_NAME_LENGTH, columnDefinition = LAST_NAME_COL_DEF)
+    @Column(name = "last_name", nullable = false, length = 15, columnDefinition = "NVARCHAR(15)")
     private String lastName;
-    @Column(name = YEARS, columnDefinition = YEARS_COL_DEF)
+    @Column(name = "years", columnDefinition = "INT")
     private int years;
+}
+```
+
+As you can tell, this is a pretty standard Hibernate entity with 2 integer fields and 3 string fields.
+Just remember, the personId doesn't get created on its own; you've got to give it a value.
+
+Random data is generated using following method;
+```java
+private static Person genRandomPerson() {
+    ++personId;
+    return new Person(personId,
+            RandomStringUtils.randomAlphanumeric(30),
+            RandomStringUtils.randomAlphabetic(10),
+            RandomStringUtils.randomAlphabetic(15),
+            RandomUtils.nextInt(10, 100)
+    );
 }
 ```
 
@@ -101,7 +118,7 @@ private <T> void persistAndFlushObjects(Iterable<T> objects) {
 }
 ```
 
-is function employs the entityManager to persist objects. 
+The `persist` function is the one that uses the `entityManager` to save objects.
 It's crucial to emphasize that this function should **exclusively be used 
 for inserting new objects into the database**. It accomplishes this by
 partitioning the input list into multiple sublists,
@@ -131,7 +148,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {}
 I execute these two methods in distinct scenarios: 
 one with the batching parameter turned on and the other with it turned off.
 Additionally, I conduct the tests using varying batch sizes for each scenario,
-specifically batch sizes of 10, 100, and 1,000. 
+specifically batch sizes of 10, 100, and 1,000. 100.000 `Person`
+objects are persisted to the database.
 
 In each test scenario, I run the test 10 times and compute the median value
 from the results. Following the completion of each test,
@@ -160,8 +178,7 @@ Here are the results:
 Indeed, the chart clearly demonstrates that enabling batching results in the
 fastest data insertion. It's also evident that larger batch sizes correspond
 to faster persistence. However, it's essential to exercise caution when considering
-further increases in batch size, as this can lead to significant memory usage
-issues.
+further increases in batch size, as this can lead to memory usage issues.
 
 The unexpected second-place performance is intriguing, given the conventional
 expectation that batched methods should outperform. To gain a deeper understanding
