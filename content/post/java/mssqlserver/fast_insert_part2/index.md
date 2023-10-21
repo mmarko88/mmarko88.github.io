@@ -12,7 +12,7 @@ categories: [ "java", "sql" ]
 ---
 
 ## Introduction
-In the previous post [Fastest way to insert the data in MS SQL - Part 1 Hibernate Batching](../persist_vs_saveAll) 
+In the previous post [Fastest way to insert the data in MS SQL - Part 1 Hibernate Batching](../persist_vs_saveAll/) 
 we compared the performance of Hibernate inserts with batching turned off vs batching turned on.
 In this post, we will explore other ways to insert data into MS SQL server and compare performance with Hibernate.
 
