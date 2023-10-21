@@ -2,3 +2,4 @@
 *.lock
 public/*
 .idea/*
+/resources

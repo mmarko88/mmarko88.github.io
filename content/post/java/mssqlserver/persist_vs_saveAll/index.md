@@ -148,12 +148,12 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {}
 I execute these two methods in distinct scenarios: 
 one with the batching parameter turned on and the other with it turned off.
 Additionally, I conduct the tests using varying batch sizes for each scenario,
-specifically batch sizes of 10, 100, and 1,000. 100.000 `Person`
+specifically batch sizes of 10, 100, and 1,000. 100,000 `Person`
 objects are persisted to the database.
 
 In each test scenario, I run the test 10 times and compute the median value
 from the results. Following the completion of each test,
-I truncate the "person" table. My measurements exclusively focus on the time 
+I truncate the `Person` table. My measurements exclusively focus on the time 
 taken for the insert operations to conclude.
 
 Here are the results:
