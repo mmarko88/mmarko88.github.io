@@ -240,7 +240,7 @@ Moreover, this overhead becomes more pronounced when dealing with smaller batch 
 We can employ an additional technique when working with a prepared statement. 
 In our previous tests, we conducted inserts using the following statement: 
 ```tsql
-insert into Person(person_id, user_name, first_name, last_name, years)values(?,?,?,?,?)
+insert into Person(person_id, user_name, first_name, last_name, years) values (?,?,?,?,?)
 ``` 
 With this statement, we insert one person object at a time. However, MS SQL Server supports an alternative syntax: 
 ```tsql
