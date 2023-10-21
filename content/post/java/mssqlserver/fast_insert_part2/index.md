@@ -199,24 +199,24 @@ I truncate the `Person` table. My measurements exclusively focus on the time
 taken for the insert operations to conclude.
 
 
-| Method Name        | Median Duration | Batch Size |
-|--------------------|-----------------|------------|
-| Bulk Api           | 314             | 10000      |
-| Bulk Api           | 432             | 1000       |
-| Bulk Api           | 1504            | 100        |
-| Jdbc Template      | 1508.5          | 10000      |
-| Prepared Statement | 1520            | 10000      |
-| Jdbc Template      | 1551.5          | 1000       |
-| Prepared Statement | 1559.5          | 1000       |
-| Hibernate Persist  | 1732            | 10000      |
-| Prepared Statement | 1770.5          | 100        |
-| Hibernate Persist  | 1778            | 1000       |
-| Jdbc Template      | 1783            | 100        |
-| Hibernate Persist  | 2281            | 100        |
-| Prepared Statement | 2583            | 10         |
-| Jdbc Template      | 2618.5          | 10         |
-| Hibernate Persist  | 4850.5          | 10         |
-| Bulk Api           | 10178.5         | 10         |
+| Method Name        | Median Duration ms | Batch Size |
+|--------------------|--------------------|------------|
+| Bulk Api           | 314                | 10000      |
+| Bulk Api           | 432                | 1000       |
+| Bulk Api           | 1504               | 100        |
+| Jdbc Template      | 1508.5             | 10000      |
+| Prepared Statement | 1520               | 10000      |
+| Jdbc Template      | 1551.5             | 1000       |
+| Prepared Statement | 1559.5             | 1000       |
+| Hibernate Persist  | 1732               | 10000      |
+| Prepared Statement | 1770.5             | 100        |
+| Hibernate Persist  | 1778               | 1000       |
+| Jdbc Template      | 1783               | 100        |
+| Hibernate Persist  | 2281               | 100        |
+| Prepared Statement | 2583               | 10         |
+| Jdbc Template      | 2618.5             | 10         |
+| Hibernate Persist  | 4850.5             | 10         |
+| Bulk Api           | 10178.5            | 10         |
 
 ![Results Chart](fastInsert2ChartResults.webp)
 
