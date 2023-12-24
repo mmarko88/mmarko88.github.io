@@ -199,7 +199,7 @@ I truncate the `Person` table. My measurements exclusively focus on the time
 taken for the insert operations to conclude.
 
 
-| Method Name        | Median Duration ms | Batch Size |
+| Method Name        | Median Duration Ms | Batch Size |
 |--------------------|--------------------|------------|
 | Bulk Api           | 314                | 10000      |
 | Bulk Api           | 432                | 1000       |
