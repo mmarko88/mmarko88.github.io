@@ -141,18 +141,6 @@ However, when we increase the batch size for JDBC Template to more than 100,
 the performance worsens. Therefore, we should be careful when setting the batch
 size for JDBC Template with multi-value inserts.
 
-[//]: # (## Microsoft SQL `useBulkCopyForBatchInsert` parameter)
-
-[//]: # (Per [Microsoft SQL server documentation]&#40;https://learn.microsoft.com/en-us/sql/connect/jdbc/use-bulk-copy-api-batch-insert-operation?view=sql-server-ver16&#41;)
-
-[//]: # (there is additional parameter that can be included and that promises significant performance improvements for insert statements.)
-
-[//]: # (Althrough, it has a lot of conditions that has to be meet to make it work for insert statement. I would be careful )
-
-[//]: # (about decision about turning on this parameter on produciton. Eatherway, let's test the performance and compare the results.)
-
-
-
 ## Conclusion
 
 Based on the results above, we can conclude that multi-value inserts drastically improve insert performances and that
