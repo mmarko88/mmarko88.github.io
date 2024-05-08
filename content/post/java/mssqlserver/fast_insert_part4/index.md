@@ -1,5 +1,5 @@
 ---
-title: Fastest Way To Insert the Data in MS SQL – Part 4 – Turning on the `useBulkCopyForBatchInsert` parameter
+title: Fastest Way To Insert the Data in MS SQL – Part 4 – Turning on the `useBulkCopyForBatchInsert` Parameter
 date: 2024-05-08
 draft: false
 usePageBundles: true
