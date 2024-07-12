@@ -227,7 +227,7 @@ From the results above, we can draw the following conclusions:
 3. Optimized version of code, without string concatenation, performs much better than string concatenation. This statement is true for all versions of Java.
 4. Java 17 has much performs better when it comes to garbage collection.
 
-For more stuff like this, you can follow me on [Twitter](https://twitter.com/mare_milenkovic), [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/), or visit my [website](https://www.professionaldev.pro/). 
+For more stuff like this, you can follow me on [Twitter](https://twitter.com/mare_milenkovic), [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/). 
 
 ## Appendix: Java Code Used for Benchmarking
 At the end, here is the code that I used to perform benchmarks:

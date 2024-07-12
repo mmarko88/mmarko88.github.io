@@ -122,7 +122,7 @@ photo = "images/marko_milenkovic.jpg" #include this if you would like to show th
 
 #[plausible_analytics]
 #enable = false # to enable plausible analytics set to true.
-#websiteDomain = "professionaldev.pro" # domain name of your website, most cases same as your base url
+#websiteDomain = "professionaldev.dev" # domain name of your website, most cases same as your base url
 # plausibleDomain = "plausible.io" # default is set to plausible.io, only required if plausible is selfhosted
 # scritpName = "plausible" # default is set to plausible, only required if using a custome name for script
 
