@@ -17,3 +17,12 @@
 {{- with $image }}{{ $schema = merge $schema (dict "image" .) }}{{ end -}}
 <script type="application/ld+json">{{ $schema | jsonify }}</script>
 {{- end -}}
+
+{{- /* LCP: preload the first featured post's image on the homepage */ -}}
+{{- if .IsHome -}}
+  {{- $first := index (where site.RegularPages "Params.featured" true) 0 -}}
+  {{- $img := $first.Params.shareImage | default $first.Params.featureImage -}}
+  {{- with $img }}
+    {{- with $first.Resources.GetMatch . }}<link rel="preload" as="image" href="{{ .Permalink }}">{{ end }}
+  {{- end }}
+{{- end -}}

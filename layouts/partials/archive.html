@@ -55,6 +55,11 @@
         {{- end }}
       </ul>
     </section>
+    <section class="home_topics">
+      {{- range first 8 (sort site.Taxonomies.tags "Count" "desc") }}
+      <a class="home_topic_pill" href="{{ .Page.Permalink }}">{{ .Page.Title }} <span>{{ .Count }}</span></a>
+      {{- end }}
+    </section>
     <section class="post_cta">
       <h2 class="post_cta_title">Get new posts by email</h2>
       <p>Occasional posts on Java performance, SQL Server, and testing — no spam, unsubscribe anytime.</p>

@@ -41,6 +41,22 @@
 
     {{- partial "post-cta" . }}
 
+    {{- partial "post-latest" . }}
+
+    <div id="read-progress" aria-hidden="true"></div>
+    <script>
+      (function () {
+        var bar = document.getElementById('read-progress');
+        function update() {
+          var h = document.documentElement;
+          var pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+          bar.style.width = pct + '%';
+        }
+        document.addEventListener('scroll', update, { passive: true });
+        update();
+      })();
+    </script>
+
     {{- $showComments := true }}
     {{- if eq $s.comments false }}
       {{- $showComments = false }}

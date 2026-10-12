@@ -147,3 +147,45 @@ li ::marker
 .home_follow
   margin-top: 1.5rem
   opacity: 0.85
+
+// reading progress bar
+#read-progress
+  position: fixed
+  top: 0
+  left: 0
+  height: 3px
+  width: 0
+  background: var(--accent, #0f3460)
+  z-index: 9999
+  transition: width 0.1s linear
+
+// sidebar avatar ring + hover
+.sidebar .author_header img
+  border-radius: 50%
+  box-shadow: 0 0 0 2px var(--accent, #0f3460), 0 0 0 5px transparent
+  transition: transform 0.25s ease, box-shadow 0.25s ease
+
+.sidebar .author_header:hover img
+  transform: scale(1.05)
+  box-shadow: 0 0 0 3px var(--accent, #0f3460), 0 0 12px rgba(15, 52, 96, 0.4)
+
+// topic pills on home
+.home_topics
+  margin-top: 1.5rem
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+
+.home_topic_pill
+  display: inline-flex
+  align-items: center
+  gap: 0.35rem
+  padding: 0.3rem 0.8rem
+  border: 1px solid var(--border-color, #ddd)
+  border-radius: 999px
+  text-decoration: none
+  font-size: 0.85rem
+
+  span
+    opacity: 0.6
+    font-size: 0.75rem
