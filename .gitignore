@@ -4,3 +4,4 @@ public/*
 .idea/*
 /resources
 target/
+dependency-reduced-pom.xml
