@@ -1,0 +1,188 @@
+<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="oopGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff4757;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6b81;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="fpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2ed573;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7bed9f;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="dataGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffa502;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff7f50;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="funcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5352ed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#70a1ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="4" dy="4" stdDeviation="4" flood-opacity="0.4"/>
+    </filter>
+    <style>
+      @keyframes flowDown {
+        0% { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(35px); opacity: 0; }
+      }
+      @keyframes flowUp {
+        0% { transform: translateY(35px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes flowLeft {
+        0% { transform: translateX(0); opacity: 1; }
+        100% { transform: translateX(-15px); opacity: 0; }
+      }
+      @keyframes flowRight {
+        0% { transform: translateX(-15px); opacity: 0; }
+        100% { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.2); opacity: 1; }
+      }
+      @keyframes dash {
+        to { stroke-dashoffset: -20; }
+      }
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: bold; fill: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+      .subtitle { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #ffffff; }
+      .label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; fill: #ffffff; font-weight: 500; }
+      .label-dark { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; fill: #1a1a2e; font-weight: 600; }
+      .box { stroke: #ffffff; stroke-width: 2; filter: url(#shadow); }
+      .arrow { stroke: #ffffff; stroke-width: 2; fill: none; marker-end: url(#arrowhead); opacity: 0.6; stroke-dasharray: 5,5; animation: dash 1s linear infinite; }
+      .flow-dot { fill: #ffffff; filter: url(#glow); }
+      .pulse-circle { fill: #ffffff; opacity: 0.3; animation: pulse 2s ease-in-out infinite; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ffffff" />
+    </marker>
+  </defs>
+
+  <!-- Background with gradient -->
+  <rect width="800" height="450" fill="url(#bgGradient)" />
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="60" fill="#ffffff" opacity="0.1" />
+  <circle cx="700" cy="350" r="80" fill="#ffffff" opacity="0.1" />
+  <circle cx="400" cy="225" r="120" fill="#ffffff" opacity="0.05" />
+
+  <!-- OOP Section -->
+  <text x="200" y="45" text-anchor="middle" class="subtitle">❌ OOP: Data Travels Through Functions</text>
+  
+  <!-- Pipeline showing data moving through functions -->
+  <!-- Function 1 -->
+  <rect x="50" y="80" width="100" height="60" class="box" rx="10" fill="url(#funcGradient)" />
+  <text x="100" y="115" text-anchor="middle" class="label-dark" font-size="12">calculate()</text>
+
+  <!-- Arrow 1 -->
+  <path d="M 150 110 L 190 110" class="arrow" />
+
+  <!-- Function 2 -->
+  <rect x="200" y="80" width="100" height="60" class="box" rx="10" fill="url(#funcGradient)" />
+  <text x="250" y="115" text-anchor="middle" class="label-dark" font-size="12">validate()</text>
+
+  <!-- Arrow 2 -->
+  <path d="M 300 110 L 340 110" class="arrow" />
+
+  <!-- Function 3 -->
+  <rect x="350" y="80" width="100" height="60" class="box" rx="10" fill="url(#funcGradient)" />
+  <text x="400" y="115" text-anchor="middle" class="label-dark" font-size="12">discount()</text>
+
+  <!-- Data packet that moves through the pipeline -->
+  <g id="dataPacketOOP">
+    <rect x="70" y="95" width="60" height="30" rx="5" fill="url(#oopGradient)" stroke="#fff" stroke-width="2" filter="url(#glow)" />
+    <text x="100" y="115" text-anchor="middle" class="label" font-size="11">📦 Data</text>
+    <animateTransform attributeName="transform" type="translate" values="0,0; 150,0; 300,0; 0,0" dur="3s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="1;1;1;0;1" dur="3s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Label below -->
+  <text x="225" y="180" text-anchor="middle" class="label" font-size="13" opacity="0.8">Data object moves through method chain</text>
+
+  <!-- Divider with VS -->
+  <circle cx="400" cy="225" r="40" fill="#ffffff" opacity="0.2" />
+  <text x="400" y="235" text-anchor="middle" class="title" font-size="32">VS</text>
+
+  <!-- FP Section -->
+  <text x="600" y="45" text-anchor="middle" class="subtitle">✅ FP: Functions Visit Data</text>
+
+  <!-- Data in center - shows transformation as functions visit -->
+  <g id="dataCenter">
+    <rect x="530" y="150" width="140" height="60" class="box" rx="15" fill="url(#dataGradient)" />
+    <text x="600" y="180" text-anchor="middle" class="label-dark">Order (record)</text>
+    <text x="600" y="198" text-anchor="middle" class="label-dark" font-size="12">🎯 plain data</text>
+  </g>
+
+  <!-- Data versions showing transformation - stacked behind -->
+  <g id="dataVersion1" opacity="0">
+    <rect x="530" y="150" width="140" height="60" class="box" rx="15" fill="url(#fpGradient)" opacity="0.5" />
+    <text x="600" y="180" text-anchor="middle" class="label" opacity="0.7">validated</text>
+    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="0.5s" />
+  </g>
+
+  <g id="dataVersion2" opacity="0">
+    <rect x="530" y="150" width="140" height="60" class="box" rx="15" fill="url(#fpGradient)" opacity="0.5" />
+    <text x="600" y="180" text-anchor="middle" class="label" opacity="0.7">discounted</text>
+    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1.5s" />
+  </g>
+
+  <g id="dataVersion3" opacity="0">
+    <rect x="530" y="150" width="140" height="60" class="box" rx="15" fill="url(#fpGradient)" opacity="0.5" />
+    <text x="600" y="180" text-anchor="middle" class="label" opacity="0.7">processed</text>
+    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="2.5s" />
+  </g>
+
+  <!-- Functions arranged around the data -->
+  <rect x="480" y="60" width="80" height="35" rx="5" fill="url(#fpGradient)" stroke="#fff" stroke-width="2" />
+  <text x="520" y="83" text-anchor="middle" class="label" font-size="11">calculate()</text>
+
+  <rect x="570" y="60" width="80" height="35" rx="5" fill="url(#fpGradient)" stroke="#fff" stroke-width="2" />
+  <text x="610" y="83" text-anchor="middle" class="label" font-size="11">validate()</text>
+
+  <rect x="660" y="60" width="80" height="35" rx="5" fill="url(#fpGradient)" stroke="#fff" stroke-width="2" />
+  <text x="700" y="83" text-anchor="middle" class="label" font-size="11">discount()</text>
+
+  <!-- Arrows from functions to data -->
+  <path d="M 520 95 L 560 145" class="arrow" />
+  <path d="M 610 95 L 610 145" class="arrow" />
+  <path d="M 700 95 L 640 145" class="arrow" />
+
+  <!-- Function packets visiting data with transformation effect -->
+  <g id="funcVisit1">
+    <rect x="495" y="100" width="50" height="25" rx="3" fill="url(#fpGradient)" stroke="#fff" stroke-width="2" filter="url(#glow)" />
+    <text x="520" y="117" text-anchor="middle" class="label" font-size="10">calc</text>
+    <animateTransform attributeName="transform" type="translate" values="0,0; 60,40; 0,0" dur="3s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="1;1;0;1" dur="3s" repeatCount="indefinite" />
+  </g>
+
+  <g id="funcVisit2">
+    <rect x="585" y="100" width="50" height="25" rx="3" fill="url(#fpGradient)" stroke="#fff" stroke-width="2" filter="url(#glow)" />
+    <text x="610" y="117" text-anchor="middle" class="label" font-size="10">val</text>
+    <animateTransform attributeName="transform" type="translate" values="0,0; 0,40; 0,0" dur="3s" repeatCount="indefinite" begin="1s" />
+    <animate attributeName="opacity" values="1;1;0;1" dur="3s" repeatCount="indefinite" begin="1s" />
+  </g>
+
+  <g id="funcVisit3">
+    <rect x="675" y="100" width="50" height="25" rx="3" fill="url(#fpGradient)" stroke="#fff" stroke-width="2" filter="url(#glow)" />
+    <text x="700" y="117" text-anchor="middle" class="label" font-size="10">disc</text>
+    <animateTransform attributeName="transform" type="translate" values="0,0; -60,40; 0,0" dur="3s" repeatCount="indefinite" begin="2s" />
+    <animate attributeName="opacity" values="1;1;0;1" dur="3s" repeatCount="indefinite" begin="2s" />
+  </g>
+
+  <!-- Label below -->
+  <text x="600" y="280" text-anchor="middle" class="label" font-size="13" opacity="0.8">Data stays in place, transforms as functions visit</text>
+  <text x="600" y="300" text-anchor="middle" class="label" font-size="13" opacity="0.8">Each function returns a new version of data</text>
+
+  <!-- Title -->
+  <text x="400" y="440" text-anchor="middle" class="title">Moving Functions to Data</text>
+</svg>
