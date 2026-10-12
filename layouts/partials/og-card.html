@@ -9,6 +9,8 @@
 {{- with .Params.shareImage -}}{{- with $.Resources.GetMatch . -}}{{ $img = . }}{{ end }}{{ end -}}
 {{- if not $img -}}{{- with .Params.featureImage -}}{{- with $.Resources.GetMatch . -}}{{ $img = . }}{{ end }}{{ end }}{{ end -}}
 {{- if not $img }}{{ $img = resources.Get "images/author.jpg" }}{{ end -}}
+{{- /* SVG/unprocessable resources can't be Fill-ed — fall back to author photo */ -}}
+{{- if not (reflect.IsImageResourceProcessable $img) }}{{ $img = resources.Get "images/author.jpg" }}{{ end -}}
 {{- $card = $card.Filter (images.Overlay ($img.Fill "1200x400") 0 0) -}}
 
 {{- /* wrap title into <=3 lines of ~26 chars */ -}}
