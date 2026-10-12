@@ -1,4 +1,6 @@
 +++
+sidebar = false
+singleColumn = true
 title = "About Me"
 description = "Marko Milenkovic — Senior Java Developer & Tech Lead writing about backend performance, SQL Server, JUnit and JVM internals."
 date = "2022-07-10"

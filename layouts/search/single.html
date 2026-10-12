@@ -1,0 +1,17 @@
+{{- define "main" }}
+<div class="content home_centered search_page pt-2 pb-2">
+  <h1 class="search_page_title">Search</h1>
+  <div class="search search_page_field">
+    <input type="search" class="search_page_input form_field" id="find" autocomplete="off"
+           placeholder='{{ T "blog_search_field_placeholder" }}'>
+    <label for="find" class="search_label">
+      {{- partial "sprite" (dict "icon" "search") }}
+    </label>
+  </div>
+  <p class="search_hint pale">Press Enter to search all posts, pages and TIL notes.</p>
+  <div id="results" class="pt-2 pb-2">
+    <div class="results pt-2" id="searchpage"></div>
+  </div>
+</div>
+<script src="{{ "js/search-page.js" | relURL }}" defer></script>
+{{- end }}

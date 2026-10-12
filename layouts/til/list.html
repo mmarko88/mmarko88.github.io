@@ -1,5 +1,5 @@
 {{ define "main" }}
-<div class="grid-inverse wrap content">
+<div class="home_centered wrap content">
   <div>
     <h1 class="post_title">{{ .Title }}</h1>
     {{- with .Content }}{{ . }}{{ end }}
@@ -30,6 +30,5 @@
       })();
     </script>
   </div>
-  {{- partial "sidebar" . }}
 </div>
 {{ end }}

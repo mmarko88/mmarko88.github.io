@@ -1,4 +1,6 @@
 +++
+sidebar = false
+singleColumn = true
 title = "What I'm Doing Now"
 description = "What Marko is currently working on and learning."
 toc = false

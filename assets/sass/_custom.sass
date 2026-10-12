@@ -325,3 +325,46 @@ html[data-mode="dim"]
 @media (prefers-color-scheme: dark)
   html:not([data-mode="lit"])
     --bg: #0d1117
+
+// CTA card background: white in light mode, subtle card in dark mode
+.post_cta
+  background: var(--post-bg, var(--light))
+
+// post pages: same page background as home (theme makes .page white)
+html.page:not([data-mode="dim"])
+  --choice-bg: var(--haze)
+
+@media (prefers-color-scheme: dark)
+  html.page:not([data-mode="lit"])
+    --choice-bg: var(--bg)
+
+// single-column posts: cap the card width
+.wrap > .post_content
+  max-width: 50rem
+  margin: 0 auto
+
+// post card: white content background like the CTA box (light mode);
+// --post-bg resolves to the dark card in dark mode
+.wrap > .post_content
+  background: var(--post-bg, var(--light))
+  border-radius: 8px
+  padding: 2rem
+
+// search page
+.search_page .search_page_input
+  font-size: 1.15rem
+  padding: 0.9rem 1rem
+  width: 100%
+
+.search_page .search_label svg
+  width: 1.4rem
+  height: 1.4rem
+
+.search_hint
+  margin-top: 0.5rem
+  font-size: 0.85rem
+
+.search_page .results .search_result
+  display: block
+  padding: 0.6rem 0
+  border-bottom: 1px solid var(--border-color, #eee)
