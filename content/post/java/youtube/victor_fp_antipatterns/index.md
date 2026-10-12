@@ -3,9 +3,9 @@ title: Functional Programming Antipatterns Notes
 date: 2024-05-11
 draft: true
 usePageBundles: true
-featureImage: 'fp_antipatterns.png' # Top image on post.
+featureImage: 'fp_antipatterns.webp' # Top image on post.
 featureImageAlt: 'functional programming antipatterns by Victor Rentea' # Alternative text for featured image.
-shareImage: 'fp_antipatterns.png' # For SEO and social media snippets.
+shareImage: 'fp_antipatterns.jpg' # For SEO and social media snippets.
 tags: ["java", "java developers", "mistakes", "java mistakes", "developers mistakes", "functional programming"]
 categories: [
     "java", "functional programming"

@@ -3,9 +3,9 @@ title: "How do I become proficient with functional programming in Java"
 date: 2021-04-05
 draft: false
 usePageBundles: true
-featureImage: 'fp_in_java.png' # Top image on post.
+featureImage: 'fp_in_java.webp' # Top image on post.
 featureImageAlt: 'How do I become proficient with functional programming in Java' # Alternative text for featured image.
-shareImage: 'fp_in_java.png' # For SEO and social media snippets.
+shareImage: 'fp_in_java.jpg' # For SEO and social media snippets.
 tags: ["functional programming", "java", "learn functional programming", "getting started with functional programming in java"]
 categories: [ "java", "functional programming"]
 ---

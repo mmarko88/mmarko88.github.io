@@ -3,9 +3,9 @@ title: 10 Mistakes That Java Developers Make That Prevent Them From Being Succes
 date: 2021-06-11
 draft: false
 usePageBundles: true
-featureImage: 'teen_mistakes.png' # Top image on post.
+featureImage: 'teen_mistakes.webp' # Top image on post.
 featureImageAlt: '10 mistakes that java developers make that prevent them from being successful developers' # Alternative text for featured image.
-shareImage: 'teen_mistakes.png' # For SEO and social media snippets.
+shareImage: 'teen_mistakes.jpg' # For SEO and social media snippets.
 tags: ["java", "java developers", "mistakes", "java mistakes", "developers mistakes", "successful developers"]
 categories: [
     "java",

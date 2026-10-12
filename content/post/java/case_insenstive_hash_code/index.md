@@ -3,9 +3,9 @@ title: "How to Write Classes With Multiple Case Insensitive Strings"
 date: 2023-05-12
 draft: false
 usePageBundles: true
-featureImage: 'persons_case_insensitive.png' # Top image on post.
-featureImageAlt: 'persons_case_insensitive.png' # Alternative text for featured image.
-shareImage: 'persons_case_insensitive.png' # For SEO and social media snippets.
+featureImage: 'persons_case_insensitive.webp' # Top image on post.
+featureImageAlt: 'persons_case_insensitive' # Alternative text for featured image.
+shareImage: 'persons_case_insensitive.jpg' # For SEO and social media snippets.
 tags: ["java", "hashMap", "strings"]
 categories: [ "java"]
 ---

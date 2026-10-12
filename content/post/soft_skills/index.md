@@ -3,7 +3,7 @@ title: "Why Should You, as a Software Developer, Learn Soft Skills?"
 date: 2022-12-05
 draft: false
 usePageBundles: true
-featureImage: 'soft_skills.jpg' # Top image on post.
+featureImage: 'soft_skills.webp' # Top image on post.
 featureImageAlt: 'Soft skills' # Alternative text for featured image.
 shareImage: 'soft_skills.jpg' # For SEO and social media snippets.
 tags: [
