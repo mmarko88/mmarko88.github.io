@@ -28,9 +28,14 @@
   weight = -108
 
 [[main]]
+  name = "TIL"
+  url = "til/"
+  weight = -107
+
+[[main]]
   name = "About"
   url = "about/"
-  weight = -107
+  weight = -106
 
 # social menu links
 

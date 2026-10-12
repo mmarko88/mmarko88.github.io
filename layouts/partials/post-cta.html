@@ -1,0 +1,20 @@
+{{- /* End-of-post call to action: newsletter subscribe + social links.
+     Newsletter form renders only when site.Params.buttondown is set. */ -}}
+<div class="post_cta">
+  <h2 class="post_cta_title">{{ T "cta_title" | default "Liked this post?" }}</h2>
+  <p>Follow me on
+    <a href="https://x.com/mare_milenkovic" target="_blank" rel="noopener">X</a> and
+    <a href="https://www.linkedin.com/in/marko-milenkovic/" target="_blank" rel="noopener">LinkedIn</a>
+    for more Java posts like this one.</p>
+  {{- with site.Params.buttondown }}
+  <form action="https://buttondown.com/api/emails/embed-subscribe/{{ . }}" method="post"
+        target="popupwindow" onsubmit="window.open('https://buttondown.com/{{ . }}', 'popupwindow')"
+        class="post_cta_form">
+    <label for="bd-email">Subscribe for new posts:</label>
+    <input type="email" name="email" id="bd-email" placeholder="you@example.com" required />
+    <input type="submit" value="Subscribe" />
+  </form>
+  {{- else }}
+  <p>Or <a href="{{ "index.xml" | relURL }}">subscribe via RSS</a> to get new posts.</p>
+  {{- end }}
+</div>

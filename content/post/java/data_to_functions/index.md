@@ -279,6 +279,17 @@ Order processOrder(Order order, BigDecimal discountRate, BigDecimal taxRate) {
 
 Notice how each function is pure (no side effects), takes data as input, and returns new data as output. The original order is never modified.
 
+Visually, the pipeline looks like a chain of transformations:
+
+```mermaid
+flowchart LR
+    A[Order] --> B[validateOrder]
+    B --> C[applyDiscount]
+    C --> D[calculateTax]
+    D --> E[completeOrder]
+    E --> F[Processed Order]
+```
+
 ## Performance Considerations
 
 The functional approach of "moving data to functions" has performance implications that you should be aware of:

@@ -1,0 +1,41 @@
+{{- /* Generate a branded 1200x630 OG card: post image on top,
+     post title + domain/author on a dark band below. Returns image Permalink. */ -}}
+{{- $fontB := resources.Get "fonts/Roboto-Bold.ttf" -}}
+{{- $fontM := resources.Get "fonts/Roboto-Medium.ttf" -}}
+{{- $card := resources.Get "images/og-bg.png" -}}
+
+{{- /* image: shareImage > featureImage > author photo */ -}}
+{{- $img := "" -}}
+{{- with .Params.shareImage -}}{{- with $.Resources.GetMatch . -}}{{ $img = . }}{{ end }}{{ end -}}
+{{- if not $img -}}{{- with .Params.featureImage -}}{{- with $.Resources.GetMatch . -}}{{ $img = . }}{{ end }}{{ end }}{{ end -}}
+{{- if not $img }}{{ $img = resources.Get "images/author.jpg" }}{{ end -}}
+{{- $card = $card.Filter (images.Overlay ($img.Fill "1200x400") 0 0) -}}
+
+{{- /* wrap title into <=3 lines of ~26 chars */ -}}
+{{- $lines := slice -}}
+{{- $line := "" -}}
+{{- range $w := split .Title " " -}}
+  {{- if gt (add (len $line) (add (len $w) 1)) 26 -}}
+    {{- $lines = $lines | append $line -}}
+    {{- $line = $w -}}
+  {{- else -}}
+    {{- $line = cond (eq $line "") $w (print $line " " $w) -}}
+  {{- end -}}
+{{- end -}}
+{{- $lines = $lines | append $line -}}
+{{- if gt (len $lines) 3 -}}
+  {{- $lines = first 3 $lines -}}
+  {{- $lines = $lines | append "" -}}
+  {{- $lines = (slice (index $lines 0) (index $lines 1) (print (index $lines 2) "...")) -}}
+{{- end -}}
+
+{{- $size := cond (le (len $lines) 2) 56 44 -}}
+{{- $y := cond (le (len $lines) 2) 450 430 -}}
+{{- $step := cond (le (len $lines) 2) 68 54 -}}
+{{- range $lines -}}
+  {{- $card = $card.Filter (images.Text . (dict "color" "#ffffff" "size" $size "x" 60 "y" $y "font" $fontB)) -}}
+  {{- $y = add $y $step -}}
+{{- end -}}
+{{- $card = $card.Filter (images.Text "professionaldev.dev" (dict "color" "#9bb8d3" "size" 26 "x" 60 "y" 585 "font" $fontM)) -}}
+{{- $card = $card.Filter (images.Text "Marko Milenkovic" (dict "color" "#9bb8d3" "size" 26 "x" 940 "y" 585 "font" $fontM)) -}}
+{{- $card.Permalink -}}

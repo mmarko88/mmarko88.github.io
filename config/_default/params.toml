@@ -110,13 +110,16 @@ utterancesTheme = "preferred-color-scheme" # follows visitor's OS dark/light pre
 # since = 2016
 
 # Show related content at the end of an article based on the 'series' taxonomy. Can be set in post front matter.
- showRelatedInArticle = false
+ showRelatedInArticle = true
  showRelatedInSidebar = true
 
 # website author
 [author]
 name = "Marko Milenkovic"
 photo = "images/marko_milenkovic.jpg" #include this if you would like to show the author photo on the sidebar
+
+# Newsletter: set to your Buttondown username to show the subscribe form at the end of posts
+buttondown = "mmarko88"
 
 
 #[plausible_analytics]

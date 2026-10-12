@@ -1,0 +1,12 @@
+{{- /* Render ```mermaid code blocks as client-side diagrams (Hugo >=0.123).
+     Mermaid loads from CDN only on pages that contain a mermaid block. */ -}}
+<pre class="mermaid" role="img" aria-label="diagram">
+{{- .Inner -}}
+</pre>
+{{- if not (.Page.Store.Get "mermaidLoaded") -}}
+{{- .Page.Store.Set "mermaidLoaded" true -}}
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+{{- end -}}
