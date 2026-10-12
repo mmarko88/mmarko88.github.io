@@ -9,7 +9,7 @@ the professionaldev.dev original, or Google may rank the dev.to copy above this 
 - Set it to `https://www.professionaldev.dev/post/<path>/`
 - Do this for all existing cross-posted articles; add it to the per-post checklist in `ARTICLE_IDEAS.md`
 
-## #7 — Expand About page + CV
+## #7 — Expand About page + CV ~~DONE (CV PDF still needed for download link)~~
 
 `content/about.md` is currently ~15 lines. For recruiter/job-visibility value it should include:
 
