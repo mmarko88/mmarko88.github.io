@@ -4,8 +4,11 @@ enableSearch = true
 # socials
 twitter = "@mare_milenkovic"
 largeTwitterCard = true # set to true if you want to show a large twitter card image. The default is a small twitter card image
-introDescription = "Practical Java backend engineering: performance benchmarks, clean code, and real-world fixes."
-# introURL = "about/" # set the url for the 'read more' button below the introDescription, or set to false to not show the button
+introDescription = "I'm Marko — a Java backend engineer writing about what actually works: performance benchmarks, JUnit, SQL Server, and JVM internals.\n\n[Subscribe for new posts →](https://buttondown.com/mmarko88)\n[What I'm up to now →](/now/)"
+introURL = "post/"
+
+# Newsletter: Buttondown username — shows subscribe form in post CTA + homepage
+buttondown = "mmarko88" # set the url for the 'read more' button below the introDescription, or set to false to not show the button
 # description = "A theme based on VMware's Clarity Design System for publishing technical blogs with Hugo." # Set your site's meta tag (SEO) description here. Alternatively set this description in your home page content file e.g. content/_index.md. Whatever is set in the latter will take precedence.
 # keywords = ["design", "clarity", "hugo theme"] # Set your site's meta tag (SEO) keywords here. Alternatively set these in your home page content file e.g. content/_index.md. Whatever is set in the latter will take precedence.
 
@@ -117,9 +120,6 @@ utterancesTheme = "preferred-color-scheme" # follows visitor's OS dark/light pre
 [author]
 name = "Marko Milenkovic"
 photo = "images/marko_milenkovic.jpg" #include this if you would like to show the author photo on the sidebar
-
-# Newsletter: set to your Buttondown username to show the subscribe form at the end of posts
-buttondown = "mmarko88"
 
 
 #[plausible_analytics]

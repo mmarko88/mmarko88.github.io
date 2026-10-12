@@ -13,6 +13,15 @@
 {{ end }}
 <div class="grid-inverse wrap content">
   <div>
+    {{- if .IsHome }}
+      {{- $topSeries := index (sort site.Taxonomies.series "Count" "desc") 0 }}
+      {{- with $topSeries }}
+      <a class="home_series_banner" href="{{ .Page.Permalink }}">
+        <span class="home_series_label">Start here</span>
+        <strong>{{ .Page.Title }}</strong> — a {{ .Count }}-part series
+      </a>
+      {{- end }}
+    {{- end }}
     <ul class="posts" id="posts">
       {{- range (.Paginate $pages).Pages }}
         {{ partial "excerpt" . }}
@@ -21,6 +30,38 @@
         {{- template "_internal/pagination.html" . }}
       </li>
     </ul>
+    {{- if .IsHome }}
+    <section class="home_projects">
+      <h2>Selected Work</h2>
+      <div class="home_projects_grid">
+        {{- range site.Data.projects.project }}
+        <a class="home_project_card" href="{{ .url }}" target="_blank" rel="noopener">
+          <h3>{{ .name }}</h3>
+          <p>{{ .description }}</p>
+          {{- with .lang }}<span class="home_project_lang">{{ . }}</span>{{ end }}
+        </a>
+        {{- end }}
+      </div>
+    </section>
+    <section class="home_latest">
+      <h2>Latest</h2>
+      <ul class="home_latest_list">
+        {{- $latest := where (where site.RegularPages "Type" "in" site.Params.mainSections).ByDate.Reverse "Params.featured" "ne" true }}
+        {{- range first 3 $latest }}
+        <li><a href="{{ .Permalink }}">{{ .Title }}</a><span class="pale">{{ .Date.Format "Jan 2, 2006" }}</span></li>
+        {{- end }}
+        {{- range first 1 ((where site.RegularPages "Type" "til").ByDate.Reverse) }}
+        <li><a href="{{ .Permalink }}">{{ .Title }}</a><span class="pale">TIL · {{ .Date.Format "Jan 2, 2006" }}</span></li>
+        {{- end }}
+      </ul>
+    </section>
+    <section class="post_cta">
+      <h2 class="post_cta_title">Get new posts by email</h2>
+      <p>Occasional posts on Java performance, SQL Server, and testing — no spam, unsubscribe anytime.</p>
+      {{ partial "newsletter-form" . }}
+    </section>
+    <p class="home_follow">Or follow me on <a href="https://x.com/mare_milenkovic" target="_blank" rel="noopener">X</a> and <a href="https://www.linkedin.com/in/marko-milenkovic/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+    {{- end }}
   </div>
   {{- partial "sidebar" . }}
 </div>

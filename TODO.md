@@ -18,3 +18,13 @@ the professionaldev.dev original, or Google may rank the dev.to copy above this 
 - Talks/presentations if any
 - CV PDF download link (drop the PDF into `static/files/`, link `/files/cv.pdf`)
 - Links already exist in the social menu — just reference them naturally in the text
+
+## Homepage improvements (research, Oct 2026)
+
+- [x] **H1** — Sharpen hero positioning: who/what/outcome in 5s + CTA (Read posts / Subscribe)
+- [x] **H2** — Newsletter CTA on homepage (reuse post-cta Buttondown form)
+- [x] **H3** — "Latest" strip on home: 3 newest posts + latest TIL (signals freshness)
+- [x] **H4** — Projects/Selected Work section (3-4 cards, data file-driven)
+- [x] **H5** — "Start here" series callout (MS SQL 4-part series banner)
+- [x] **H6** — /now page + status line in hero
+- [x] **H7** — End-of-page contact CTA (X + LinkedIn repeat)
