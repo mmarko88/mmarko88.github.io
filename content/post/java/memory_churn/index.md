@@ -6,7 +6,7 @@ usePageBundles: true
 tags: [ "java", "peformance"]
 categories: [ "java", "peformance"]
 featureImage: 'memory.svg' # Top image on post.
-shareImage: 'memory.svg' # For SEO and social media snippets.
+shareImage: 'memory_og.png' # For SEO and social media snippets.
 featureImageAlt: 'How do I become proficient with functional programming in Java' # Alternative text for featured image.
 ---
 

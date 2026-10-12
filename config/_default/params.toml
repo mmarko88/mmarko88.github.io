@@ -35,7 +35,7 @@ fontsDir = "fonts/" # without a leading forward slash
 
 # Social media sharing image: Will be used on Twitter, Facebook, LinkedIn, etc.
 # when a given page has no other image present.
-fallBackOgImage = "images/logo1.png"
+fallBackOgImage = "images/marko_milenkovic.jpg"
 
 # Logo image
 logo = "images/logo1.png"
