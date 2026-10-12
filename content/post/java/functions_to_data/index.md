@@ -2,11 +2,10 @@
 title: "Moving Functions to Data Instead of Data to Functions: A Functional Programming Principle"
 date: 2026-10-11
 draft: true
-usePageBundles: true
 tags: ["java", "functional programming", "design patterns"]
 categories: ["java", "functional programming"]
-featureImage: 'fp_data_oriented.png' # Top image on post.
-shareImage: 'fp_data_oriented.png' # For SEO and social media snippets.
+featureImage: 'fp_data_oriented.svg' # Top image on post.
+shareImage: 'fp_data_oriented.svg' # For SEO and social media snippets.
 featureImageAlt: 'Moving functions to data in functional programming' # Alternative text for featured image.
 ---
 
