@@ -15,8 +15,8 @@
   {{- if and (eq (hasPrefix $url $base) false) (eq (hasPrefix $url "http") false) }}
     {{ $url = absLangURL $url }}
   {{- end }}
-  {{- /* rel="me": IndieWeb identity verification; noopener for external links */ -}}
-  <a href="{{ $url }}" rel="me noopener" target="_blank">
+  {{- /* rel="me" + noopener only on external profiles */ -}}
+  <a href="{{ $url }}"{{ if hasPrefix $url "http" }} rel="me noopener" target="_blank"{{ end }}>
     {{ partial "sprite" (dict "icon" $label) }}
   </a>
   {{- end }}

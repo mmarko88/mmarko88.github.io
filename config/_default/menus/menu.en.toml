@@ -42,6 +42,11 @@
   url = "about/"
   weight = -105
 
+[[main]]
+  name = "Search"
+  url = "search/"
+  weight = -104
+
 # social menu links
 
 [[social]]

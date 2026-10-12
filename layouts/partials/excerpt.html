@@ -15,11 +15,23 @@
     </div>
     <div class="excerpt_footer">
       <div class="pale">
-        {{- $summary := truncate 320  (htmlUnescape .Plain) }}
+        {{- /* summary: explicit > abstract > plain trimmed at sentence boundary */ -}}
+        {{- $summary := "" }}
         {{- if .Params.summary }}
           {{- $summary = .Params.summary }}
         {{- else if .Params.abstract }}
-          {{ $summary = .Params.abstract }}
+          {{- $summary = .Params.abstract }}
+        {{- else }}
+          {{- $plain := htmlUnescape .Plain }}
+          {{- $sentences := split $plain ". " }}
+          {{- $acc := "" }}
+          {{- range $i, $sent := $sentences }}
+            {{- $cand := cond (eq $acc "") $sent (print $acc ". " $sent) }}
+            {{- if and (lt (len $cand) 300) (lt $i 4) }}
+              {{- $acc = $cand }}
+            {{- end }}
+          {{- end }}
+          {{- $summary = print $acc "." }}
         {{- end }}
         {{ if not ( strings.Contains $summary "<p>" ) }}
           <p>{{ $summary | markdownify }}</p>

@@ -1,0 +1,25 @@
+{{- /* Homepage hero — replaces sidebar author card on the centered home layout */ -}}
+{{- $s := site.Params -}}
+{{- $author := $s.author -}}
+{{- $name := $author -}}
+{{- $photo := "" -}}
+{{- if reflect.IsMap $author -}}
+  {{- $name = $author.name -}}
+  {{- $photo = $author.photo -}}
+{{- end -}}
+<section class="home_hero">
+  {{- with $photo }}
+  <img class="home_hero_photo" src="{{ absURL . }}" alt="{{ $name }} photo">
+  {{- end }}
+  <h1 class="home_hero_name">{{ $name }}</h1>
+  {{- with $s.introDescription }}
+  <div class="home_hero_bio">{{ markdownify . }}</div>
+  {{- end }}
+  <div class="home_hero_ctas">
+    {{- if ( ne $s.introURL false ) }}
+      {{- $r := T "read_more" }}
+      <a href='{{ absLangURL (default "post/" $s.introURL) }}' class="button" role="button" title='{{ $r }}'>{{ $r }}</a>
+    {{- end }}
+    {{- partial "follow" . }}
+  </div>
+</section>

@@ -11,16 +11,19 @@
   {{ $normalPosts := $pages | symdiff $featuredPosts }}
   {{ $pages = $featuredPosts | append $normalPosts }}
 {{ end }}
-<div class="grid-inverse wrap content">
+{{- /* Centered single column on home + post archive; sidebar elsewhere */ -}}
+{{- $centered := or .IsHome (eq .Section "post") }}
+<div class="{{ if $centered }}home_centered{{ else }}grid-inverse{{ end }} wrap content">
   <div>
     {{- if .IsHome }}
-      {{- $topSeries := index (sort site.Taxonomies.series "Count" "desc") 0 }}
-      {{- with $topSeries }}
-      <a class="home_series_banner" href="{{ .Page.Permalink }}">
-        <span class="home_series_label">Start here</span>
-        <strong>{{ .Page.Title }}</strong> — a {{ .Count }}-part series
-      </a>
-      {{- end }}
+    {{ partial "home-hero" . }}
+    {{- $topSeries := index (sort site.Taxonomies.series "Count" "desc") 0 }}
+    {{- with $topSeries }}
+    <a class="home_series_banner" href="{{ .Page.Permalink }}">
+      <span class="home_series_label">Start here</span>
+      <strong>{{ .Page.Title }}</strong> — a {{ .Count }}-part series
+    </a>
+    {{- end }}
     {{- end }}
     <ul class="posts" id="posts">
       {{- range (.Paginate $pages).Pages }}
@@ -68,5 +71,5 @@
     <p class="home_follow">Or follow me on <a href="https://x.com/mare_milenkovic" target="_blank" rel="noopener">X</a> and <a href="https://www.linkedin.com/in/marko-milenkovic/" target="_blank" rel="noopener">LinkedIn</a>.</p>
     {{- end }}
   </div>
-  {{- partial "sidebar" . }}
+  {{- if not $centered }}{{ partial "sidebar" . }}{{ end }}
 </div>
