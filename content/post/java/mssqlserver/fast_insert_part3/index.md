@@ -8,6 +8,7 @@ featureImageAlt: 'java sending data to mssql server' # Alternative text for feat
 shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
+series: [ "Fastest Way to Insert Data in MS SQL" ]
 ---
 
 In a previous post, we concluded that the Bulk API insert is the fastest way
@@ -147,7 +148,7 @@ Based on the results above, we can conclude that multi-value inserts drastically
 you should definitely consider it if you have performance problems. On the other hand, if you need to insert a huge 
 amount of data, then Bulk API insert is the king. 
 
-For updates, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
+For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
 
 Thank you for your attention.
 

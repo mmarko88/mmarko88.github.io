@@ -7,7 +7,7 @@
     typographer = false
   [highlight]
     codeFences = true
-    guessSyntax = true
+    guessSyntax = false
     hl_Lines = "--"
     lineNoStart = 1
     lineNos = true # always set to true # else line numbers won't show at all! even when you toggle them on in the UI

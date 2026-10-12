@@ -1,27 +1,27 @@
 ---
-title: "Moving Functions to Data Instead of Data to Functions: A Functional Programming Principle"
+title: "Moving Data to Functions Instead of Functions to Data: A Functional Programming Principle"
 date: 2026-10-11
 draft: true
 tags: ["java", "functional programming", "design patterns"]
 categories: ["java", "functional programming"]
 featureImage: 'fp_data_oriented.svg' # Top image on post.
 shareImage: 'fp_data_oriented.svg' # For SEO and social media snippets.
-featureImageAlt: 'Moving functions to data in functional programming' # Alternative text for featured image.
+featureImageAlt: 'Moving data to functions in functional programming' # Alternative text for featured image.
 ---
 
 ## Introduction
 
-One of the fundamental principles in functional programming is the idea of "moving functions to data instead of moving data to functions." This concept might sound abstract at first, but it represents a profound shift in how we think about structuring our code.
+One of the fundamental principles in functional programming is the idea of "moving data to functions instead of moving functions to data." This concept might sound abstract at first, but it represents a profound shift in how we think about structuring our code.
 
-In traditional object-oriented programming, we're used to bundling data and behavior together in objects. We call methods on objects, passing data through method chains. Functional programming takes a different approach: data stays where it is, and functions visit the data to transform it.
+In traditional object-oriented programming, we're used to bundling data and behavior together in objects. We send operations to the object that owns the data - the function travels to where the data lives. Functional programming takes the opposite approach: functions stay separate, and we move the data to them to be transformed.
 
 This article explores what this principle means, why it's beneficial, and how you can apply it in your Java code.
 
-## What Does "Moving Functions to Data" Mean?
+## What Does "Moving Data to Functions" Mean?
 
 The core idea is simple: instead of having data carry its behavior around (as in OOP), we keep data as plain values and have separate functions that operate on that data.
 
-### OOP Style: Moving Data to Functions
+### OOP Style: Moving Functions to Data
 
 In object-oriented programming, data and behavior are tightly coupled:
 
@@ -32,7 +32,7 @@ class Order {
     
     public BigDecimal calculateTotal() {
         return items.stream()
-            .map(Item::getPrice)
+            .map(Item::price)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     
@@ -44,15 +44,15 @@ class Order {
     }
 }
 
-// Usage: data moves to functions
+// Usage: functions are dispatched to the data
 Order order = new Order(items, customer);
 BigDecimal total = order.calculateTotal();
 Order discounted = order.applyDiscount(percent);
 ```
 
-Here, the data (the `Order` object) carries its functions around. We move data to functions by calling methods on the object.
+Here, the functions live on the data itself. When we call a method on the object, we send the operation to where the data is - the function travels to the data, which never moves.
 
-### Functional Style: Moving Functions to Data
+### Functional Style: Moving Data to Functions
 
 In functional programming, data and behavior are separated:
 
@@ -62,7 +62,7 @@ record Order(List<Item> items, Customer customer) {}
 // Functions are separate and operate on data
 BigDecimal calculateTotal(Order order) {
     return order.items().stream()
-        .map(Item::getPrice)
+        .map(Item::price)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
 }
 
@@ -73,13 +73,13 @@ Order applyDiscount(Order order, BigDecimal discount) {
     return new Order(discountedItems, order.customer());
 }
 
-// Usage: functions operate on data
+// Usage: data is passed to functions
 Order order = new Order(items, customer);
 BigDecimal total = calculateTotal(order);
 Order discounted = applyDiscount(order, percent);
 ```
 
-Here, the data is just a plain record, and functions visit the data to transform it. We move functions to data.
+Here, the data is just a plain record - it stays inert, and we pass it to the functions that transform it. We move data to functions.
 
 ## Why Is This Approach Better?
 
@@ -96,7 +96,7 @@ interface ItemContainer {
 // Now the function works with any type implementing ItemContainer
 BigDecimal calculateTotal(ItemContainer container) {
     return container.items().stream()
-        .map(Item::getPrice)
+        .map(Item::price)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
 }
 
@@ -131,7 +131,7 @@ Each function takes data, transforms it, and passes the result to the next funct
 
 ### 3. Immutability
 
-When we move functions to data, this approach naturally promotes immutability. Instead of modifying data in place, functions return new, transformed data:
+When we move data to functions, this approach naturally promotes immutability. Instead of modifying data in place, functions return new, transformed data:
 
 ```java
 // Original order is never modified
@@ -281,7 +281,7 @@ Notice how each function is pure (no side effects), takes data as input, and ret
 
 ## Performance Considerations
 
-The functional approach of "moving functions to data" has performance implications that you should be aware of:
+The functional approach of "moving data to functions" has performance implications that you should be aware of:
 
 ### Object Allocation Overhead
 
@@ -359,7 +359,7 @@ While this approach has many benefits, it's not a silver bullet. Here are some c
 
 ## Conclusion
 
-"Moving functions to data instead of data to functions" is a powerful principle that can lead to more reusable, composable, and testable code. By separating data from behavior, you gain:
+"Moving data to functions instead of functions to data" is a powerful principle that can lead to more reusable, composable, and testable code. By separating data from behavior, you gain:
 
 - Functions that work with any compatible data structure
 - Easy composition of complex transformations
@@ -371,4 +371,4 @@ However, like any principle, it should be applied judiciously. The key is to und
 
 In Java, records (introduced in Java 14) make this approach much more practical by providing immutable data carriers with minimal boilerplate. Combined with functional interfaces and the Stream API, Java developers can leverage many of the benefits of functional programming while staying within the Java ecosystem.
 
-For more stuff like this, you can follow me on [Twitter](https://twitter.com/mare_milenkovic), [LinkedIn](https://www.linkedin.com/in/marko-milenkovic/).
+For more stuff like this, you can follow me on [Twitter](https://x.com/mare_milenkovic), [LinkedIn](https://www.linkedin.com/in/marko-milenkovic/).

@@ -12,14 +12,22 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+          fetch-depth: 1    # Full history not needed; front-matter dates drive .Lastmod
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3.2.1
         with:
           hugo-version: '0.167.0'
           extended: true
+
+      - name: Cache Hugo modules and generated resources
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/hugo_cache
+            resources/_gen
+          key: ${{ runner.os }}-hugocache-${{ hashFiles('go.sum') }}
+          restore-keys: ${{ runner.os }}-hugocache-
 
       - name: Run Hugo
         run: |

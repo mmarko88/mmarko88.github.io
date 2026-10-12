@@ -181,4 +181,4 @@ public class CiStringTest {
 In this [article](https://www.baeldung.com/java-map-with-case-insensitive-keys), you can find a description of the problem we are discussing. The article also proposes several solutions to the problem, including the previously mentioned [Solution 1](#solution-1-use-treemap). In addition to that, the article suggests using Apache's `CaseInsensitiveMap` or Spring's `LinkedCaseInsensitiveMap` as alternative solutions. However, it is important to note that both of these solutions are based on lowercasing the keys, which may not be the desired behavior in certain scenarios.
 
 I'm active on Twitter and LinkedIn, and I'd love it if you could give me a follow.
-You can find me on Twitter at [@mare_milenkovic](https://twitter.com/mare_milenkovic) and on LinkedIn at [mare-milenkovic](https://www.linkedin.com/in/mare-milenkovic/).
+You can find me on Twitter at [@mare_milenkovic](https://x.com/mare_milenkovic) and on LinkedIn at [mare-milenkovic](https://www.linkedin.com/in/mare-milenkovic/).

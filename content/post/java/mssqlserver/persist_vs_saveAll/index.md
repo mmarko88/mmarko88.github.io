@@ -8,6 +8,7 @@ featureImageAlt: 'java sending data to mssql server' # Alternative text for feat
 shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
+series: [ "Fastest Way to Insert Data in MS SQL" ]
 ---
 
 ## Introduction
@@ -266,4 +267,4 @@ code adjustments, you can achieve dramatic performance enhancements.
 This highlights how important it is to carefully measure performance 
 and examine it closely to get the best results.
 
-For updates, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
+For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).

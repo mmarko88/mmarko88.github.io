@@ -1,0 +1,19 @@
+{{- /* Inject BlogPosting JSON-LD structured data on post pages (Google rich results) */ -}}
+{{- if and .IsPage (eq .Type "post") -}}
+{{- $image := "" -}}
+{{- with .Params.shareImage -}}{{- with $.Resources.GetMatch . -}}{{ $image = .Permalink }}{{ end }}{{ end -}}
+{{- if not $image -}}{{- with .Params.featureImage -}}{{- with $.Resources.GetMatch . -}}{{ $image = .Permalink }}{{ end }}{{ end }}{{ end -}}
+{{- $schema := dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "headline" .Title
+  "description" (.Params.description | default (.Summary | plainify | truncate 160))
+  "url" .Permalink
+  "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+  "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+  "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+  "author" (dict "@type" "Person" "name" (site.Params.author.name | default site.Title) "url" site.BaseURL)
+  "inLanguage" "en" -}}
+{{- with $image }}{{ $schema = merge $schema (dict "image" .) }}{{ end -}}
+<script type="application/ld+json">{{ $schema | jsonify }}</script>
+{{- end -}}

@@ -11,19 +11,16 @@ enableRobotsTXT = true
 
 DefaultContentLanguage = "en"
 
-#[taxonomies]
-#category = "categories"
-#tag = "tags"
-#series = "series"
+[taxonomies]
+category = "categories"
+tag = "tags"
+series = "series"
 
 [pagination]
 pagerSize = 10
 
 [services.googleAnalytics]
 id = "G-QMH75S45WQ"
-
-[services.disqus]
-shortname = "professionaldev"
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]

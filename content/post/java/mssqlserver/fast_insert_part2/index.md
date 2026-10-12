@@ -8,6 +8,7 @@ featureImageAlt: 'java sending data to mssql server' # Alternative text for feat
 shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
+series: [ "Fastest Way to Insert Data in MS SQL" ]
 
 ---
 
@@ -250,6 +251,6 @@ Allowing us to insert multiple sets of values in a single statement, up to a lim
 In my upcoming post, I will assess the performance of this method and compare it to the fastest Bulk API insert 
 to determine its efficiency.
 
-For updates, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/). 
+For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/). 
 
 Thank you for your attention.

@@ -10,6 +10,7 @@ tags: ["java", "java developers", "mistakes", "java mistakes", "developers mista
 categories: [
     "java",
 ]
+featured: true
 ---
 
 Based on my previous experience, I created a list of 10 mistakes that developers made, preventing them from being a great developer. Here is the list:
@@ -60,5 +61,5 @@ Developing software is a team activity. When you encounter a problem during prog
 If it is not the case, then you will get help and the team will understand that the problem is complex and that you need time to solve it. Involving more people will help you resolve complex problems faster. Developers that don’t ask for help, usually spend too much time on a ticket.  
 Help others when you see they have problems with their ticket. As a result, the team will be more productive and people will like you more.
 
-If you like this content, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/).
+If you like this content, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/).
 

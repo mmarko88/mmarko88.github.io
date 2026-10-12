@@ -20,7 +20,12 @@
 #[[main]]
 #  parent = "Links"
 #  name = "Twitter"
-#  url = "https://twitter.com/mare_milenkovic"
+#  url = "https://x.com/mare_milenkovic"
+
+[[main]]
+  name = "Posts"
+  url = "post/"
+  weight = -108
 
 [[main]]
   name = "About"
@@ -37,7 +42,7 @@
 [[social]]
   name = "twitter"
   weight = 2
-  url = "https://twitter.com/mare_milenkovic/#"
+  url = "https://x.com/mare_milenkovic/#"
 [[social]]
   name = "linkedin"
   weight = 3

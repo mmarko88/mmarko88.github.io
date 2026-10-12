@@ -3,8 +3,8 @@ enableSearch = true
 
 # socials
 twitter = "@mare_milenkovic"
-largeTwitterCard = false # set to true if you want to show a large twitter card image. The default is a small twitter card image
-introDescription = ""
+largeTwitterCard = true # set to true if you want to show a large twitter card image. The default is a small twitter card image
+introDescription = "Practical Java backend engineering: performance benchmarks, clean code, and real-world fixes."
 # introURL = "about/" # set the url for the 'read more' button below the introDescription, or set to false to not show the button
 # description = "A theme based on VMware's Clarity Design System for publishing technical blogs with Hugo." # Set your site's meta tag (SEO) description here. Alternatively set this description in your home page content file e.g. content/_index.md. Whatever is set in the latter will take precedence.
 # keywords = ["design", "clarity", "hugo theme"] # Set your site's meta tag (SEO) keywords here. Alternatively set these in your home page content file e.g. content/_index.md. Whatever is set in the latter will take precedence.
@@ -90,9 +90,9 @@ enforceLightMode = false
 comments = true
 
 # Enable or disable Utterances (https://github.com/utterance/utterances) Github Issue-Based Commenting
-# utterances = true  #Run the utterances script in the single.html layout to load https://utteranc.es comments
-# utterancesRepo = "GHUsername/Repository.Name" # Utterances is enabled when this param is set
-# utterancesTheme = "github-light" # Default: github-dark
+utterances = true  #Run the utterances script in the single.html layout to load https://utteranc.es comments
+utterancesRepo = "mmarko88/mmarko88.github.io" # Utterances is enabled when this param is set
+utterancesTheme = "preferred-color-scheme" # follows visitor's OS dark/light preference, matching site modes
 # utterancesIssueTerm = "pathname" # Default: pathname
 
 # Maximum number of recent posts.

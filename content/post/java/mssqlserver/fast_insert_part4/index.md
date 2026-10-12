@@ -8,6 +8,8 @@ featureImageAlt: 'java sending data to mssql server' # Alternative text for feat
 shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
+series: [ "Fastest Way to Insert Data in MS SQL" ]
+featured: true
 ---
 
 In previous discussions, we established that bulk insert and multi-value batched inserts represent the 
@@ -105,7 +107,7 @@ This issue has been resolved in the latest version of the Java MS SQL Server JDB
 This parameter has limited utility; avoid enabling it blindly without first assessing the
 benefits and drawbacks it may bring to your application.
 
-For updates, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
+For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
 
 
 

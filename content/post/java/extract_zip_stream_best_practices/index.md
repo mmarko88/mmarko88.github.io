@@ -6,6 +6,7 @@ usePageBundles: true
 featureImage: 'extract_zip.webp' # Top image on post.
 featureImageAlt: 'Best practices that you should follow when extracting zip archive in Java' # Alternative text for featured image.
 shareImage: 'extract_zip.jpg' # For SEO and social media snippets.
+featured: true
 tags: ["zip", "java"]
 categories: [ "java"]
 ---

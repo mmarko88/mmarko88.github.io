@@ -13,6 +13,7 @@ categories: [
     "java",
     "testing",
 ]
+featured: true
 ---
 
 # Introduction
@@ -115,7 +116,7 @@ Parallel test execution can speed up your build, but you must be careful when en
 
 Another more significant problem with parallel tests is if the tests are not independent, there can be [flaky tests](https://www.techtarget.com/whatis/definition/flaky-test). They are very hard to debug and identify.
 
-If you liked this post, you can follow me on [Twitter](https://twitter.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/) for more content.
+If you liked this post, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/) for more content.
 
 # Resources
 [Maven documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html)
