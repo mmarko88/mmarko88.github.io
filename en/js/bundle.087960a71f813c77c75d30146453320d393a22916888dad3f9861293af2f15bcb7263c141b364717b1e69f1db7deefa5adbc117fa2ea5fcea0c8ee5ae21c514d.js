@@ -6,8 +6,10 @@ const featuredImageClass = 'image_featured';
 const imageScalableClass = 'image-scalable';
 const scaleImageClass = 'image-scale';
 const pageHasLoaded = 'DOMContentLoaded';
-const imageAltClass = 'img_alt'
+const imageAltClass = 'img_alt';
 
+
+const defaultSiteLanguage = '<no value>';
 const baseURL = 'https://www.professionaldev.dev/';
 const searchFieldClass = '.search_field';
 const searchClass = '.search';
@@ -45,7 +47,7 @@ function elem(selector, parent = document){
 
 function elems(selector, parent = document) {
   let elems = parent.querySelectorAll(selector);
-  return elems.length ? elems : false;
+  return elems;
 }
 
 function pushClass(el, targetClass) {
@@ -207,7 +209,16 @@ function parseBoolean(string) {
 };
 
 function forEach(node, callback) {
-  Array.prototype.forEach.call(node.childNodes, callback);
+  node ? Array.prototype.forEach.call(node.childNodes, callback) : false;
+}
+
+function findQuery(query = 'query') {
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has(query)){
+    let c = urlParams.get(query);
+    return c;
+  }
+  return "";
 }
 
 function wrapText(text, context, wrapper = 'mark') {
@@ -880,33 +891,33 @@ function fileClosure(){
         // Insert caption
         image.insertAdjacentHTML('afterend', desc.outerHTML);
       }
+
+      // Persist modified alt to image element
+      image.alt = alt
     });
 
     hljs.initHighlightingOnLoad();
   }
 
-  function largeImages(baseParent, images = []) {
-    if(images) {
-      images.forEach(function(image) {
-        window.setTimeout(function(){
-          let actualWidth = image.naturalWidth;
-          let parentWidth = baseParent.offsetWidth;
-          let actionableRatio = actualWidth / parentWidth;
+ function mark_image_as_scalable(baseParent, image) {
+  let actualWidth = image.naturalWidth;
+  let parentWidth = baseParent.offsetWidth;
+  let actionableRatio = actualWidth / parentWidth;
 
-          if (actionableRatio > 1) {
-            pushClass(image.parentNode.parentNode, imageScalableClass);
-            image.parentNode.parentNode.dataset.scale = actionableRatio;
-          }
-        }, 100)
-      });
-    }
+  if (actionableRatio > 1) {
+    pushClass(image.parentNode.parentNode, imageScalableClass);
+    image.parentNode.parentNode.dataset.scale = actionableRatio;
   }
+ }
 
   (function AltImage() {
     let post = elem('.post_content');
-    let images = post ? post.querySelectorAll('img') : false;
+    let images = post ? post.querySelectorAll('img') : [];
     images ? populateAlt(images) : false;
-    largeImages(post, images);
+
+    images.forEach((image) => image.addEventListener('load', (e) => {
+      mark_image_as_scalable(post, image);
+    }));
   })();
 
   doc.addEventListener('click', function(event) {
@@ -974,6 +985,14 @@ function fileClosure(){
   })();
 
   (function navToggle() {
+    elems('.nav_parent').forEach((link) => link.addEventListener('mouseenter', function(event) {
+      event.target.children[0].classList.add('nav_open')
+    }));
+
+    elems('.nav_parent').forEach((link) => link.addEventListener('mouseleave', function(event) {
+      event.target.children[0].classList.remove('nav_open')
+    }));
+
     doc.addEventListener('click', function(event){
       const target = event.target;
       const open = 'jsopen';
