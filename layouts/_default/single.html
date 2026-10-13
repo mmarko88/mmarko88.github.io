@@ -60,10 +60,19 @@
               f.contentWindow.postMessage({ giscus: { setConfig: { theme: siteTheme() } } }, 'https://giscus.app');
             }
           }
-          var poll = setInterval(function () {
-            if (document.querySelector('.post_comments iframe')) { clearInterval(poll); sync(); }
-          }, 400);
-          setTimeout(function () { clearInterval(poll); }, 10000);
+          // iframe is lazy-loaded (data-loading="lazy") — a fixed poll can miss it.
+          // Watch the container for insertion, then sync again on iframe load
+          // (messages posted before giscus is ready are dropped).
+          var box = document.querySelector('.post_comments');
+          function watch() {
+            var f = box && box.querySelector('iframe');
+            if (!f || f._themeWatched) return;
+            f._themeWatched = true;
+            f.addEventListener('load', function () { setTimeout(sync, 200); });
+            sync();
+          }
+          if (box) new MutationObserver(watch).observe(box, { childList: true, subtree: true });
+          watch();
           new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
         })();
       </script>
