@@ -33,10 +33,14 @@
       {{ partial "source-link" (dict "url" . "label" "Browse the example code") }}
     {{- end }}
 
-    {{- partial "post-cta" . }}
+    {{- if eq .Section "post" }}
+      {{- partial "post-cta" . }}
+    {{- end }}
 
     {{- $showComments := true }}
-    {{- if eq $s.comments false }}
+    {{- if ne .Section "post" }}
+      {{- $showComments = false }}
+    {{- else if eq $s.comments false }}
       {{- $showComments = false }}
     {{- else if eq $p.comments false }}
       {{- $showComments = false }}
@@ -75,7 +79,9 @@
       {{- partial "related" . }}
     {{- end }}
 
-    {{- partial "post-latest" . }}
+    {{- if eq .Section "post" }}
+      {{- partial "post-latest" . }}
+    {{- end }}
 
     <div id="read-progress" aria-hidden="true"></div>
     <script>
@@ -90,6 +96,7 @@
         update();
       })();
     </script>
+    <script src="{{ "js/share.js" | relURL }}" defer></script>
 
     {{- partial "i18nlist" . }}
 

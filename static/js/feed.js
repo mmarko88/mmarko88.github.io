@@ -54,20 +54,6 @@
   if (loadBtn) loadBtn.addEventListener('click', loadMore);
   if (nextLink) nextLink.addEventListener('click', function (e) { e.preventDefault(); loadMore(); });
 
-  // share: native share -> clipboard fallback
-  document.addEventListener('click', function (e) {
-    var b = e.target.closest('.feed_share');
-    if (!b) return;
-    if (navigator.share) {
-      navigator.share({ title: b.dataset.title, url: b.dataset.share }).catch(function () {});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(b.dataset.share).then(function () {
-        b.textContent = 'Copied!';
-        setTimeout(function () { b.textContent = 'Share'; }, 1500);
-      });
-    }
-  });
-
   // #subscribe anchor: scroll-restore must not fight the jump, and feed
   // batches inserting above the section shift it -> re-pin until user scrolls
   var subTarget = document.getElementById('subscribe');
@@ -100,7 +86,7 @@
   }
 
   // scroll restore: replay loaded pages, then jump to saved position
-  var KEY = 'feedState';
+  var KEY = 'feedState:' + location.pathname;
   var saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(KEY)); } catch (e) {}
   var pagesToReplay = saved && saved.pages ? saved.pages : 0;

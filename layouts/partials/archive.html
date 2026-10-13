@@ -1,5 +1,6 @@
 {{ $pages := .Pages }}
-{{ if .IsHome }}
+{{ $home := .IsHome }}
+{{ if $home }}
   {{/* Home = unified feed: posts + TIL merged chronologically */}}
   {{ $pages = (where site.RegularPages "Type" "in" (slice "post" "til")).ByDate.Reverse }}
 {{ else }}
@@ -10,11 +11,10 @@
     {{ $pages = $featuredPosts | append $normalPosts }}
   {{ end }}
 {{ end }}
-{{- /* Centered single column on home + post archive; sidebar elsewhere */ -}}
-{{- $centered := or .IsHome (eq .Section "post") }}
-<div class="{{ if $centered }}home_centered{{ else }}grid-inverse{{ end }} wrap content">
+{{- /* Centered single column everywhere — no sidebar/right pane */ -}}
+<div class="home_centered wrap content">
   <div>
-    {{- if .IsHome }}
+    {{- if $home }}
     {{ partial "home-hero" . }}
     {{- /* pinned "Now" card — like a pinned post on social profiles */ -}}
     {{- with site.GetPage "now" }}
@@ -23,11 +23,12 @@
       <span class="feed_pinned_body">{{ .Title }} — {{ .Summary | plainify | truncate 140 }}</span>
     </a>
     {{- end }}
+    {{- end }}
     <div id="feed_items" class="feed_items">
       {{- $paginator := .Paginate $pages 6 }}
       {{- range $i, $p := $paginator.Pages }}
         {{ partial "feed-card" $p }}
-        {{- if and (eq $i 4) (eq $paginator.PageNumber 1) }}
+        {{- if and $home (eq $i 4) (eq $paginator.PageNumber 1) }}
           {{ partial "subscribe-card" $ }}
         {{- end }}
       {{- end }}
@@ -38,16 +39,6 @@
     <div id="feed_sentinel"></div>
     <button id="feed_loadmore" type="button" class="feed_loadmore" hidden>Load more</button>
     <script src="{{ "js/feed.js" | relURL }}" defer></script>
-    {{- else }}
-    <ul class="posts" id="posts">
-      {{- range (.Paginate $pages).Pages }}
-        {{ partial "excerpt" . }}
-      {{- end }}
-      <li>
-        {{- template "_internal/pagination.html" . }}
-      </li>
-    </ul>
-    {{- end }}
+    <script src="{{ "js/share.js" | relURL }}" defer></script>
   </div>
-  {{- if not $centered }}{{ partial "sidebar" . }}{{ end }}
 </div>
