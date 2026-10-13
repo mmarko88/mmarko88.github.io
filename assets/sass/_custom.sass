@@ -368,3 +368,164 @@ html.page:not([data-mode="dim"])
   display: block
   padding: 0.6rem 0
   border-bottom: 1px solid var(--border-color, #eee)
+
+// --- social feed home ---
+.feed_items
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+.feed_card
+  background: var(--post-bg, var(--light))
+  border: 1px solid var(--border-color, rgba(0,0,0,0.08))
+  border-radius: 12px
+  padding: 1rem 1.25rem
+
+.feed_card_head
+  display: flex
+  align-items: center
+  gap: 0.6rem
+  margin-bottom: 0.5rem
+
+.feed_avatar
+  width: 40px
+  height: 40px
+  border-radius: 50%
+  object-fit: cover
+
+.feed_head_meta
+  display: flex
+  flex-direction: column
+  line-height: 1.2
+
+.feed_author
+  font-weight: 600
+  font-size: 0.95rem
+
+.feed_pill
+  margin-left: auto
+  font-size: 0.72rem
+  font-weight: 700
+  letter-spacing: 0.05em
+  padding: 0.2rem 0.55rem
+  border-radius: 999px
+  background: var(--accent, #1d70a2)
+  color: #fff
+
+.feed_media
+  display: block
+  margin: 0.5rem -1.25rem
+
+.feed_media figure
+  margin: 0
+  padding: 0
+
+.feed_media picture, .feed_media img
+  display: block
+  width: 100%
+  height: auto
+
+// svg diagrams: cap height, don't crop — white bg so they read in both themes
+.feed_media img.image_svg
+  max-height: 420px
+  object-fit: contain
+  background: #fff
+  padding: 1rem
+
+.feed_title h2
+  font-size: 1.25rem
+  margin: 0.5rem 0 0.25rem
+
+.feed_title, .feed_til_title
+  color: var(--text)
+  text-decoration: none
+
+.feed_excerpt, .feed_til_body
+  font-size: 0.95rem
+  margin: 0.25rem 0 0.5rem
+
+.feed_til_title
+  font-size: 1.05rem
+  font-weight: 600
+
+.feed_card_actions
+  display: flex
+  align-items: center
+  gap: 1rem
+  border-top: 1px solid var(--border-color, rgba(0,0,0,0.08))
+  padding-top: 0.6rem
+  margin-top: 0.6rem
+  font-size: 0.85rem
+
+.feed_action
+  color: var(--accent, #1d70a2)
+  text-decoration: none
+
+button.feed_action
+  background: none
+  border: none
+  padding: 0
+  font: inherit
+  cursor: pointer
+
+// pinned "now" card
+.feed_pinned
+  display: flex
+  flex-direction: column
+  gap: 0.2rem
+  background: var(--post-bg, var(--light))
+  border: 1px solid var(--border-color, rgba(0,0,0,0.08))
+  border-left: 3px solid var(--accent, #1d70a2)
+  border-radius: 12px
+  padding: 0.9rem 1.25rem
+  margin-bottom: 1rem
+  color: var(--text)
+  text-decoration: none
+
+.feed_pinned_label
+  font-size: 0.75rem
+  font-weight: 700
+  letter-spacing: 0.06em
+  text-transform: uppercase
+  color: var(--accent, #1d70a2)
+
+.feed_pinned_body
+  font-size: 0.95rem
+
+// feed chrome
+#feed_sentinel
+  min-height: 2rem
+  text-align: center
+  padding: 1rem 0
+
+.feed_end
+  color: var(--pale, #888)
+  font-size: 0.9rem
+
+.feed_loadmore, .feed_next
+  display: block
+  margin: 0.5rem auto
+  padding: 0.6rem 2rem
+  border-radius: 999px
+  border: 1px solid var(--border-color, rgba(0,0,0,0.15))
+  background: var(--post-bg, var(--light))
+  color: var(--text)
+  font-size: 0.9rem
+  cursor: pointer
+  text-decoration: none
+  text-align: center
+
+.feed_next
+  display: none  // JS-driven; kept in DOM as next-page locator
+
+// hero stats row
+.home_hero_stats
+  display: flex
+  gap: 1.5rem
+  justify-content: center
+  font-size: 0.9rem
+  color: var(--pale, #888)
+  margin: 0.4rem 0 0.8rem
+
+.home_hero_stats strong
+  color: var(--text)

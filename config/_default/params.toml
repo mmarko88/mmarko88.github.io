@@ -4,7 +4,7 @@ enableSearch = true
 # socials
 twitter = "@mare_milenkovic"
 largeTwitterCard = true # set to true if you want to show a large twitter card image. The default is a small twitter card image
-introDescription = "I'm Marko — a Java backend engineer writing about what actually works: performance benchmarks, JUnit, SQL Server, and JVM internals.\n\n[Subscribe for new posts →](https://buttondown.com/mmarko88)\n[What I'm up to now →](/now/)"
+introDescription = "I'm Marko — a Java backend engineer writing about what actually works: performance benchmarks, JUnit, SQL Server, and JVM internals."
 introURL = "post/"
 
 # Newsletter: Buttondown username — shows subscribe form in post CTA + homepage

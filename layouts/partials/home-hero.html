@@ -15,11 +15,14 @@
   {{- with $s.introDescription }}
   <div class="home_hero_bio">{{ markdownify . }}</div>
   {{- end }}
+  <div class="home_hero_stats">
+    {{- $nPosts := len (where site.RegularPages "Type" "post") }}
+    {{- $nTil := len (where site.RegularPages "Type" "til") }}
+    <span><strong>{{ $nPosts }}</strong> posts</span>
+    <span><strong>{{ $nTil }}</strong> TIL</span>
+  </div>
   <div class="home_hero_ctas">
-    {{- if ( ne $s.introURL false ) }}
-      {{- $r := T "read_more" }}
-      <a href='{{ absLangURL (default "post/" $s.introURL) }}' class="button" role="button" title='{{ $r }}'>{{ $r }}</a>
-    {{- end }}
+    <a href="#subscribe" class="button" role="button">Subscribe</a>
     {{- partial "follow" . }}
   </div>
 </section>

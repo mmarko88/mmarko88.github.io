@@ -2,10 +2,9 @@
 title: "Testing best practices"
 date: 2022-09-09
 draft: true
-usePageBundles: true
-featureImage: 'fp_in_java.webp' # Top image on post.
-featureImageAlt: 'How do I become proficient with functional programming in Java' # Alternative text for featured image.
-shareImage: 'fp_in_java.jpg' # For SEO and social media snippets.
+featureImage: 'images/building.png' # Top image on post.
+featureImageAlt: 'Testing best practices' # Alternative text for featured image.
+shareImage: 'images/building.png' # For SEO and social media snippets.
 ---
 
 1. A failing test should tell you exactly what is wrong quickly, without you having to spend a lot of time analyzing the failure.

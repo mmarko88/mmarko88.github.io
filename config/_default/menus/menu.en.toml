@@ -23,16 +23,6 @@
 #  url = "https://x.com/mare_milenkovic"
 
 [[main]]
-  name = "Posts"
-  url = "post/"
-  weight = -108
-
-[[main]]
-  name = "TIL"
-  url = "til/"
-  weight = -107
-
-[[main]]
   name = "Now"
   url = "now/"
   weight = -106

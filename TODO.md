@@ -28,3 +28,8 @@ the professionaldev.dev original, or Google may rank the dev.to copy above this 
 - [x] **H5** — "Start here" series callout (MS SQL 4-part series banner)
 - [x] **H6** — /now page + status line in hero
 - [x] **H7** — End-of-page contact CTA (X + LinkedIn repeat)
+
+## Deferred — feed v2
+- [ ] Per-card like button (localStorage-only heart, no counter)
+- [ ] Per-card comments on home (icon + link to post Utterances; optional live count via GitHub API)
+- [ ] Live comment count via api.github.com repos/mmarko88/mmarko88.github.io/issues (rate-limited, unauthenticated)

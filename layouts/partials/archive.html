@@ -1,15 +1,14 @@
 {{ $pages := .Pages }}
 {{ if .IsHome }}
-  {{ $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
-  {{/* Home shows only featured posts — /post/ keeps the full archive */}}
-  {{ $pages = where $pages "Params.featured" true }}
-{{ end }}
-
-{{ if eq site.Params.pinFeatured true }}
-  {{ $featured := default 8 site.Params.numberOfPinnedPosts }}
-  {{ $featuredPosts := first $featured (where $pages "Params.featured" true)}}
-  {{ $normalPosts := $pages | symdiff $featuredPosts }}
-  {{ $pages = $featuredPosts | append $normalPosts }}
+  {{/* Home = unified feed: posts + TIL merged chronologically */}}
+  {{ $pages = (where site.RegularPages "Type" "in" (slice "post" "til")).ByDate.Reverse }}
+{{ else }}
+  {{ if eq site.Params.pinFeatured true }}
+    {{ $featured := default 8 site.Params.numberOfPinnedPosts }}
+    {{ $featuredPosts := first $featured (where $pages "Params.featured" true)}}
+    {{ $normalPosts := $pages | symdiff $featuredPosts }}
+    {{ $pages = $featuredPosts | append $normalPosts }}
+  {{ end }}
 {{ end }}
 {{- /* Centered single column on home + post archive; sidebar elsewhere */ -}}
 {{- $centered := or .IsHome (eq .Section "post") }}
@@ -17,14 +16,31 @@
   <div>
     {{- if .IsHome }}
     {{ partial "home-hero" . }}
-    {{- $topSeries := index (sort site.Taxonomies.series "Count" "desc") 0 }}
-    {{- with $topSeries }}
-    <a class="home_series_banner" href="{{ .Page.Permalink }}">
-      <span class="home_series_label">Start here</span>
-      <strong>{{ .Page.Title }}</strong> — a {{ .Count }}-part series
+    {{- /* pinned "Now" card — like a pinned post on social profiles */ -}}
+    {{- with site.GetPage "now" }}
+    <a class="feed_pinned" href="{{ .RelPermalink }}">
+      <span class="feed_pinned_label">Pinned · Now</span>
+      <span class="feed_pinned_body">{{ .Title }} — {{ .Summary | plainify | truncate 140 }}</span>
     </a>
     {{- end }}
+    <div id="feed_items" class="feed_items">
+      {{- $paginator := .Paginate $pages 6 }}
+      {{- range $paginator.Pages }}
+        {{ partial "feed-card" . }}
+      {{- end }}
+    </div>
+    {{- if .Paginator.HasNext }}
+      <a class="feed_next" href="{{ .Paginator.Next.URL }}">Load more</a>
     {{- end }}
+    <div id="feed_sentinel"></div>
+    <button id="feed_loadmore" type="button" class="feed_loadmore" hidden>Load more</button>
+    <script src="{{ "js/feed.js" | relURL }}" defer></script>
+    <section class="post_cta" id="subscribe">
+      <h2 class="post_cta_title">Get new posts by email</h2>
+      <p>Occasional posts on Java performance, SQL Server, and testing — no spam, unsubscribe anytime.</p>
+      {{ partial "newsletter-form" . }}
+    </section>
+    {{- else }}
     <ul class="posts" id="posts">
       {{- range (.Paginate $pages).Pages }}
         {{ partial "excerpt" . }}
@@ -33,42 +49,6 @@
         {{- template "_internal/pagination.html" . }}
       </li>
     </ul>
-    {{- if .IsHome }}
-    <section class="home_projects">
-      <h2>Selected Work</h2>
-      <div class="home_projects_grid">
-        {{- range site.Data.projects.project }}
-        <a class="home_project_card" href="{{ .url }}" target="_blank" rel="noopener">
-          <h3>{{ .name }}</h3>
-          <p>{{ .description }}</p>
-          {{- with .lang }}<span class="home_project_lang">{{ . }}</span>{{ end }}
-        </a>
-        {{- end }}
-      </div>
-    </section>
-    <section class="home_latest">
-      <h2>Latest</h2>
-      <ul class="home_latest_list">
-        {{- $latest := where (where site.RegularPages "Type" "in" site.Params.mainSections).ByDate.Reverse "Params.featured" "ne" true }}
-        {{- range first 3 $latest }}
-        <li><a href="{{ .Permalink }}">{{ .Title }}</a><span class="pale">{{ .Date.Format "Jan 2, 2006" }}</span></li>
-        {{- end }}
-        {{- range first 1 ((where site.RegularPages "Type" "til").ByDate.Reverse) }}
-        <li><a href="{{ .Permalink }}">{{ .Title }}</a><span class="pale">TIL · {{ .Date.Format "Jan 2, 2006" }}</span></li>
-        {{- end }}
-      </ul>
-    </section>
-    <section class="home_topics">
-      {{- range first 8 (sort site.Taxonomies.tags "Count" "desc") }}
-      <a class="home_topic_pill" href="{{ .Page.Permalink }}">{{ .Page.Title }} <span>{{ .Count }}</span></a>
-      {{- end }}
-    </section>
-    <section class="post_cta">
-      <h2 class="post_cta_title">Get new posts by email</h2>
-      <p>Occasional posts on Java performance, SQL Server, and testing — no spam, unsubscribe anytime.</p>
-      {{ partial "newsletter-form" . }}
-    </section>
-    <p class="home_follow">Or follow me on <a href="https://x.com/mare_milenkovic" target="_blank" rel="noopener">X</a> and <a href="https://www.linkedin.com/in/marko-milenkovic/" target="_blank" rel="noopener">LinkedIn</a>.</p>
     {{- end }}
   </div>
   {{- if not $centered }}{{ partial "sidebar" . }}{{ end }}

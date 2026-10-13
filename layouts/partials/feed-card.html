@@ -1,0 +1,40 @@
+{{- /* Social-feed card: IG-ish for posts, compact Twitter-ish for TIL */ -}}
+{{- $author := site.Params.author -}}
+{{- $name := $author -}}
+{{- $photo := "" -}}
+{{- if reflect.IsMap $author }}{{ $name = $author.name }}{{ $photo = $author.photo }}{{ end -}}
+{{- $hrs := (now.Sub .Date).Hours -}}
+{{- $ago := "now" -}}
+{{- if ge $hrs 8760 }}{{ $ago = printf "%.0fy" (div $hrs 8760) -}}
+{{- else if ge $hrs 720 }}{{ $ago = printf "%.0fmo" (div $hrs 720) -}}
+{{- else if ge $hrs 168 }}{{ $ago = printf "%.0fw" (div $hrs 168) -}}
+{{- else if ge $hrs 24 }}{{ $ago = printf "%.0fd" (div $hrs 24) -}}
+{{- else if ge $hrs 1 }}{{ $ago = printf "%.0fh" $hrs -}}
+{{- else }}{{ $ago = printf "%.0fm" (mul $hrs 60) }}{{ end -}}
+<article class="feed_card feed_card_{{ .Type }}">
+  <header class="feed_card_head">
+    <div class="feed_head_meta">
+      <span class="feed_author">{{ $name }}</span>
+      <time class="pale" datetime="{{ .Date.Format "2006-01-02" }}" title="{{ .Date.Format "Jan 2, 2006" }}">{{ $ago }}</time>
+    </div>
+    {{- if eq .Type "til" }}<span class="feed_pill">TIL</span>{{ end }}
+  </header>
+  {{- if eq .Type "til" }}
+    <a class="feed_til_title" href="{{ .Permalink }}">{{ .Title }}</a>
+    <div class="feed_til_body">{{ .Summary }}</div>
+  {{- else }}
+    {{- $thumb := .Params.thumbnail | default .Params.featureImage | default .Params.shareImage -}}
+    {{- with $thumb }}
+    <a href="{{ $.Permalink }}" class="feed_media">
+      {{- partial "image" (dict "file" . "alt" $.Title "type" "thumbnail" "Page" $.Page) }}
+    </a>
+    {{- end }}
+    <a class="feed_title" href="{{ .Permalink }}"><h2>{{ .Title | markdownify }}</h2></a>
+    <p class="feed_excerpt">{{ .Summary | plainify | truncate 160 }}</p>
+  {{- end }}
+  <footer class="feed_card_actions">
+    <a class="feed_action" href="{{ .Permalink }}">Open</a>
+    {{- if ne .Type "til" }}<span class="feed_action pale">{{ .ReadingTime }} min read</span>{{ end }}
+    <button class="feed_action feed_share" type="button" data-share="{{ .Permalink }}" data-title="{{ .Title }}">Share</button>
+  </footer>
+</article>

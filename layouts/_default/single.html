@@ -29,6 +29,16 @@
       {{- .Content }}
     </div>
 
+    {{- $showComments := true }}
+    {{- if eq $s.comments false }}
+      {{- $showComments = false }}
+    {{- else if eq $p.comments false }}
+      {{- $showComments = false }}
+    {{- end }}
+    {{- if ne $showComments false }}
+      {{- partial "comments" . }}
+    {{- end }}
+
     {{- $showRelatedInArticle := $s.showRelatedInArticle }}
     {{- if eq $p.showRelatedInArticle true }}
       {{- $showRelatedInArticle = true }}
@@ -57,15 +67,6 @@
       })();
     </script>
 
-    {{- $showComments := true }}
-    {{- if eq $s.comments false }}
-      {{- $showComments = false }}
-    {{- else if eq $p.comments false }}
-      {{- $showComments = false }}
-    {{- end }}
-    {{- if ne $showComments false }}
-      {{- partial "comments" . }}
-    {{- end }}
     {{- partial "i18nlist" . }}
 
   </article>
