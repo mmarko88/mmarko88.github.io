@@ -1,11 +1,13 @@
 {{- /* Newsletter subscribe form — renders only when site.Params.buttondown is set,
-     otherwise falls back to an RSS link. */ -}}
+     otherwise falls back to an RSS link. Pass dict with "key" for unique input id
+     (a page can render several forms: post-cta, footer, in-feed card). */ -}}
+{{- $key := .key | default "main" -}}
 {{- with site.Params.buttondown }}
 <form action="https://buttondown.com/api/emails/embed-subscribe/{{ . }}" method="post"
       target="popupwindow" onsubmit="window.open('https://buttondown.com/{{ . }}', 'popupwindow')"
       class="post_cta_form">
-  <label for="bd-email">Subscribe for new posts:</label>
-  <input type="email" name="email" id="bd-email" placeholder="you@example.com" required />
+  <label for="bd-email-{{ $key }}">Subscribe for new posts:</label>
+  <input type="email" name="email" id="bd-email-{{ $key }}" placeholder="you@example.com" required />
   <input type="submit" value="Subscribe" />
 </form>
 {{- else }}

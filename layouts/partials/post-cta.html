@@ -1,10 +1,10 @@
-{{- /* End-of-post call to action: newsletter subscribe + social links.
-     Newsletter form renders only when site.Params.buttondown is set. */ -}}
+{{- /* End-of-post call to action: social links + newsletter subscribe.
+     Footer carries the canonical #subscribe anchor; this is the peak-intent copy. */ -}}
 <div class="post_cta">
   <h2 class="post_cta_title">{{ T "cta_title" | default "Liked this post?" }}</h2>
   <p>Follow me on
     <a href="https://x.com/mare_milenkovic" target="_blank" rel="noopener">X</a> and
     <a href="https://www.linkedin.com/in/marko-milenkovic/" target="_blank" rel="noopener">LinkedIn</a>
     for more Java posts like this one.</p>
-  {{ partial "newsletter-form" . }}
+  {{ partial "newsletter-form" (dict "key" "cta") }}
 </div>

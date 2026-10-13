@@ -197,6 +197,11 @@ li ::marker
   z-index: 9999
   transition: width 0.1s linear
 
+// theme's dim mode maps --accent to undefined --bubble -> every var(--accent)
+// consumer silently drops to its light-mode fallback. Root fix: real dim accent.
+html[data-mode="dim"]
+  --accent: #58a6ff
+
 // sidebar avatar ring + hover
 .sidebar .author_header img
   border-radius: 50%
@@ -336,25 +341,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, .post_item:focus-wit
   margin: 0 auto 1rem
   line-height: 1.6
 
-.home_hero_ctas
-  display: flex
-  align-items: center
-  justify-content: center
-  gap: 1rem
-  flex-wrap: wrap
+// Subscribe CTA in header nav — accent pill
+a.nav_item[href*="#subscribe"]
+  background: var(--accent, #1d70a2)
+  color: #fff
+  border-radius: 999px
+  padding: 0.35rem 1rem
+  font-weight: 600
+  transition: filter 0.15s ease
 
-  .follow
-    display: inline-flex
-    gap: 0.5rem
-
-// follow icons: theme fills them $haze (#fafafa) — invisible on light surfaces.
-// Use text color instead; dark mode still resolves to light text.
-.home_hero_ctas .follow svg, .sidebar .follow svg
-  fill: var(--text)
-  transition: fill 0.2s ease
-
-.home_hero_ctas .follow a:hover svg, .sidebar .follow a:hover svg
-  fill: var(--accent)
+a.nav_item[href*="#subscribe"]:hover
+  filter: brightness(1.12)
 
 // dark theme: navy #002538 -> GitHub-dark #0d1117 (page bg, footer, surfaces)
 html[data-mode="dim"]
@@ -485,6 +482,7 @@ html.page:not([data-mode="dim"])
 .feed_til_title
   font-size: 1.05rem
   font-weight: 600
+  margin: 0.25rem 0 0.5rem
 
 .feed_card_actions
   display: flex
@@ -616,3 +614,109 @@ button.feed_action
 
 // code container bg follows site mode — dark keeps theme default; light override
 // (rules emitted in static/css/syntax.css alongside token colors)
+
+// --- feed polish (design audit) ---
+.feed_items
+  gap: 1.5rem
+
+.feed_card
+  position: relative
+  overflow: hidden // clip full-bleed media to card corners
+  transition: box-shadow 0.15s ease, border-color 0.15s ease
+
+.feed_card:hover
+  border-color: var(--accent, #1d70a2)
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08)
+
+// TILs: inline "note" look — accent bar + tinted bg, not a click-through card
+.feed_card_til
+  box-shadow: inset 4px 0 0 var(--accent, #1d70a2)
+  background: var(--post-bg, var(--light))
+  background: color-mix(in srgb, var(--accent, #1d70a2) 6%, var(--post-bg, var(--light)))
+
+// TILs are read-inline, not clickable — no card-hover affordance
+.feed_card_til:hover
+  border-color: var(--border-color, rgba(0,0,0,0.08))
+  box-shadow: inset 4px 0 0 var(--accent, #1d70a2)
+
+// stretched-link: title link's overlay makes the whole card clickable
+.feed_card_link::after
+  content: ""
+  position: absolute
+  inset: 0
+
+.feed_card .feed_media, .feed_card .feed_card_actions
+  position: relative
+  z-index: 1
+
+.feed_card .feed_media
+  z-index: 0 // stretched overlay wins — media click opens the post anyway
+
+.feed_til_body
+  position: relative
+  z-index: 1 // above share button's stacking context
+
+// actions: icon+label, 44px tap targets
+.feed_action
+  display: inline-flex
+  align-items: center
+  gap: 0.35rem
+  min-height: 44px
+  padding: 0 0.4rem
+  font-size: 0.85rem
+  border-radius: 8px
+  cursor: pointer
+
+.feed_action svg
+  width: 1rem
+  height: 1rem
+  stroke: currentColor
+  fill: none
+  stroke-width: 2
+  stroke-linecap: round
+  stroke-linejoin: round
+
+// in-feed subscribe card
+.feed_subscribe
+  text-align: center
+  border-style: dashed
+  border-color: var(--accent, #1d70a2)
+
+.feed_subscribe p
+  margin: 0.3rem 0 0.8rem
+  font-size: 0.92rem
+  color: var(--pale, #888)
+
+.feed_subscribe .post_cta_form
+  justify-content: center
+  margin: 0 auto
+
+// hero: bigger name, quieter stats
+.home_hero_name
+  font-size: 2.2rem
+
+.home_hero_stats
+  display: flex
+  justify-content: center
+  gap: 1.5rem
+  font-size: 0.85rem
+  color: var(--pale, #888)
+
+// footer newsletter row
+.footer_newsletter
+  padding: 1.5rem 0
+  text-align: center
+  border-top: 1px solid var(--border-color, rgba(0,0,0,0.08))
+
+.footer_newsletter .post_cta_form
+  justify-content: center
+  margin: 0.5rem auto 0
+
+// Subscribe CTA — push to the right end of the header (after icons + mode toggle)
+.nav_parent:has(> a.nav_item[href*="#subscribe"])
+  order: 99
+  margin-left: auto
+
+@media (min-width: 640px)
+  .nav_parent:has(> a.nav_item[href*="#subscribe"])
+    margin-right: 0

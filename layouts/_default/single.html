@@ -44,16 +44,16 @@
     {{- if ne $showComments false }}
       {{- partial "comments" . }}
       <script>
-        // sync utterances theme with site mode (lit/dim; auto -> prefers-color-scheme)
+        // sync giscus theme with site mode (lit/dim; auto -> preferred_color_scheme)
         (function () {
-          var MAP = { lit: 'github-light', dim: 'github-dark' };
+          var MAP = { lit: 'light', dim: 'dark' };
           function siteTheme() {
-            return MAP[document.documentElement.getAttribute('data-mode')] || 'preferred-color-scheme';
+            return MAP[document.documentElement.getAttribute('data-mode')] || 'preferred_color_scheme';
           }
           function sync() {
-            var f = document.querySelector('.post_comments iframe.utterances-frame, .post_comments iframe');
+            var f = document.querySelector('.post_comments iframe.giscus-frame, .post_comments iframe');
             if (f && f.contentWindow) {
-              f.contentWindow.postMessage({ type: 'set-theme', theme: siteTheme() }, 'https://utteranc.es');
+              f.contentWindow.postMessage({ giscus: { setConfig: { theme: siteTheme() } } }, 'https://giscus.app');
             }
           }
           var poll = setInterval(function () {

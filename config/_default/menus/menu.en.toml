@@ -37,6 +37,11 @@
   url = "search/"
   weight = -104
 
+[[main]]
+  name = "Subscribe"
+  url = "/#subscribe"
+  weight = -103
+
 # social menu links
 
 [[social]]

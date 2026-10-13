@@ -25,8 +25,11 @@
     {{- end }}
     <div id="feed_items" class="feed_items">
       {{- $paginator := .Paginate $pages 6 }}
-      {{- range $paginator.Pages }}
-        {{ partial "feed-card" . }}
+      {{- range $i, $p := $paginator.Pages }}
+        {{ partial "feed-card" $p }}
+        {{- if and (eq $i 4) (eq $paginator.PageNumber 1) }}
+          {{ partial "subscribe-card" $ }}
+        {{- end }}
       {{- end }}
     </div>
     {{- if .Paginator.HasNext }}
@@ -35,11 +38,6 @@
     <div id="feed_sentinel"></div>
     <button id="feed_loadmore" type="button" class="feed_loadmore" hidden>Load more</button>
     <script src="{{ "js/feed.js" | relURL }}" defer></script>
-    <section class="post_cta" id="subscribe">
-      <h2 class="post_cta_title">Get new posts by email</h2>
-      <p>Occasional posts on Java performance, SQL Server, and testing — no spam, unsubscribe anytime.</p>
-      {{ partial "newsletter-form" . }}
-    </section>
     {{- else }}
     <ul class="posts" id="posts">
       {{- range (.Paginate $pages).Pages }}

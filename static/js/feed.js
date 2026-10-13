@@ -68,6 +68,37 @@
     }
   });
 
+  // #subscribe anchor: scroll-restore must not fight the jump, and feed
+  // batches inserting above the section shift it -> re-pin until user scrolls
+  var subTarget = document.getElementById('subscribe');
+  var pinTimer = null;
+  function pinTo(el, ms) {
+    var t0 = Date.now();
+    el.scrollIntoView({ behavior: 'smooth' });
+    clearInterval(pinTimer);
+    pinTimer = setInterval(function () {
+      if (Date.now() - t0 > ms) return clearInterval(pinTimer);
+      var r = el.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > window.innerHeight) el.scrollIntoView();
+    }, 200);
+  }
+  ['wheel', 'touchmove', 'keydown'].forEach(function (ev) {
+    window.addEventListener(ev, function () { clearInterval(pinTimer); }, { passive: true });
+  });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href*="#subscribe"]');
+    if (!a || !subTarget) return;
+    var u;
+    try { u = new URL(a.href); } catch (err) { return; }
+    if (u.origin !== location.origin || u.pathname !== location.pathname) return;
+    e.preventDefault();
+    history.replaceState(null, '', '#subscribe');
+    pinTo(subTarget, 3000);
+  });
+  if (location.hash === '#subscribe' && subTarget) {
+    requestAnimationFrame(function () { pinTo(subTarget, 3000); });
+  }
+
   // scroll restore: replay loaded pages, then jump to saved position
   var KEY = 'feedState';
   var saved = null;
@@ -83,7 +114,7 @@
       requestAnimationFrame(function () { scrollTo(0, saved.y); });
     }
   }
-  if (saved) replay();
+  if (saved && location.hash !== '#subscribe') replay();
 
   window.addEventListener('beforeunload', function () {
     sessionStorage.setItem(KEY, JSON.stringify({ pages: fetched, y: scrollY }));

@@ -20,7 +20,7 @@
     {{- if eq .Type "til" }}<span class="feed_pill">TIL</span>{{ end }}
   </header>
   {{- if eq .Type "til" }}
-    <a class="feed_til_title" href="{{ .Permalink }}">{{ .Title }}</a>
+    <h2 class="feed_til_title">{{ .Title }}</h2>
     <div class="feed_til_body">{{ .Summary }}</div>
   {{- else }}
     {{- $thumb := .Params.thumbnail | default .Params.featureImage | default .Params.shareImage -}}
@@ -29,12 +29,11 @@
       {{- partial "image" (dict "file" . "alt" $.Title "type" "thumbnail" "Page" $.Page) }}
     </a>
     {{- end }}
-    <a class="feed_title" href="{{ .Permalink }}"><h2>{{ .Title | markdownify }}</h2></a>
+    <a class="feed_title feed_card_link" href="{{ .Permalink }}"><h2>{{ .Title | markdownify }}</h2></a>
     <p class="feed_excerpt">{{ .Summary | plainify | truncate 160 }}</p>
   {{- end }}
   <footer class="feed_card_actions">
-    <a class="feed_action" href="{{ .Permalink }}">Open</a>
-    {{- if ne .Type "til" }}<span class="feed_action pale">{{ .ReadingTime }} min read</span>{{ end }}
-    <button class="feed_action feed_share" type="button" data-share="{{ .Permalink }}" data-title="{{ .Title }}">Share</button>
+    {{- if ne .Type "til" }}<span class="feed_action pale"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ .ReadingTime }} min read</span>{{ end }}
+    <button class="feed_action feed_share" type="button" data-share="{{ .Permalink }}" data-title="{{ .Title }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>Share</button>
   </footer>
 </article>
