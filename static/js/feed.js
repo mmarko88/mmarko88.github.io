@@ -13,7 +13,10 @@
   function done() {
     sentinel.textContent = "You're all caught up";
     sentinel.className = 'feed_end';
-    if (nextLink) nextLink.hidden = true;
+    if (nextLink) {
+      nextLink.hidden = true;
+      nextLink.removeAttribute('href'); // blocks further loads + keeps loadBtn hidden
+    }
     if (loadBtn) loadBtn.hidden = true;
   }
 

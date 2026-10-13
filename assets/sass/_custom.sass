@@ -25,17 +25,55 @@ li ::marker
   margin-top: 0
   font-size: 1.1rem
 
+// newsletter form — pill inputs, accent button; wraps to stacked rows on mobile
+.post_cta_form
+  display: flex
+  align-items: center
+  flex-wrap: wrap
+  gap: 0.5rem
+  max-width: 30rem
+
+.post_cta_form label
+  flex: 0 0 100%
+  font-size: 0.85rem
+  color: var(--pale, #888)
+
 .post_cta_form input[type="email"]
-  padding: 0.5rem 0.75rem
-  margin-right: 0.5rem
+  flex: 1 1 12rem
+  min-width: 0
+  padding: 0.65rem 1.1rem
   border: 1px solid var(--border-color, #ccc)
-  border-radius: 4px
-  min-width: 220px
+  border-radius: 999px
+  font-size: 0.95rem
+  background: var(--bg, #fff)
+  color: var(--text)
+
+.post_cta_form input[type="email"]:focus
+  outline: none
+  border-color: var(--accent, #1d70a2)
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #1d70a2) 18%, transparent)
 
 .post_cta_form input[type="submit"]
-  padding: 0.5rem 1rem
-  border-radius: 4px
+  flex: 0 0 auto
+  padding: 0.65rem 1.5rem
+  border: none
+  border-radius: 999px
+  background: var(--accent, #1d70a2)
+  color: #fff
+  font-weight: 600
+  font-size: 0.95rem
   cursor: pointer
+  transition: filter 0.15s ease, transform 0.1s ease
+
+.post_cta_form input[type="submit"]:hover
+  filter: brightness(1.12)
+
+.post_cta_form input[type="submit"]:active
+  transform: scale(0.97)
+
+@media (max-width: 30rem)
+  .post_cta_form input[type="email"], .post_cta_form input[type="submit"]
+    flex: 1 1 100%
 
 // TIL stream — entries rendered inline as a feed
 .til_stream
@@ -517,6 +555,10 @@ button.feed_action
 
 .feed_next
   display: none  // JS-driven; kept in DOM as next-page locator
+
+// hidden attr must beat the display:block above
+.feed_loadmore[hidden]
+  display: none
 
 // hero stats row
 .home_hero_stats
