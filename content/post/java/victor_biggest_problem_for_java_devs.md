@@ -25,8 +25,6 @@ He also gave me this advice:
 
 As long as you are surrounded by people smarter than you, you are good. And as long as you love to work with your team, you are good. Doesn't matter project or technology, it can be a terrible legacy system. If you have super cool surroundings, and you keep learning, and you keep having fun, it's perfect.
 
-If you liked this post, you can follow me on [Twitter](https://x.com/mare_milenkovic), or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/).
-
 Victor is a great trainer and one of the best presenters. You can find him at the following links:
 
 * Website [victorrentea.ro](http://victorrentea.ro/) you can find a *blog*, *recorded talks*, plus other *goodies*.

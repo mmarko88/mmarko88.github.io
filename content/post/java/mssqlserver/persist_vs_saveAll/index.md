@@ -131,7 +131,6 @@ and reset the persistence context.
 In addition, we set flush mode to manual, all changes are deliberately flushed to the database before initiating the process.
 This approach allows for more precise control over when the data is actually transmitted to the database.
 
-
 And here is the second function:
 ```java
 public void saveAll(List<Person> people) {
@@ -266,5 +265,3 @@ may not operate optimally out of the box, but with some straightforward
 code adjustments, you can achieve dramatic performance enhancements.
 This highlights how important it is to carefully measure performance 
 and examine it closely to get the best results.
-
-For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).

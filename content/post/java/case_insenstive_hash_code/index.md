@@ -104,5 +104,3 @@ The `hashCode` function is implemented similarly to the `hashCode` function in t
 
 ## Conclusion
 Using these simple functions and an IDE code generator, you can create case-insensitive classes that can be efficiently stored in a HashMap or other collections. This is particularly useful for storing objects as keys, as HashMaps provide fast key-based searches.
-
-If you liked the content, you can find me on Twitter at [@mare_milenkovic](https://x.com/mare_milenkovic) and on LinkedIn at [mare-milenkovic](https://www.linkedin.com/in/mare-milenkovic/).

@@ -7,6 +7,7 @@ categories: ["java", "functional programming"]
 featureImage: 'fp_data_oriented.svg' # Top image on post.
 shareImage: 'fp_data_oriented.svg' # For SEO and social media snippets.
 featureImageAlt: 'Moving data to functions in functional programming' # Alternative text for featured image.
+sourceCode: 'https://github.com/mmarko88/blog-examples' # Renders source-code card above comments.
 ---
 
 ## Introduction
@@ -381,5 +382,3 @@ While this approach has many benefits, it's not a silver bullet. Here are some c
 However, like any principle, it should be applied judiciously. The key is to understand the trade-offs and choose the right approach for your specific situation.
 
 In Java, records (introduced in Java 14) make this approach much more practical by providing immutable data carriers with minimal boilerplate. Combined with functional interfaces and the Stream API, Java developers can leverage many of the benefits of functional programming while staying within the Java ecosystem.
-
-For more stuff like this, you can follow me on [Twitter](https://x.com/mare_milenkovic), [LinkedIn](https://www.linkedin.com/in/marko-milenkovic/).

@@ -31,7 +31,6 @@ I conducted tests to insert `1,000,000 Person` objects with various batch sizes 
 Each test was executed 10 times, and the median time was calculated. 
 With the parameter enabled, the results are as follows:
 
-
 | MethodName        | MedianDuration | BatchSize |
 |-------------------|----------------|-----------|
 | Jdbc Template     | 5752           | 20000     |
@@ -106,8 +105,3 @@ This issue has been resolved in the latest version of the Java MS SQL Server JDB
 
 This parameter has limited utility; avoid enabling it blindly without first assessing the
 benefits and drawbacks it may bring to your application.
-
-For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
-
-
-

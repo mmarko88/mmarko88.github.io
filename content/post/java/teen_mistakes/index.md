@@ -60,6 +60,3 @@ Developers are not very communicative people. They like to solve problems by the
 Developing software is a team activity. When you encounter a problem during programming, try to solve it by yourself. But don’t waste too much time if you can’t figure out the solution. There is a high probability that some of your colleagues already encounter the same problem and know a solution.  
 If it is not the case, then you will get help and the team will understand that the problem is complex and that you need time to solve it. Involving more people will help you resolve complex problems faster. Developers that don’t ask for help, usually spend too much time on a ticket.  
 Help others when you see they have problems with their ticket. As a result, the team will be more productive and people will like you more.
-
-If you like this content, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/).
-

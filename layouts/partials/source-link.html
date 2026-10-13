@@ -1,0 +1,9 @@
+{{- /* Source-code link card: expects dict "url" + optional "label" */ -}}
+<a class="source_link" href="{{ .url }}" target="_blank" rel="noopener">
+  <span class="source_link_icon">{{ partial "sprite" (dict "icon" "github") }}</span>
+  <span class="source_link_text">
+    <strong>{{ .label | default "View source code" }}</strong>
+    <span class="source_link_url">{{ .url }}</span>
+  </span>
+  <span class="source_link_arrow" aria-hidden="true">→</span>
+</a>

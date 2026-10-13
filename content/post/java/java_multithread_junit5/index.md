@@ -19,7 +19,6 @@ featured: true
 # Introduction
 We need fast-build pipelines. This is because we need fast feedback from our pipeline in order to be more productive. If something is wrong with our code, then we want our pipeline to fail fast. To accomplish that, you may decide to allow parallel test execution for tests in your project. This post describes how to do that with Maven and Junit 5.
 
-
 # Getting Started With Junit 5 and Maven
 
 To get started with Junit 5, you need to import the following dependency into the project:
@@ -44,7 +43,6 @@ Maven offers you two ways for running tests in parallel:
 ## 1. By Using the Parallel Parameter
 The setup for parallel test execution is straightforward. Include the following parameter:
 
-
 ```xml
 
 <forkCount>2</forkCount>
@@ -52,7 +50,6 @@ The setup for parallel test execution is straightforward. Include the following 
 It must have a value greater than 1 to enable parallel execution. It is important to know that parallel execution is achieved by starting multiple JVM child processes. This has multiple consequences, and it can affect your decision to use this method. Maven starts multiple JVM instances, and this means that it consumes more memory. Each thread has its own memory space. But it accomplishes a greater level of test independence, as processes cannot share data. You can use this method when you need to use an in-memory database for your unit tests.
 
 The parameter ````forkCount```` has a fixed positive integer value which represents the number of forks. Of course, it is usual that multiple developers work on the same project, and we don't know how many cores other developers will have on their machines. To better use hardware, it would be great if we can set this parameter to create a number of forks that depends on the number of cores on CPU. Maven supports this, and you can configure it in the following way:
-
 
 ```xml
 
@@ -106,7 +103,6 @@ It is enough to set ``junit.jupiter.execution.parallel.enabled=true``` to allow 
 
 ### How Many Threads Junit Will Use for Parallel Execution?
 
-
 This is also configurable property ```junit.jupiter.execution.parallel.config.strategy=dynamic``` and it also has default value ```dynamic```. Strategy can be also ```fixed``` or ```custom```. If we set up ```fixed``` value for this property, then we also need to set up the value for the ```junit.jupiter.execution.parallel.config.fixed.parallelism=<positive integer>```. This is not a scalable solution, and we should use ```dynamic``` value to better utilize the hardware.
 
 ```dynamic``` property also has a connected property that influences how many threads JUnit will create. ```junit.jupiter.execution.parallel.config.dynamic.factor=<positive decimal number>```. Factor to multiply by the number of processors/cores to determine the desired parallelism for the dynamic configuration strategy.
@@ -116,12 +112,9 @@ Parallel test execution can speed up your build, but you must be careful when en
 
 Another more significant problem with parallel tests is if the tests are not independent, there can be [flaky tests](https://www.techtarget.com/whatis/definition/flaky-test). They are very hard to debug and identify.
 
-If you liked this post, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/marko-milenkovic-48320b59/) for more content.
-
 # Resources
 [Maven documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html)
 
 [Junit guide](https://junit.org/junit5/docs/snapshot/user-guide/#writing-tests-parallel-execution)
 
 [JUnit5 Parallel Execution of tests](https://antkorwin.com/junit5/junit5_parallel_execution.html)
-

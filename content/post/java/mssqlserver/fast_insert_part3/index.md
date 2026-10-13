@@ -146,14 +146,6 @@ size for JDBC Template with multi-value inserts.
 
 Based on the results above, we can conclude that multi-value inserts drastically improve insert performances and that
 you should definitely consider it if you have performance problems. On the other hand, if you need to insert a huge 
-amount of data, then Bulk API insert is the king. 
-
-For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
+amount of data, then Bulk API insert is the king.
 
 Thank you for your attention.
-
-
-
-
-
-

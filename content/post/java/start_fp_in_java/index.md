@@ -37,8 +37,6 @@ After watching those courses, I wanted to know more about Monads. They are very 
 # Learn from Haskell
 I started learning Haskell. At the end of Venkat Subramaniam's presentation, I asked him if learning Haskell will help me better understand FP concepts. The answer was something like: “Not only Haskell helped me to understand FP, Haskell LEARNED ME how to write good code”. Some developers say that learning Haskell is like learning programming again from scratch. I learned great stuff from Haskell, and it was easy and fun to get started with it. [Learn You a Haskell for Great Good!](http://learnyouahaskell.com/chapters) is a great tutorial to get started with Haskell.
 
-
-
 # Learn some FP language
 If you don’t like Haskell, don’t worry, you can learn another FP language. You can check Kotlin, Scala, F#, Clojure, Elixir, Erlang...
 
@@ -63,4 +61,4 @@ To get familiar with FP, I studied and applied in practice FP concepts. The most
 
 Using FP in code doesn't prevent us, developers, from writing bad code. We still need to write unit tests, have a good understanding of our task and our codebase. We still need to apply all the best practices that we learned in the past. FP is promoting good practices and makes it easier for us developers to write good and maintainable code.
 
-I plan to further learn about FP and Java. I will continue to write posts on this subject. For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/).
+I plan to further learn about FP and Java. I will continue to write posts on this subject.

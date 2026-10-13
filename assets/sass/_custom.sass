@@ -45,7 +45,7 @@ li ::marker
   border: 1px solid var(--border-color, #ccc)
   border-radius: 999px
   font-size: 0.95rem
-  background: var(--bg, #fff)
+  background: var(--post-bg, #fff)
   color: var(--text)
 
 .post_cta_form input[type="email"]:focus
@@ -571,3 +571,48 @@ button.feed_action
 
 .home_hero_stats strong
   color: var(--text)
+
+// source-code link card (source shortcode)
+.source_link
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 0.85rem 1rem
+  margin: 1rem 0
+  border: 1px solid var(--border-color, rgba(0,0,0,0.12))
+  border-radius: 10px
+  background: var(--post-bg, var(--light))
+  text-decoration: none
+  color: var(--text)
+  transition: border-color 0.15s ease, box-shadow 0.15s ease
+
+.source_link:hover
+  border-color: var(--accent, #1d70a2)
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08)
+
+.source_link_icon svg
+  width: 1.6rem
+  height: 1.6rem
+  fill: var(--text)
+  display: block
+
+.source_link_text
+  display: flex
+  flex-direction: column
+  line-height: 1.25
+  min-width: 0
+
+.source_link_url
+  font-size: 0.78rem
+  color: var(--pale, #888)
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+
+.source_link_arrow
+  margin-left: auto
+  font-size: 1.2rem
+  color: var(--accent, #1d70a2)
+
+// code container bg follows site mode — dark keeps theme default; light override
+// (rules emitted in static/css/syntax.css alongside token colors)

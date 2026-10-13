@@ -175,7 +175,6 @@ From the above description, it can be inferred that the example code generates a
 ## How Can We Fix It?
 The solution would be to reduce the number of allocations. For example, we can consider creating a pool of objects that can be reused (something like thread pools). The proposed solution wouldn't work on this example, because we don't know what instances of the String object will be created.
 
-
 ### What Can We Do Then?
 If we must allocate memory, then we should check if we can perform smaller memory allocations. We can create a new class that will contain references to existing strings. The class must implement `equals` and `hashCode` methods. Requested behaviour will be the same, but the amount of allocated memory will be significantly smaller. We can call this class `PersonPk` and implement it as follows:
 
@@ -226,8 +225,6 @@ From the results above, we can draw the following conclusions:
 2. Java 17 has an order of magnitude better performance for string concatenation compared to java 8.
 3. Optimized version of code, without string concatenation, performs much better than string concatenation. This statement is true for all versions of Java.
 4. Java 17 has much performs better when it comes to garbage collection.
-
-For more stuff like this, you can follow me on [Twitter](https://x.com/mare_milenkovic), [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/). 
 
 ## Appendix: Java Code Used for Benchmarking
 At the end, here is the code that I used to perform benchmarks:

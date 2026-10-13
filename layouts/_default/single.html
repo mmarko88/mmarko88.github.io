@@ -29,6 +29,12 @@
       {{- .Content }}
     </div>
 
+    {{- with .Params.sourceCode }}
+      {{ partial "source-link" (dict "url" . "label" "Browse the example code") }}
+    {{- end }}
+
+    {{- partial "post-cta" . }}
+
     {{- $showComments := true }}
     {{- if eq $s.comments false }}
       {{- $showComments = false }}
@@ -37,6 +43,26 @@
     {{- end }}
     {{- if ne $showComments false }}
       {{- partial "comments" . }}
+      <script>
+        // sync utterances theme with site mode (lit/dim; auto -> prefers-color-scheme)
+        (function () {
+          var MAP = { lit: 'github-light', dim: 'github-dark' };
+          function siteTheme() {
+            return MAP[document.documentElement.getAttribute('data-mode')] || 'preferred-color-scheme';
+          }
+          function sync() {
+            var f = document.querySelector('.post_comments iframe.utterances-frame, .post_comments iframe');
+            if (f && f.contentWindow) {
+              f.contentWindow.postMessage({ type: 'set-theme', theme: siteTheme() }, 'https://utteranc.es');
+            }
+          }
+          var poll = setInterval(function () {
+            if (document.querySelector('.post_comments iframe')) { clearInterval(poll); sync(); }
+          }, 400);
+          setTimeout(function () { clearInterval(poll); }, 10000);
+          new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
+        })();
+      </script>
     {{- end }}
 
     {{- $showRelatedInArticle := $s.showRelatedInArticle }}
@@ -48,8 +74,6 @@
     {{- if (and ($showRelatedInArticle) (isset $p "series")) }}
       {{- partial "related" . }}
     {{- end }}
-
-    {{- partial "post-cta" . }}
 
     {{- partial "post-latest" . }}
 

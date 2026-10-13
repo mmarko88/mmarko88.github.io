@@ -1,0 +1,11 @@
+{{- /* Source-code link card (inline placement).
+     For end-of-post placement just above comments, prefer the
+     sourceCode front-matter param instead: sourceCode: "url"
+     Usage: {{< source url="https://github.com/..." >}}
+            {{< source url="..." label="Browse the examples" >}} */ -}}
+{{- $url := .Get "url" | default (.Get 0) -}}
+{{- if $url -}}
+  {{- partial "source-link" (dict "url" $url "label" (.Get "label")) -}}
+{{- else -}}
+  {{- errorf "source shortcode: missing 'url' parameter" -}}
+{{- end -}}

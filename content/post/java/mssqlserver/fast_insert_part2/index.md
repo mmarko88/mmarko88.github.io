@@ -23,7 +23,6 @@ We will consider four different ways to persist data:
 3. Using Spring Data Jdbc Template with batching.
 4. Using Microsoft Bulk API.
 
-
 ### Hibernate Batching
 Hibernate batching is implemented as following:
 ```java
@@ -103,7 +102,6 @@ The actual insertion process is carried out by the `insertInternal` method, whic
 It iterates through the list of objects, sets their values in the prepared statement, and adds them to a batch. 
 When the specified batch size is reached, the batch is executed, and this process is repeated until all objects 
 are inserted.
-
 
 ### Using Spring Data Jdbc Template With Batching
 ```java
@@ -199,7 +197,6 @@ from the results. Following the completion of each test,
 I truncate the `Person` table. My measurements exclusively focus on the time
 taken for the insert operations to conclude.
 
-
 | Method Name        | Median Duration Ms | Batch Size |
 |--------------------|--------------------|------------|
 | Bulk Api           | 314                | 10000      |
@@ -250,7 +247,5 @@ insert into Person(person_id, user_name, first_name, last_name, years) values (?
 Allowing us to insert multiple sets of values in a single statement, up to a limit of 2,100 parameters. 
 In my upcoming post, I will assess the performance of this method and compare it to the fastest Bulk API insert 
 to determine its efficiency.
-
-For updates, you can follow me on [Twitter](https://x.com/mare_milenkovic) or [LinkedIn](https://www.linkedin.com/in/mare-milenkovic/). 
 
 Thank you for your attention.
