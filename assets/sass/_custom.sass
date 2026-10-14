@@ -722,9 +722,14 @@ button.feed_action
   color: var(--accent, #1d70a2)
 
 // waline widget: its reaction row overflows the fixed-height container,
-// and overflow-y:hidden clips the emoji bottoms — unclip it
-.wl-reaction
+// and overflow-y:hidden clips the emoji bottoms — unclip it.
+// #waline prefix needed: waline injects its stylesheet at runtime,
+// after ours — equal specificity would lose.
+#waline .wl-reaction
   overflow: visible
+
+#waline .wl-reaction-list
+  flex-wrap: wrap
 
 // visited posts — dimmed until hover (RSS-reader convention)
 .feed_card.is_read .feed_title,

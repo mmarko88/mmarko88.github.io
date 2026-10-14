@@ -41,7 +41,7 @@
     if (el) el.textContent = n + ' reaction' + (n === 1 ? '' : 's');
   }
 
-  function makeIcon(card, type, idx) {
+  function makeIcon(card, icons, type, idx) {
     var em = EMOJI[idx];
     var liked = !!localStorage.getItem(storeKey(card.dataset.path, type));
     var btn = document.createElement('button');
@@ -53,7 +53,7 @@
     btn.setAttribute('aria-label', em[1]);
     btn.setAttribute('title', em[1]);
     btn.innerHTML = '<img src="' + EMOJI_BASE + em[0] + '" alt="' + em[1] + '" loading="lazy">';
-    card.querySelector('.feed_react_icons').appendChild(btn);
+    icons.appendChild(btn);
   }
 
   function applyState(card, item) {
@@ -73,7 +73,7 @@
       var icons = document.createElement('span');
       icons.className = 'feed_react_icons';
       pill.appendChild(icons);
-      top.forEach(function (r) { makeIcon(card, r.type, r.idx); });
+      top.forEach(function (r) { makeIcon(card, icons, r.type, r.idx); });
     }
     var link = document.createElement('a');
     link.className = 'feed_react_total';
