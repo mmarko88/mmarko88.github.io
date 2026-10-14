@@ -676,33 +676,50 @@ button.feed_action
   stroke-linecap: round
   stroke-linejoin: round
 
-// emoji reactions — same 6-emoji row as the widget on post pages;
-// badges always visible, count shown only when it has votes
-.feed_reacts
-  display: flex
-  flex-wrap: wrap
-  padding: 0 0.4rem 0.6rem
+// reactions pill — dev.to style: stacked emoji icons + "N reactions" text
+.feed_react_pill
+  gap: 0.45rem
+
+.feed_react_icons
+  display: inline-flex
+  align-items: center
 
 .feed_react
-  gap: 0.3rem
+  display: inline-flex
+  align-items: center
+  padding: 0.15rem
+  border: none
+  border-radius: 999px
+  background: var(--translucent-light, rgba(0, 0, 0, 0.06))
+  box-shadow: 0 0 0 2px var(--bg, #fff)
+  cursor: pointer
+
+.feed_react + .feed_react
+  margin-left: -0.5rem
 
 .feed_react img
   width: 1.1rem
   height: 1.1rem
   display: block
 
-.feed_react_count
-  font-size: 0.8rem
-  font-variant-numeric: tabular-nums
-  display: none
-
-.feed_react.has_votes .feed_react_count
-  display: inline
-  color: var(--accent, #1d70a2)
-
 .feed_react.liked
+  background: rgba(29, 112, 162, 0.2)
+
+.feed_react_total
+  color: var(--pale, #888)
+  font-size: 0.85rem
+  text-decoration: none
+
+.feed_react_total:hover
   color: var(--accent, #1d70a2)
-  background: rgba(29, 112, 162, 0.12)
+
+.feed_comments
+  color: var(--pale, #888)
+  font-size: 0.85rem
+  text-decoration: none
+
+.feed_comments:hover
+  color: var(--accent, #1d70a2)
 
 // visited posts — dimmed until hover (RSS-reader convention)
 .feed_card.is_read .feed_title,

@@ -1,11 +1,11 @@
-// Waline reactions on feed cards — the same 6-emoji row the comment
-// widget renders on post pages (tieba pack), one toggle each.
+// Waline reactions on feed cards — dev.to-style pill: up to 3 stacked
+// emoji icons (top-voted types, still one-click toggles) + total count,
+// plus a comments pill. The full 6-emoji row stays on post pages.
 // GET  /api/article?path=p1,p2&type=reaction0,...,reaction5
 //      -> {errno:0, data:[{reaction0..reaction5}, ...]} — items align
 //         positionally with the requested paths (no path field on items)
 // POST /api/article  {path, type:'reactionN', action:'inc'|'desc'}
-// The old heart button was reaction0 — same counter, and the original
-// waline:liked:<path> localStorage keys still mark it as voted.
+// reaction0 keeps the original waline:liked:<path> keys from the heart era.
 (function () {
   var box = document.getElementById('feed_items');
   if (!box) return;
@@ -35,37 +35,62 @@
       .filter(function (c) { return !c._reactsInit; });
   }
 
-  function setCount(btn, n) {
-    n = Math.max(n, 0);
-    btn.querySelector('.feed_react_count').textContent = n;
-    btn.classList.toggle('has_votes', n > 0);
+  function updateTotal(card) {
+    var el = card.querySelector('.feed_react_total');
+    var n = (card._counts || []).reduce(function (a, b) { return a + b; }, 0);
+    if (el) el.textContent = n + ' reaction' + (n === 1 ? '' : 's');
   }
 
-  function makeBadge(card, type, idx, n, liked) {
+  function makeIcon(card, type, idx) {
     var em = EMOJI[idx];
+    var liked = !!localStorage.getItem(storeKey(card.dataset.path, type));
     var btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'feed_action feed_react' + (liked ? ' liked' : '');
-    btn.dataset.path = card.dataset.path;
+    btn.className = 'feed_react' + (liked ? ' liked' : '');
     btn.dataset.type = type;
+    btn._idx = idx;
     btn.setAttribute('aria-pressed', String(liked));
     btn.setAttribute('aria-label', em[1]);
     btn.setAttribute('title', em[1]);
-    btn.innerHTML = '<img src="' + EMOJI_BASE + em[0] + '" alt="' + em[1] + '" loading="lazy"><span class="feed_react_count"></span>';
-    card.querySelector('.feed_reacts').appendChild(btn);
-    setCount(btn, n);
+    btn.innerHTML = '<img src="' + EMOJI_BASE + em[0] + '" alt="' + em[1] + '" loading="lazy">';
+    card.querySelector('.feed_react_icons').appendChild(btn);
   }
 
   function applyState(card, item) {
     item = item || {};
-    card._reactsInit = true;
-    var row = document.createElement('div');
-    row.className = 'feed_reacts';
-    card.appendChild(row);
-    TYPES.forEach(function (type, i) {
-      var liked = !!localStorage.getItem(storeKey(card.dataset.path, type));
-      makeBadge(card, type, i, item[type] || 0, liked);
-    });
+    card._counts = TYPES.map(function (t) { return item[t] || 0; });
+    var footer = card.querySelector('.feed_card_actions');
+    if (!footer) return;
+    // reactions pill: stacked icons + "N reactions" link
+    var pill = document.createElement('div');
+    pill.className = 'feed_action feed_react_pill';
+    var icons = document.createElement('span');
+    icons.className = 'feed_react_icons';
+    pill.appendChild(icons);
+    var link = document.createElement('a');
+    link.className = 'feed_react_total';
+    link.href = card.dataset.path + '#waline';
+    pill.appendChild(link);
+    footer.insertBefore(pill, footer.children[0]);
+    // dev.to shows the icons of the most-voted reaction types
+    TYPES.map(function (t, i) { return { type: t, idx: i, n: card._counts[i] }; })
+      .sort(function (a, b) { return (b.n - a.n) || (a.idx - b.idx); })
+      .slice(0, 3)
+      .forEach(function (r) { makeIcon(card, r.type, r.idx); });
+    updateTotal(card);
+    // comments pill: "N comments" or "Add comment", links to the widget
+    var clink = document.createElement('a');
+    clink.className = 'feed_action feed_comments';
+    clink.href = card.dataset.path + '#waline';
+    clink.textContent = '💬';
+    footer.insertBefore(clink, pill.nextSibling);
+    fetch(server + '/api/comment?type=count&url=' + encodeURIComponent(card.dataset.path))
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        var n = (res && res.data && res.data[0]) || 0;
+        clink.textContent = n ? '💬 ' + n + (n === 1 ? ' comment' : ' comments') : '💬 Add comment';
+      })
+      .catch(function () { clink.textContent = '💬 Comments'; });
   }
 
   function fetchCounts() {
@@ -95,26 +120,30 @@
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.feed_react');
     if (!b || !box.contains(b)) return;
+    var card = b.closest('.feed_card');
+    var idx = b._idx;
     var type = b.dataset.type;
-    var key = storeKey(b.dataset.path, type);
+    var key = storeKey(card.dataset.path, type);
     var liked = b.classList.contains('liked');
     var action = liked ? 'desc' : 'inc';
-    var c = b.querySelector('.feed_react_count');
+    var counts = card._counts || (card._counts = []);
     // optimistic toggle
     b.classList.toggle('liked', !liked);
     b.setAttribute('aria-pressed', String(!liked));
-    setCount(b, (+(c && c.textContent) || 0) + (liked ? -1 : 1));
+    counts[idx] = Math.max(0, (counts[idx] || 0) + (liked ? -1 : 1));
+    updateTotal(card);
     if (liked) localStorage.removeItem(key);
     else localStorage.setItem(key, '1');
     fetch(server + '/api/article', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: b.dataset.path, type: type, action: action })
+      body: JSON.stringify({ path: card.dataset.path, type: type, action: action })
     }).catch(function () {
       // revert on network failure so the count stays honest
       b.classList.toggle('liked', liked);
       b.setAttribute('aria-pressed', String(liked));
-      setCount(b, (+(c && c.textContent) || 0) + (liked ? 1 : -1));
+      counts[idx] = Math.max(0, (counts[idx] || 0) + (liked ? 1 : -1));
+      updateTotal(card);
       if (liked) localStorage.setItem(key, '1');
       else localStorage.removeItem(key);
     });
