@@ -13,15 +13,15 @@
   if (!server) return;
 
   var KEY = 'waline:liked:';
-  // bilibili emoji pack — same images + order as the widget's reaction row
-  var EMOJI_BASE = 'https://unpkg.com/@waline/emojis/bilibili/';
+  // twemoji pack — same images + order as the widget's reaction row
+  var EMOJI_BASE = 'https://unpkg.com/@waline/emojis/tw/';
   var EMOJI = [
-    ['bb_thumbsup.png', 'Like'],
-    ['bb_look_down.png', 'Dislike'],
-    ['bb_sunglasses.png', 'Cool'],
-    ['bb_pick_nose.png', 'Meh'],
-    ['bb_awkward.png', 'Awkward'],
-    ['bb_sleep.png', 'Boring']
+    ['1f44d.png', 'Like'],
+    ['1f44e.png', 'Dislike'],
+    ['1f60e.png', 'Cool'],
+    ['1f612.png', 'Meh'],
+    ['1f62c.png', 'Awkward'],
+    ['1f634.png', 'Boring']
   ];
   var TYPES = EMOJI.map(function (_, i) { return 'reaction' + i; });
 
