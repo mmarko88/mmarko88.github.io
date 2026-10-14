@@ -693,6 +693,36 @@ button.feed_action
 .feed_like.liked svg path
   fill: currentColor
 
+// emoji reaction badges — same counters as the widget's emoji row on posts
+.feed_reacts
+  display: flex
+  flex-wrap: wrap
+  padding: 0 0.4rem 0.6rem
+
+.feed_react
+  gap: 0.3rem
+
+.feed_react img
+  width: 1.05rem
+  height: 1.05rem
+  display: block
+
+.feed_react .feed_like_count
+  font-size: 0.8rem
+
+.feed_react:not(.has_likes):not(.liked)
+  display: none
+
+.feed_react.has_likes .feed_like_count
+  color: var(--accent, #1d70a2)
+
+.feed_react.liked,
+.feed_react.liked .feed_like_count
+  color: var(--accent, #1d70a2)
+
+.feed_react.liked
+  background: rgba(29, 112, 162, 0.12)
+
 // visited posts — dimmed until hover (RSS-reader convention)
 .feed_card.is_read .feed_title,
 .feed_card.is_read .feed_til_title
