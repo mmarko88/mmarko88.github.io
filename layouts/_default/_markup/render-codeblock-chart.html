@@ -1,0 +1,25 @@
+{{- /* Render ```chart code blocks as Chart.js canvas charts (Hugo >=0.123).
+     Block content: a Chart.js config JSON object.
+     Chart.js loads from CDN only on pages that contain a chart block.
+     Example:
+       ```chart
+       {"type":"bar","data":{"labels":["a","b"],"datasets":[{"label":"x","data":[1,2]}]}}
+       ```
+*/ -}}
+{{- $aria := .Attributes.aria | default "chart" -}}
+<div class="post-chart" role="img" aria-label="{{ $aria }}" data-config='{{ .Inner }}'>
+  <canvas></canvas>
+</div>
+{{- if not (.Page.Store.Get "chartLoaded") -}}
+{{- .Page.Store.Set "chartLoaded" true -}}
+<script type="module">
+  import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4/+esm';
+  Chart.defaults.color = getComputedStyle(document.body).color;
+  Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
+  document.querySelectorAll('.post-chart[data-config]').forEach(el => {
+    const cfg = JSON.parse(el.dataset.config);
+    cfg.options = Object.assign({ maintainAspectRatio: false }, cfg.options);
+    new Chart(el.querySelector('canvas'), cfg);
+  });
+</script>
+{{- end -}}

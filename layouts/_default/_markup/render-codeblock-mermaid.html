@@ -7,6 +7,54 @@
 {{- .Page.Store.Set "mermaidLoaded" true -}}
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+
+  // Lucide icons for @{ icon: "lucide:..." } node shapes (mermaid >=11.7)
+  mermaid.registerIconPacks([{
+    name: 'lucide',
+    loader: () => fetch('https://cdn.jsdelivr.net/npm/@iconify-json/lucide@1/icons.json').then(r => r.json())
+  }]);
+
+  const pres = [...document.querySelectorAll('pre.mermaid')];
+  const src = pres.map(el => el.textContent);
+
+  const renderAll = () => {
+    const cs = getComputedStyle(document.body);
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      look: 'neo',
+      themeVariables: {
+        fontFamily: cs.fontFamily,
+        fontSize: '15px',
+        primaryTextColor: cs.color,
+        labelColor: cs.color,
+        primaryColor: 'rgba(29,112,162,0.12)',
+        primaryBorderColor: '#1d70a2',
+        secondaryColor: 'transparent',
+        tertiaryColor: 'transparent',
+        mainBkg: 'transparent',
+        clusterBkg: 'transparent',
+        lineColor: '#1d70a2',
+        edgeLabelBackground: cs.backgroundColor,
+        nodeBorder: '#1d70a2'
+      }
+    });
+    pres.forEach((el, i) => {
+      el.removeAttribute('data-processed');
+      el.textContent = src[i];
+    });
+    mermaid.run({ querySelector: 'pre.mermaid' });
+  };
+
+  renderAll();
+
+  // Re-render with fresh colors when light/dark mode toggles.
+  // Watch both <html> and <body> attribute changes — themes toggle in different places.
+  const obs = new MutationObserver(renderAll);
+  obs.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class', 'data-theme', 'data-mode', 'data-color-mode']
+  });
+  obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 </script>
 {{- end -}}

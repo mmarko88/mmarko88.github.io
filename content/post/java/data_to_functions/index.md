@@ -1,22 +1,22 @@
 ---
-title: "Moving Data to Functions Instead of Functions to Data: A Functional Programming Principle"
+title: "Data-Oriented Programming in Java: Move Data to Functions, Not Functions to Data"
 date: 2026-10-11
 draft: true
-tags: ["java", "functional programming", "design patterns"]
+description: "Separate data from behavior in Java: immutable records through pure functions — simpler tests, easy composition. Measured benchmark of the real cost."
+tags: ["java", "functional programming", "design patterns", "data-oriented programming"]
 categories: ["java", "functional programming"]
 featureImage: 'fp_data_oriented.svg' # Top image on post.
-shareImage: 'fp_data_oriented.svg' # For SEO and social media snippets.
-featureImageAlt: 'Moving data to functions in functional programming' # Alternative text for featured image.
+shareImage: 'fp_data_oriented.png' # For SEO and social media snippets.
+featureImageAlt: 'Data-oriented programming in Java: moving data to functions' # Alternative text for featured image.
 sourceCode: 'https://github.com/mmarko88/blog-examples' # Renders source-code card above comments.
+toc: true
 ---
 
-## Introduction
+Your `Order` class has twelve methods now. Discounts, taxes, validation, totals, formatting — everything that ever needed the order's fields got added as a method. Nobody remembers which ones mutate state, and testing `applyDiscount` means constructing half the object graph first.
 
-One of the fundamental principles in functional programming is the idea of "moving data to functions instead of moving functions to data." This concept might sound abstract at first, but it represents a profound shift in how we think about structuring our code.
+Functional programming pushes in the opposite direction: keep the data inert, pass it to functions. Instead of moving functions to where the data lives, you move the data to the functions. Java records made this style practical — here's what it buys you, and what it costs.
 
-In traditional object-oriented programming, we're used to bundling data and behavior together in objects. We send operations to the object that owns the data - the function travels to where the data lives. Functional programming takes the opposite approach: functions stay separate, and we move the data to them to be transformed.
-
-This article explores what this principle means, why it's beneficial, and how you can apply it in your Java code.
+**TL;DR:** model data as plain immutable records and transform it with standalone pure functions. You get trivially testable, composable business logic; you pay with extra object allocations — measured at ~115 vs ~98 ns for the full pipeline on JDK 24, negligible for typical business code.
 
 ## What Does "Moving Data to Functions" Mean?
 
@@ -39,7 +39,7 @@ class Order {
     
     public Order applyDiscount(BigDecimal discount) {
         List<Item> discountedItems = items.stream()
-            .map(item -> item.withPrice(item.price().multiply(discount)))
+            .map(item -> new Item(item.sku(), item.quantity(), item.price().multiply(discount)))
             .toList();
         return new Order(discountedItems, customer);
     }
@@ -48,7 +48,7 @@ class Order {
 // Usage: functions are dispatched to the data
 Order order = new Order(items, customer);
 BigDecimal total = order.calculateTotal();
-Order discounted = order.applyDiscount(percent);
+Order discounted = order.applyDiscount(new BigDecimal("0.9"));
 ```
 
 Here, the functions live on the data itself. When we call a method on the object, we send the operation to where the data is - the function travels to the data, which never moves.
@@ -69,7 +69,7 @@ BigDecimal calculateTotal(Order order) {
 
 Order applyDiscount(Order order, BigDecimal discount) {
     List<Item> discountedItems = order.items().stream()
-        .map(item -> item.withPrice(item.price().multiply(discount)))
+        .map(item -> new Item(item.sku(), item.quantity(), item.price().multiply(discount)))
         .toList();
     return new Order(discountedItems, order.customer());
 }
@@ -77,14 +77,14 @@ Order applyDiscount(Order order, BigDecimal discount) {
 // Usage: data is passed to functions
 Order order = new Order(items, customer);
 BigDecimal total = calculateTotal(order);
-Order discounted = applyDiscount(order, percent);
+Order discounted = applyDiscount(order, new BigDecimal("0.9"));
 ```
 
 Here, the data is just a plain record - it stays inert, and we pass it to the functions that transform it. We move data to functions.
 
-## Why Is This Approach Better?
+## What You Actually Gain
 
-### 1. Function Reusability
+### 1. Reuse One Function Across Many Types
 
 When functions are separate from data, you can design them to work with multiple data types through interfaces or generics. In Java, since it's statically typed, you'd typically define an interface to achieve this reusability.
 
@@ -114,7 +114,7 @@ BigDecimal invoiceTotal = calculateTotal(invoice);
 
 The benefit is that functions are decoupled from specific classes - they depend on abstractions (interfaces) rather than concretions. This makes it easier to reuse functions across different data structures that share the same shape, and easier to test since you can use simple test implementations.
 
-### 2. Easy Composition
+### 2. Compose Functions Into Pipelines
 
 Functions can be easily composed together to create complex transformations:
 
@@ -122,28 +122,28 @@ Functions can be easily composed together to create complex transformations:
 Order processOrder(Order order) {
     return Optional.of(order)
         .map(o -> validateOrder(o))
-        .map(o -> applyDiscount(o, BigDecimal.valueOf(0.9)))
-        .map(o -> calculateTax(o))
+        .map(o -> applyDiscount(o, new BigDecimal("0.9")))
+        .map(o -> calculateTax(o, new BigDecimal("0.21")))
         .orElseThrow(() -> new IllegalArgumentException("Invalid order"));
 }
 ```
 
 Each function takes data, transforms it, and passes the result to the next function. The data flows through a pipeline of functions.
 
-### 3. Immutability
+### 3. Immutability Comes Free
 
 When we move data to functions, this approach naturally promotes immutability. Instead of modifying data in place, functions return new, transformed data:
 
 ```java
 // Original order is never modified
 Order original = new Order(items, customer);
-Order discounted = applyDiscount(original, percent);
+Order discounted = applyDiscount(original, new BigDecimal("0.9"));
 // original is still unchanged
 ```
 
 This eliminates a whole class of bugs related to shared mutable state. While you could technically have functions that visit and modify mutable data, the functional programming style encourages immutability as a best practice.
 
-### 4. Simpler Testing
+### 4. Test Logic With a Data Literal
 
 Testing becomes much simpler because you can test functions with simple data literals:
 
@@ -151,8 +151,8 @@ Testing becomes much simpler because you can test functions with simple data lit
 @Test
 void testCalculateTotal() {
     Order order = new Order(
-        List.of(new Item("A", new BigDecimal("10.00"))),
-        new Customer("John")
+        List.of(new Item("A", 1, new BigDecimal("10.00"))),
+        new Customer("C-1", "John")
     );
     
     BigDecimal total = calculateTotal(order);
@@ -162,11 +162,15 @@ void testCalculateTotal() {
 
 No need to set up complex object graphs or use mocks.
 
-### 5. Better Serialization
+> **If you take one thing from this post, take this.** The biggest win isn't purity or elegance — it's that every piece of business logic becomes a function you can test with a data literal. No container, no mocks, no 40-line `setUp()`. That alone changes how fast you can iterate.
+
+### 5. Serialize Plain Data, No Plumbing
 
 Plain data structures serialize and deserialize much more easily than complex object graphs with behavior:
 
 ```java
+ObjectMapper objectMapper = new ObjectMapper();
+
 // A simple record can be easily converted to JSON
 Order order = new Order(items, customer);
 String json = objectMapper.writeValueAsString(order);
@@ -175,11 +179,15 @@ String json = objectMapper.writeValueAsString(order);
 Order reconstructed = objectMapper.readValue(json, Order.class);
 ```
 
+```text
+{"items":[{"sku":"A","quantity":1,"price":10.00}],"customer":{"id":"C-1","name":"John"}}
+```
+
 ## Practical Example: Order Processing Pipeline
 
-Let's look at a more complete example that demonstrates the power of this approach.
+Here's the approach applied to a realistic order flow.
 
-### The Data
+### The Data: Plain Records
 
 ```java
 record Item(String sku, int quantity, BigDecimal price) {}
@@ -191,7 +199,9 @@ enum OrderStatus {
 }
 ```
 
-### The Functions
+### The Functions: One Job Each
+
+Each function checks the state it expects, transforms, and stamps the next status — a state machine enforced by types, not by hidden flags:
 
 ```java
 Order validateOrder(Order order) {
@@ -205,7 +215,11 @@ Order validateOrder(Order order) {
         OrderStatus.VALIDATED
     );
 }
+```
 
+Discounts only apply to validated orders — the status check is what makes the pipeline safe to reorder-proof:
+
+```java
 Order applyDiscount(Order order, BigDecimal discountRate) {
     if (order.status() != OrderStatus.VALIDATED) {
         throw new IllegalStateException("Order must be validated first");
@@ -226,7 +240,11 @@ Order applyDiscount(Order order, BigDecimal discountRate) {
         OrderStatus.DISCOUNTED
     );
 }
+```
 
+Tax becomes a line item on the order rather than a separate field — the data model stays flat:
+
+```java
 Order calculateTax(Order order, BigDecimal taxRate) {
     if (order.status() != OrderStatus.DISCOUNTED) {
         throw new IllegalStateException("Order must be discounted first");
@@ -250,7 +268,11 @@ Order calculateTax(Order order, BigDecimal taxRate) {
         OrderStatus.TAXED
     );
 }
+```
 
+The last step is just a state flip:
+
+```java
 Order completeOrder(Order order) {
     if (order.status() != OrderStatus.TAXED) {
         throw new IllegalStateException("Order must be taxed first");
@@ -265,7 +287,7 @@ Order completeOrder(Order order) {
 }
 ```
 
-### The Pipeline
+### Composing the Pipeline
 
 ```java
 Order processOrder(Order order, BigDecimal discountRate, BigDecimal taxRate) {
@@ -280,86 +302,100 @@ Order processOrder(Order order, BigDecimal discountRate, BigDecimal taxRate) {
 
 Notice how each function is pure (no side effects), takes data as input, and returns new data as output. The original order is never modified.
 
-Visually, the pipeline looks like a chain of transformations:
+Think of the data flowing down a pipe: each segment is one function — the order goes in, gets transformed, and comes out stamped with a new status:
 
 ```mermaid
 flowchart LR
-    A[Order] --> B[validateOrder]
-    B --> C[applyDiscount]
-    C --> D[calculateTax]
-    D --> E[completeOrder]
-    E --> F[Processed Order]
+    P@{ icon: "lucide:inbox", label: "PENDING" }
+    subgraph S1[" "]
+        direction TB
+        F1@{ icon: "lucide:list-checks", label: "validateOrder" } --> V@{ icon: "lucide:shield-check", label: "VALIDATED" }
+    end
+    subgraph S2[" "]
+        direction TB
+        F2@{ icon: "lucide:ticket-percent", label: "applyDiscount" } --> D@{ icon: "lucide:tag", label: "DISCOUNTED" }
+    end
+    subgraph S3[" "]
+        direction TB
+        F3@{ icon: "lucide:calculator", label: "calculateTax" } --> T@{ icon: "lucide:receipt", label: "TAXED" }
+    end
+    subgraph S4[" "]
+        direction TB
+        F4@{ icon: "lucide:check-check", label: "completeOrder" } --> C@{ icon: "lucide:circle-check-big", label: "COMPLETED" }
+    end
+    P --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> E@{ shape: "circ", label: "END" }
+    classDef fn fill:transparent,stroke:#1d70a2,stroke-dasharray:4 4
+    classDef terminal fill:#1d70a2,color:#fff,stroke:#1d70a2
+    class F1,F2,F3,F4 fn
+    class C terminal
+    classDef endcap fill:#1d70a2,color:#fff,stroke:#1d70a2,font-size:11px
+    class E endcap
+    linkStyle 4,5,6,7,8 stroke:#1d70a2,stroke-width:6px
 ```
 
-## Performance Considerations
+## What It Actually Costs: Measured
 
-The functional approach of "moving data to functions" has performance implications that you should be aware of:
+Every pipeline step allocates a new `Order` instead of mutating in place. I ran the order pipeline above through JMH (OpenJDK 24, average time per operation, 3 forks × 5 iterations):
 
-### Object Allocation Overhead
+| Operation | Mutable | Functional |
+|---|---|---|
+| validate | 7.5 ns | 2.5 ns |
+| applyDiscount | 25.0 ns | 49.2 ns |
+| calculateTotal | 31.9 ns | 44.2 ns |
+| full pipeline | 98.4 ns | 114.9 ns |
 
-Creating new objects for every transformation can be expensive, especially in hot paths:
-
-```java
-// Each transformation creates a new Order object
-Order validated = validateOrder(order);        // New object
-Order discounted = applyDiscount(validated);    // New object
-Order taxed = calculateTax(discounted);         // New object
-Order completed = completeOrder(taxed);         // New object
-```
-
-In performance-critical code, this allocation overhead can be significant. The JVM is optimized for short-lived objects, but in tight loops or high-throughput systems, it can still impact performance.
-
-### Memory Churn
-
-Frequent object creation and garbage collection can cause memory churn, leading to:
-- Increased GC pressure
-- Potential GC pauses
-- Cache inefficiency due to scattered object allocations
-
-This is similar to the memory churn issue discussed in my article on [What Is Memory Churn and How to Avoid It in Java](/post/java/memory_churn/), where string concatenation created many temporary objects. The functional approach can have similar effects - each transformation creates new objects that need to be garbage collected.
-
-### When to Use Mutable State
-
-For performance-critical sections, you might need to use mutable state:
-
-```java
-// In a hot path, mutable state might be necessary
-class MutableOrder {
-    private List<Item> items;
-    private OrderStatus status;
-    
-    public void applyDiscount(BigDecimal discount) {
-        // Modify in place instead of creating new object
-        this.items = items.stream()
-            .map(item -> item.withPrice(item.price().multiply(discount)))
-            .toList();
-    }
+```chart
+{
+  "type": "bar",
+  "data": {
+    "labels": ["validate", "applyDiscount", "calculateTotal", "full pipeline"],
+    "datasets": [
+      { "label": "Mutable (ns/op)", "data": [7.5, 25.0, 31.9, 98.4] },
+      { "label": "Functional (ns/op)", "data": [2.5, 49.2, 44.2, 114.9] }
+    ]
+  },
+  "options": {
+    "plugins": { "title": { "display": true, "text": "JMH avg time per op — lower is better" } }
+  }
 }
 ```
 
-### Mitigation Strategies
+Two takeaways:
 
-You can mitigate performance issues while still maintaining functional style:
+- **~17% slower end-to-end** — still single-digit nanoseconds of difference per order, invisible in typical business code.
+- **The cost concentrates where allocation happens.** `applyDiscount` is ~2x slower because it rebuilds the item list and the `Order`. `validate`, which allocates nothing, runs *3x faster* functionally — allocation, not the style itself, is what you pay for.
 
-1. **Use object pooling** for frequently created objects
-2. **Lazy evaluation** - defer transformations until needed
-3. **Batch operations** - process multiple items together
-4. **Use primitive specializations** where possible (e.g., `IntStream` instead of `Stream<Integer>`)
-5. **Profile first** - don't optimize prematurely; measure actual bottlenecks
+<details>
+<summary>Raw JMH output (JMH 1.37, OpenJDK 24, avgt mode)</summary>
 
-### The Trade-off
+```text
+$ java -jar blog-examples-1.0-SNAPSHOT.jar "OrderBenchmark" -wi 3 -i 5 -f 3
 
-The functional approach trades some performance for:
-- Better code clarity
-- Easier reasoning about state
-- Simpler testing
-- Fewer bugs related to shared mutable state
+Benchmark                                         Mode  Cnt    Score    Error  Units
+OrderBenchmark.benchmarkFunctionalApplyDiscount   avgt   15   49.247 ±  1.431  ns/op
+OrderBenchmark.benchmarkFunctionalCalculateTotal  avgt   15   44.224 ±  3.621  ns/op
+OrderBenchmark.benchmarkFunctionalProcessOrder    avgt   15  114.896 ±  1.557  ns/op
+OrderBenchmark.benchmarkFunctionalValidate        avgt   15    2.539 ±  0.052  ns/op
+OrderBenchmark.benchmarkMutableApplyDiscount      avgt   15   25.019 ±  1.023  ns/op
+OrderBenchmark.benchmarkMutableCalculateTotal     avgt   15   31.872 ±  0.429  ns/op
+OrderBenchmark.benchmarkMutableProcessOrder       avgt   15   98.391 ±  5.569  ns/op
+OrderBenchmark.benchmarkMutableValidate           avgt   15    7.529 ±  1.430  ns/op
+```
+</details>
 
-For most business logic, the performance difference is negligible. For hot paths and performance-critical sections, you may need to fall back to mutable state or use hybrid approaches.
+The real risk isn't these nanoseconds — it's allocation churn under sustained load: more garbage, more GC pressure, worse cache locality. I covered that pattern in [What Is Memory Churn and How to Avoid It in Java](/post/java/memory_churn/).
+
+### If You Do Hit a Hot Path
+
+Mutate in place there — a method that updates `this.items` instead of returning a new object — or try lazy evaluation, batching, and primitive streams (`IntStream` instead of `Stream<Integer>`). Profile first: the benchmark above shows the cost is real per-operation but small, so optimize only the paths a profiler actually flags.
 
 ## When This Approach Doesn't Work
 
-While this approach has many benefits, it's not a silver bullet. Here are some cases where it might not be the best fit:
+This isn't a silver bullet. Reach for something else:
 
 1. **When you need encapsulation**: Sometimes you need to hide internal details and control access to data. In these cases, OOP's encapsulation can be beneficial.
 
@@ -369,16 +405,10 @@ While this approach has many benefits, it's not a silver bullet. Here are some c
 
 4. **When overusing higher-order functions**: Passing functions as parameters everywhere can make code harder to navigate and debug. If a function breaks, the error occurs where it's called, but finding where it's defined can become difficult. Use higher-order functions judiciously and keep function definitions close to their usage.
 
-## Conclusion
+## The Takeaway
 
-"Moving data to functions instead of functions to data" is a powerful principle that can lead to more reusable, composable, and testable code. By separating data from behavior, you gain:
+Separate the data from the behavior: model state as immutable records, transform it with standalone pure functions, compose those functions into pipelines. The payoff is business logic you can test with a data literal and reason about one function at a time — at a cost that benchmarks show is negligible outside hot paths.
 
-- Functions that work with any compatible data structure
-- Easy composition of complex transformations
-- Immutable data by default
-- Simpler testing with plain data literals
-- Better serialization and debugging
+Try it on one small class this week. Take a "god object" with a handful of transformation methods, turn it into a record, and move the methods out into static functions. Then write the tests — notice how short they get.
 
-However, like any principle, it should be applied judiciously. The key is to understand the trade-offs and choose the right approach for your specific situation.
-
-In Java, records (introduced in Java 14) make this approach much more practical by providing immutable data carriers with minimal boilerplate. Combined with functional interfaces and the Stream API, Java developers can leverage many of the benefits of functional programming while staying within the Java ecosystem.
+The full benchmark code and runnable examples are in the [blog-examples](https://github.com/mmarko88/blog-examples) repo. If allocation overhead becomes a real bottleneck, read [What Is Memory Churn and How to Avoid It in Java](/post/java/memory_churn/) next.
