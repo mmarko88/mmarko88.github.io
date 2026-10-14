@@ -687,23 +687,23 @@ button.feed_action
 .feed_react
   display: inline-flex
   align-items: center
-  padding: 0.15rem
+  padding: 0
   border: none
   border-radius: 999px
-  background: var(--translucent-light, rgba(0, 0, 0, 0.06))
-  box-shadow: 0 0 0 2px var(--bg, #fff)
+  background: transparent
   cursor: pointer
 
 .feed_react + .feed_react
   margin-left: 0.15rem
 
 .feed_react img
-  width: 1.1rem
-  height: 1.1rem
+  width: 1.15rem
+  height: 1.15rem
   display: block
 
 .feed_react.liked
   background: rgba(29, 112, 162, 0.2)
+  box-shadow: 0 0 0 0.2rem rgba(29, 112, 162, 0.2)
 
 .feed_react_total
   color: var(--pale, #888)
@@ -786,3 +786,18 @@ button.feed_action
 .nav_parent:has(> a.nav_item[href*="#subscribe"])
   order: 99
   margin-left: auto
+
+// mermaid diagrams: center the rendered svg in post body
+pre.mermaid
+  display: flex
+  justify-content: center
+  margin: 1.5rem 0
+
+// chart render hook (```chart blocks): fixed-height responsive canvas container
+.post-chart
+  position: relative
+  height: 20rem
+  max-width: 42rem
+  margin: 1.5rem auto
+  canvas
+    width: 100%
