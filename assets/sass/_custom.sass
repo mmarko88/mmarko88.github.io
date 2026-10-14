@@ -695,7 +695,7 @@ button.feed_action
   cursor: pointer
 
 .feed_react + .feed_react
-  margin-left: -0.5rem
+  margin-left: -0.3rem
 
 .feed_react img
   width: 1.1rem
@@ -720,6 +720,11 @@ button.feed_action
 
 .feed_comments:hover
   color: var(--accent, #1d70a2)
+
+// waline widget: its reaction row overflows the fixed-height container,
+// and overflow-y:hidden clips the emoji bottoms — unclip it
+.wl-reaction
+  overflow: visible
 
 // visited posts — dimmed until hover (RSS-reader convention)
 .feed_card.is_read .feed_title,

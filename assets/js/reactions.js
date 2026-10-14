@@ -64,19 +64,22 @@
     // reactions pill: stacked icons + "N reactions" link
     var pill = document.createElement('div');
     pill.className = 'feed_action feed_react_pill';
-    var icons = document.createElement('span');
-    icons.className = 'feed_react_icons';
-    pill.appendChild(icons);
+    // dev.to: only reaction types with votes get an icon (top 3)
+    var top = TYPES.map(function (t, i) { return { type: t, idx: i, n: card._counts[i] }; })
+      .filter(function (r) { return r.n > 0; })
+      .sort(function (a, b) { return (b.n - a.n) || (a.idx - b.idx); })
+      .slice(0, 3);
+    if (top.length) {
+      var icons = document.createElement('span');
+      icons.className = 'feed_react_icons';
+      pill.appendChild(icons);
+      top.forEach(function (r) { makeIcon(card, r.type, r.idx); });
+    }
     var link = document.createElement('a');
     link.className = 'feed_react_total';
     link.href = card.dataset.path + '#waline';
     pill.appendChild(link);
     footer.insertBefore(pill, footer.children[0]);
-    // dev.to shows the icons of the most-voted reaction types
-    TYPES.map(function (t, i) { return { type: t, idx: i, n: card._counts[i] }; })
-      .sort(function (a, b) { return (b.n - a.n) || (a.idx - b.idx); })
-      .slice(0, 3)
-      .forEach(function (r) { makeIcon(card, r.type, r.idx); });
     updateTotal(card);
     // comments pill: "N comments" or "Add comment", links to the widget
     var clink = document.createElement('a');
