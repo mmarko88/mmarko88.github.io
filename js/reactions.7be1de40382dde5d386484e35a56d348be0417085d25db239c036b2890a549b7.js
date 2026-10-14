@@ -35,13 +35,13 @@
       .filter(function (c) { return !c._reactsInit; });
   }
 
-  // per-icon count label: shown only when the type has >1 votes
+  // per-icon count label: shown whenever the type has votes
   function updateCounts(card) {
     var counts = card._counts || [];
     Array.prototype.forEach.call(card.querySelectorAll('.feed_react'), function (b) {
       var n = counts[b._idx] || 0;
       var c = b.querySelector('.feed_react_n');
-      if (c) c.textContent = n > 1 ? String(n) : '';
+      if (c) c.textContent = n >= 1 ? String(n) : '';
     });
   }
 
@@ -58,7 +58,7 @@
     btn.setAttribute('title', em[1]);
     var n = card._counts[idx] || 0;
     btn.innerHTML = '<img src="' + EMOJI_BASE + em[0] + '" alt="' + em[1] + '" loading="lazy">' +
-      '<span class="feed_react_n">' + (n > 1 ? n : '') + '</span>';
+      '<span class="feed_react_n">' + (n >= 1 ? n : '') + '</span>';
     icons.appendChild(btn);
   }
 
