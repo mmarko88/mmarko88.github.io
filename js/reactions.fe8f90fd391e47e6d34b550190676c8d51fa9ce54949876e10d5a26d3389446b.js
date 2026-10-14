@@ -1,5 +1,5 @@
-// Waline reactions on feed cards — dev.to-style pill: up to 3 stacked
-// emoji icons (top-voted types, still one-click toggles) + total count,
+// Waline reactions on feed cards — dev.to-style pill: up to 3 emoji
+// icons (top-voted types, still one-click toggles) with per-type counts,
 // plus a comments pill. The full 6-emoji row stays on post pages.
 // GET  /api/article?path=p1,p2&type=reaction0,...,reaction5
 //      -> {errno:0, data:[{reaction0..reaction5}, ...]} — items align
@@ -35,10 +35,14 @@
       .filter(function (c) { return !c._reactsInit; });
   }
 
-  function updateTotal(card) {
-    var el = card.querySelector('.feed_react_total');
-    var n = (card._counts || []).reduce(function (a, b) { return a + b; }, 0);
-    if (el) el.textContent = n + ' reaction' + (n === 1 ? '' : 's');
+  // per-icon count label: shown only when the type has >1 votes
+  function updateCounts(card) {
+    var counts = card._counts || [];
+    Array.prototype.forEach.call(card.querySelectorAll('.feed_react'), function (b) {
+      var n = counts[b._idx] || 0;
+      var c = b.querySelector('.feed_react_n');
+      if (c) c.textContent = n > 1 ? String(n) : '';
+    });
   }
 
   function makeIcon(card, icons, type, idx) {
@@ -52,7 +56,9 @@
     btn.setAttribute('aria-pressed', String(liked));
     btn.setAttribute('aria-label', em[1]);
     btn.setAttribute('title', em[1]);
-    btn.innerHTML = '<img src="' + EMOJI_BASE + em[0] + '" alt="' + em[1] + '" loading="lazy">';
+    var n = card._counts[idx] || 0;
+    btn.innerHTML = '<img src="' + EMOJI_BASE + em[0] + '" alt="' + em[1] + '" loading="lazy">' +
+      '<span class="feed_react_n">' + (n > 1 ? n : '') + '</span>';
     icons.appendChild(btn);
   }
 
@@ -61,7 +67,7 @@
     card._counts = TYPES.map(function (t) { return item[t] || 0; });
     var footer = card.querySelector('.feed_card_actions');
     if (!footer) return;
-    // reactions pill: stacked icons + "N reactions" link
+    // reactions pill: icons with per-type counts (+ "0 reactions" when empty)
     var pill = document.createElement('div');
     pill.className = 'feed_action feed_react_pill';
     // dev.to: only reaction types with votes get an icon (top 3)
@@ -75,12 +81,15 @@
       pill.appendChild(icons);
       top.forEach(function (r) { makeIcon(card, icons, r.type, r.idx); });
     }
-    var link = document.createElement('a');
-    link.className = 'feed_react_total';
-    link.href = card.dataset.path + '#waline';
-    pill.appendChild(link);
+    // when no reactions exist yet keep the "0 reactions" link to the widget
+    if (!top.length) {
+      var link = document.createElement('a');
+      link.className = 'feed_react_total';
+      link.href = card.dataset.path + '#waline';
+      link.textContent = '0 reactions';
+      pill.appendChild(link);
+    }
     footer.insertBefore(pill, footer.children[0]);
-    updateTotal(card);
     // comments pill: "N comments" or "Add comment", links to the widget
     var clink = document.createElement('a');
     clink.className = 'feed_action feed_comments';
@@ -134,7 +143,7 @@
     b.classList.toggle('liked', !liked);
     b.setAttribute('aria-pressed', String(!liked));
     counts[idx] = Math.max(0, (counts[idx] || 0) + (liked ? -1 : 1));
-    updateTotal(card);
+    updateCounts(card);
     if (liked) localStorage.removeItem(key);
     else localStorage.setItem(key, '1');
     fetch(server + '/api/article', {
@@ -146,7 +155,7 @@
       b.classList.toggle('liked', liked);
       b.setAttribute('aria-pressed', String(liked));
       counts[idx] = Math.max(0, (counts[idx] || 0) + (liked ? 1 : -1));
-      updateTotal(card);
+      updateCounts(card);
       if (liked) localStorage.setItem(key, '1');
       else localStorage.removeItem(key);
     });
