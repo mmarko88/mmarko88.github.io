@@ -11,7 +11,7 @@
 {{- else if ge $hrs 24 }}{{ $ago = printf "%.0fd" (div $hrs 24) -}}
 {{- else if ge $hrs 1 }}{{ $ago = printf "%.0fh" $hrs -}}
 {{- else }}{{ $ago = printf "%.0fm" (mul $hrs 60) }}{{ end -}}
-<article class="feed_card feed_card_{{ .Type }}">
+<article class="feed_card feed_card_{{ .Type }}"{{ if site.Params.walineServerURL }} data-path="{{ .RelPermalink }}"{{ end }}>
   <header class="feed_card_head">
     <div class="feed_head_meta">
       <span class="feed_author">{{ $name }}</span>
@@ -34,9 +34,6 @@
   {{- end }}
   <footer class="feed_card_actions">
     {{- if ne .Type "til" }}<span class="feed_action pale"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ .ReadingTime }} min read</span>{{ end }}
-    {{- if site.Params.walineServerURL }}
-    <button class="feed_action feed_like" type="button" data-path="{{ .RelPermalink }}" aria-pressed="false" aria-label="Like"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="feed_like_count">0</span></button>
-    {{- end }}
     <button class="feed_action feed_share" type="button" data-share="{{ .Permalink }}" data-title="{{ .Title }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>Share</button>
   </footer>
 </article>

@@ -676,24 +676,8 @@ button.feed_action
   stroke-linecap: round
   stroke-linejoin: round
 
-// like button — count hidden at zero; accent count when others liked;
-// filled accent heart when liked by this visitor
-.feed_like_count
-  font-variant-numeric: tabular-nums
-
-.feed_like:not(.has_likes) .feed_like_count
-  display: none
-
-.feed_like.has_likes .feed_like_count
-  color: var(--accent, #1d70a2)
-
-.feed_like.liked
-  color: var(--accent, #1d70a2)
-
-.feed_like.liked svg path
-  fill: currentColor
-
-// emoji reaction badges — same counters as the widget's emoji row on posts
+// emoji reactions — same 6-emoji row as the widget on post pages;
+// badges always visible, count shown only when it has votes
 .feed_reacts
   display: flex
   flex-wrap: wrap
@@ -703,24 +687,21 @@ button.feed_action
   gap: 0.3rem
 
 .feed_react img
-  width: 1.05rem
-  height: 1.05rem
+  width: 1.1rem
+  height: 1.1rem
   display: block
 
-.feed_react .feed_like_count
+.feed_react_count
   font-size: 0.8rem
-
-.feed_react:not(.has_likes):not(.liked)
+  font-variant-numeric: tabular-nums
   display: none
 
-.feed_react.has_likes .feed_like_count
-  color: var(--accent, #1d70a2)
-
-.feed_react.liked,
-.feed_react.liked .feed_like_count
+.feed_react.has_votes .feed_react_count
+  display: inline
   color: var(--accent, #1d70a2)
 
 .feed_react.liked
+  color: var(--accent, #1d70a2)
   background: rgba(29, 112, 162, 0.12)
 
 // visited posts — dimmed until hover (RSS-reader convention)
