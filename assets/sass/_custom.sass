@@ -676,9 +676,19 @@ button.feed_action
   stroke-linecap: round
   stroke-linejoin: round
 
-// like button — heart fills when liked
+// like button — count hidden at zero; accent count when others liked;
+// filled accent heart when liked by this visitor
 .feed_like_count
   font-variant-numeric: tabular-nums
+
+.feed_like:not(.has_likes) .feed_like_count
+  display: none
+
+.feed_like.has_likes .feed_like_count
+  color: var(--accent)
+
+.feed_like.liked
+  color: var(--accent)
 
 .feed_like.liked svg path
   fill: currentColor

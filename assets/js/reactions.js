@@ -18,10 +18,18 @@
       .filter(function (b) { return !b._likeInit; });
   }
 
+  function setCount(b, n) {
+    n = Math.max(n, 0);
+    var c = b.querySelector('.feed_like_count');
+    if (c) c.textContent = n;
+    // three visual states: no likes (count hidden) / likes by others
+    // (accent count, hollow heart) / liked by me (filled heart)
+    b.classList.toggle('has_likes', n > 0);
+  }
+
   function applyState(b, count) {
     b._likeInit = true;
-    var c = b.querySelector('.feed_like_count');
-    if (c) c.textContent = count || 0;
+    setCount(b, count || 0);
     if (localStorage.getItem(KEY + b.dataset.path)) {
       b.classList.add('liked');
       b.setAttribute('aria-pressed', 'true');
@@ -61,7 +69,7 @@
     // optimistic toggle
     b.classList.toggle('liked', !liked);
     b.setAttribute('aria-pressed', String(!liked));
-    if (c) c.textContent = Math.max((+c.textContent || 0) + (liked ? -1 : 1), 0);
+    setCount(b, (+(c && c.textContent) || 0) + (liked ? -1 : 1));
     if (liked) localStorage.removeItem(KEY + b.dataset.path);
     else localStorage.setItem(KEY + b.dataset.path, '1');
     fetch(server + '/api/article', {
@@ -72,7 +80,7 @@
       // revert on network failure so the count stays honest
       b.classList.toggle('liked', liked);
       b.setAttribute('aria-pressed', String(liked));
-      if (c) c.textContent = Math.max((+c.textContent || 0) + (liked ? 1 : -1), 0);
+      setCount(b, (+(c && c.textContent) || 0) + (liked ? 1 : -1));
       if (liked) localStorage.setItem(KEY + b.dataset.path, '1');
       else localStorage.removeItem(KEY + b.dataset.path);
     });

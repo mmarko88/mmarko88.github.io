@@ -76,7 +76,7 @@
         update();
       })();
     </script>
-    <script src="{{ "js/share.js" | relURL }}" defer></script>
+    <script src="{{ (resources.Get "js/share.js" | fingerprint).RelPermalink }}" defer></script>
 
     {{- partial "i18nlist" . }}
 

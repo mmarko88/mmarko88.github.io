@@ -38,8 +38,8 @@
     {{- end }}
     <div id="feed_sentinel"></div>
     <button id="feed_loadmore" type="button" class="feed_loadmore" hidden>Load more</button>
-    <script src="{{ "js/feed.js" | relURL }}" defer></script>
-    <script src="{{ "js/share.js" | relURL }}" defer></script>
-    <script src="{{ "js/reactions.js" | relURL }}" defer></script>
+    <script src="{{ (resources.Get "js/feed.js" | fingerprint).RelPermalink }}" defer></script>
+    <script src="{{ (resources.Get "js/share.js" | fingerprint).RelPermalink }}" defer></script>
+    <script src="{{ (resources.Get "js/reactions.js" | fingerprint).RelPermalink }}" defer></script>
   </div>
 </div>
