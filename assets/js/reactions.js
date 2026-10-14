@@ -13,15 +13,15 @@
   if (!server) return;
 
   var KEY = 'waline:liked:';
-  // waline's tieba emoji pack in the widget's own order — reaction0 = agree
-  var EMOJI_BASE = 'https://unpkg.com/@waline/emojis/tieba/';
+  // bilibili emoji pack — same images + order as the widget's reaction row
+  var EMOJI_BASE = 'https://unpkg.com/@waline/emojis/bilibili/';
   var EMOJI = [
-    ['tieba_agree.png', 'Agree'],
-    ['tieba_look_down.png', 'Dislike'],
-    ['tieba_sunglasses.png', 'Cool'],
-    ['tieba_pick_nose.png', 'Meh'],
-    ['tieba_awkward.png', 'Awkward'],
-    ['tieba_sleep.png', 'Boring']
+    ['bb_thumbsup.png', 'Like'],
+    ['bb_look_down.png', 'Dislike'],
+    ['bb_sunglasses.png', 'Cool'],
+    ['bb_pick_nose.png', 'Meh'],
+    ['bb_awkward.png', 'Awkward'],
+    ['bb_sleep.png', 'Boring']
   ];
   var TYPES = EMOJI.map(function (_, i) { return 'reaction' + i; });
 

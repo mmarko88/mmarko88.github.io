@@ -15,7 +15,14 @@
     requiredMeta: ['nick'],      // nickname only; mail/link optional
     pageview: true,
     comment: true,
-    reaction: true,              // emoji reaction row above the comment box
+    reaction: [                  // emoji reactions — bilibili pack, same as feed
+      'https://unpkg.com/@waline/emojis/bilibili/bb_thumbsup.png',
+      'https://unpkg.com/@waline/emojis/bilibili/bb_look_down.png',
+      'https://unpkg.com/@waline/emojis/bilibili/bb_sunglasses.png',
+      'https://unpkg.com/@waline/emojis/bilibili/bb_pick_nose.png',
+      'https://unpkg.com/@waline/emojis/bilibili/bb_awkward.png',
+      'https://unpkg.com/@waline/emojis/bilibili/bb_sleep.png',
+    ],
     search: false,
   });
 </script>
