@@ -95,17 +95,10 @@ enforceLightMode = false
 # Enable or disable comments globally. Default to true.
 comments = true
 
-# Giscus (https://giscus.app) — GitHub Discussions-based commenting.
-# Requires: Discussions enabled on repo + giscus GitHub App installed.
-giscus = true
-giscusRepo = "mmarko88/mmarko88.github.io"
-giscusRepoId = "512908372"
-giscusCategory = "Announcements"
-giscusCategoryId = "DIC_kwDOHpJcVM4DIV9T"
-giscusMapping = "pathname"
-giscusReactionsEnabled = "1"
-giscusTheme = "preferred_color_scheme" # initial; site JS syncs light/dark on toggle
-giscusLang = "en"
+# Waline (https://waline.js.org) — anonymous comments + emoji reactions + pageviews.
+# Backend: one-time Vercel deploy + Neon DB (guide: waline.js.org/en/guide/deploy/vercel.html).
+# Nothing renders until walineServerURL is set.
+walineServerURL = ""
 
 # Maximum number of recent posts.
 # numberOfRecentPosts = 8

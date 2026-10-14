@@ -46,36 +46,7 @@
       {{- $showComments = false }}
     {{- end }}
     {{- if ne $showComments false }}
-      {{- partial "comments" . }}
-      <script>
-        // sync giscus theme with site mode (lit/dim; auto -> preferred_color_scheme)
-        (function () {
-          var MAP = { lit: 'light', dim: 'dark' };
-          function siteTheme() {
-            return MAP[document.documentElement.getAttribute('data-mode')] || 'preferred_color_scheme';
-          }
-          function sync() {
-            var f = document.querySelector('.post_comments iframe.giscus-frame, .post_comments iframe');
-            if (f && f.contentWindow) {
-              f.contentWindow.postMessage({ giscus: { setConfig: { theme: siteTheme() } } }, 'https://giscus.app');
-            }
-          }
-          // iframe is lazy-loaded (data-loading="lazy") — a fixed poll can miss it.
-          // Watch the container for insertion, then sync again on iframe load
-          // (messages posted before giscus is ready are dropped).
-          var box = document.querySelector('.post_comments');
-          function watch() {
-            var f = box && box.querySelector('iframe');
-            if (!f || f._themeWatched) return;
-            f._themeWatched = true;
-            f.addEventListener('load', function () { setTimeout(sync, 200); });
-            sync();
-          }
-          if (box) new MutationObserver(watch).observe(box, { childList: true, subtree: true });
-          watch();
-          new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
-        })();
-      </script>
+      {{- partial "waline" . }}
     {{- end }}
 
     {{- $showRelatedInArticle := $s.showRelatedInArticle }}

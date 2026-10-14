@@ -24,7 +24,7 @@
     </a>
     {{- end }}
     {{- end }}
-    <div id="feed_items" class="feed_items">
+    <div id="feed_items" class="feed_items" data-waline-server="{{ site.Params.walineServerURL }}">
       {{- $paginator := .Paginate $pages 6 }}
       {{- range $i, $p := $paginator.Pages }}
         {{ partial "feed-card" $p }}
@@ -40,5 +40,6 @@
     <button id="feed_loadmore" type="button" class="feed_loadmore" hidden>Load more</button>
     <script src="{{ "js/feed.js" | relURL }}" defer></script>
     <script src="{{ "js/share.js" | relURL }}" defer></script>
+    <script src="{{ "js/reactions.js" | relURL }}" defer></script>
   </div>
 </div>

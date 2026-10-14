@@ -1,0 +1,22 @@
+{{- /* Waline comments — anonymous (name only), emoji reactions above the box,
+     pageview counter, dark mode synced via html[data-mode="dim"] selector.
+     Renders nothing until site.Params.walineServerURL is set. */ -}}
+{{- with site.Params.walineServerURL }}
+<div class="post_comments" id="waline"></div>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  init({
+    el: '#waline',
+    serverURL: {{ . | jsonify }},
+    lang: 'en',
+    dark: 'html[data-mode="dim"]',
+    login: 'disable',            // fully anonymous — no accounts
+    requiredMeta: ['nick'],      // nickname only; mail/link optional
+    pageview: true,
+    comment: true,
+    reaction: true,              // emoji reaction row above the comment box
+    search: false,
+  });
+</script>
+{{- end }}
