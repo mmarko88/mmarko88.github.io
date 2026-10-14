@@ -98,7 +98,7 @@ comments = true
 # Waline (https://waline.js.org) — anonymous comments + emoji reactions + pageviews.
 # Backend: one-time Vercel deploy + Neon DB (guide: waline.js.org/en/guide/deploy/vercel.html).
 # Nothing renders until walineServerURL is set.
-walineServerURL = ""
+walineServerURL = "https://mmarko88githubio-waline.vercel.app"
 
 # Maximum number of recent posts.
 # numberOfRecentPosts = 8
