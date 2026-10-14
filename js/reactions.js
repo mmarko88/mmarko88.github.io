@@ -1,5 +1,7 @@
 // Waline reactions on feed cards — anonymous one-click like.
-// GET  /api/article?path=p1,p2&type=reaction0  -> counts per path
+// GET  /api/article?path=p1,p2&type=reaction0
+//      -> {errno:0, data:[{reaction0}, ...]} — items align positionally
+//         with the requested paths (no path field on items)
 // POST /api/article  {path, type:'reaction0', action:'inc'}     -> +1 like
 // reaction0 is the same counter shown as the first emoji reaction on the
 // post page, so card likes and post reactions share one count.
@@ -35,9 +37,10 @@
     btns.forEach(function (b) { b._likeInit = true; });
     fetch(server + '/api/article?path=' + paths.map(encodeURIComponent).join(',') + '&type=reaction0')
       .then(function (r) { return r.json(); })
-      .then(function (list) {
+      .then(function (res) {
+        var list = (res && res.data) || [];
         var map = {};
-        (list || []).forEach(function (a) { map[a.path] = a.reaction0 || 0; });
+        paths.forEach(function (p, i) { map[p] = (list[i] && list[i].reaction0) || 0; });
         btns.forEach(function (b) { applyState(b, map[b.dataset.path]); });
       })
       .catch(function () {
