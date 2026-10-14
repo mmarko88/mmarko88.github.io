@@ -54,22 +54,27 @@
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.feed_like');
-    if (!b || b.classList.contains('liked') || !box.contains(b)) return;
-    b.classList.add('liked');                       // optimistic
-    b.setAttribute('aria-pressed', 'true');
+    if (!b || !box.contains(b)) return;
+    var liked = b.classList.contains('liked');
+    var action = liked ? 'desc' : 'inc';
     var c = b.querySelector('.feed_like_count');
-    if (c) c.textContent = (+c.textContent || 0) + 1;
-    localStorage.setItem(KEY + b.dataset.path, '1');
+    // optimistic toggle
+    b.classList.toggle('liked', !liked);
+    b.setAttribute('aria-pressed', String(!liked));
+    if (c) c.textContent = Math.max((+c.textContent || 0) + (liked ? -1 : 1), 0);
+    if (liked) localStorage.removeItem(KEY + b.dataset.path);
+    else localStorage.setItem(KEY + b.dataset.path, '1');
     fetch(server + '/api/article', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: b.dataset.path, type: 'reaction0', action: 'inc' })
+      body: JSON.stringify({ path: b.dataset.path, type: 'reaction0', action: action })
     }).catch(function () {
       // revert on network failure so the count stays honest
-      b.classList.remove('liked');
-      b.setAttribute('aria-pressed', 'false');
-      if (c) c.textContent = Math.max((+c.textContent || 1) - 1, 0);
-      localStorage.removeItem(KEY + b.dataset.path);
+      b.classList.toggle('liked', liked);
+      b.setAttribute('aria-pressed', String(liked));
+      if (c) c.textContent = Math.max((+c.textContent || 0) + (liked ? 1 : -1), 0);
+      if (liked) localStorage.setItem(KEY + b.dataset.path, '1');
+      else localStorage.removeItem(KEY + b.dataset.path);
     });
   });
 })();
