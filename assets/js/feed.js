@@ -102,7 +102,9 @@
   }
   if (saved && location.hash !== '#subscribe') replay();
 
-  window.addEventListener('beforeunload', function () {
+  function saveState() {
     sessionStorage.setItem(KEY, JSON.stringify({ pages: fetched, y: scrollY }));
-  });
+  }
+  window.addEventListener('pagehide', saveState);
+  window.addEventListener('beforeunload', saveState);
 })();
