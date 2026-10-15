@@ -22,7 +22,7 @@ RUN wget -O /tmp/go.tar.gz --no-check-certificate https://go.dev/dl/go${GO_VERSI
 
 RUN git config --system http.sslverify false
 
-ENV GOROOT="/opt/go/bin/go"
+ENV GOROOT="/usr/local/go"
 ENV PATH=$PATH:/usr/local/go/bin
 
 EXPOSE 1313

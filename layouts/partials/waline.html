@@ -8,7 +8,7 @@
   import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
   init({
     el: '#waline',
-    serverURL: {{ . }},
+    serverURL: {{ . | jsonify | safeJS }},
     lang: 'en',
     dark: 'html[data-mode="dim"]',
     login: 'disable',            // fully anonymous — no accounts

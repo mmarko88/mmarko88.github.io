@@ -14,7 +14,7 @@
     <span class="post_date">
       {{ .Date.Format (default "Jan 2, 2006" $.Site.Params.dateFormat) -}}
       {{ if (and $showLastmod (ne .Date .Lastmod)) }}
-        {{ $lastmodSeparator }} <time datetime="{{ .Lastmod.Format "Mon Jan 10 17:13:38 2020 -0700" }}">
+        {{ $lastmodSeparator }} <time datetime="{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}">
         {{ .Lastmod.Format (default "Jan 2, 2006" $.Site.Params.dateFormat) }}</time>
       {{ end }}	  
     </span>

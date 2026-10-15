@@ -26,7 +26,10 @@
 {{- $logo := absURL $s.logo }}
 {{- $author := $s.author }}
 {{- with $p.author }}
-  {{ $author := . }}
+  {{ $author = . }}
+{{- end }}
+{{- if reflect.IsMap $author }}
+  {{- $author = $author.name }}
 {{- end }}
 {{- /* og:image: generated branded card for regular pages, theme logic otherwise */ -}}
 {{- $image := absURL $s.fallBackOgImage }}
@@ -54,6 +57,9 @@
 <meta property="og:type" content="website">
 {{- else }}
 <meta property="og:type" content="article">
+{{- end }}
+{{- with $author }}
+<meta name="author" content="{{ . }}" />
 {{- end }}
 <meta name="description" content="{{ $summary }}" />
 <meta name="twitter:card" content="{{ if $s.largeTwitterCard }}summary_large_image{{ else }}summary{{ end }}" />
