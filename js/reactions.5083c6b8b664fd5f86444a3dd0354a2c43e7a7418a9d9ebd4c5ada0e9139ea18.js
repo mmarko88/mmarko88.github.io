@@ -67,28 +67,22 @@
     card._counts = TYPES.map(function (t) { return item[t] || 0; });
     var footer = card.querySelector('.feed_card_actions');
     if (!footer) return;
-    // reactions pill: icons with per-type counts (+ "0 reactions" when empty)
+    // reactions pill: icons with per-type counts (like button when empty)
     var pill = document.createElement('div');
     pill.className = 'feed_action feed_react_pill';
-    // dev.to: only reaction types with votes get an icon (top 3)
+    // dev.to: reaction types with votes get an icon (top 3); a type the
+    // user already toggled stays visible even if its count reads 0
     var top = TYPES.map(function (t, i) { return { type: t, idx: i, n: card._counts[i] }; })
-      .filter(function (r) { return r.n > 0; })
+      .filter(function (r) { return r.n > 0 || localStorage.getItem(storeKey(card.dataset.path, r.type)); })
       .sort(function (a, b) { return (b.n - a.n) || (a.idx - b.idx); })
       .slice(0, 3);
-    if (top.length) {
-      var icons = document.createElement('span');
-      icons.className = 'feed_react_icons';
-      pill.appendChild(icons);
-      top.forEach(function (r) { makeIcon(card, icons, r.type, r.idx); });
-    }
-    // when no reactions exist yet keep the "0 reactions" link to the widget
-    if (!top.length) {
-      var link = document.createElement('a');
-      link.className = 'feed_react_total';
-      link.href = card.dataset.path + '#waline';
-      link.textContent = '0 reactions';
-      pill.appendChild(link);
-    }
+    // no reactions yet: seed the pill with the like button so the first
+    // reaction can be cast straight from the feed
+    if (!top.length) top.push({ type: TYPES[0], idx: 0, n: 0 });
+    var icons = document.createElement('span');
+    icons.className = 'feed_react_icons';
+    pill.appendChild(icons);
+    top.forEach(function (r) { makeIcon(card, icons, r.type, r.idx); });
     footer.insertBefore(pill, footer.children[0]);
     // comments pill: "N comments" or "Add comment", links to the widget
     var clink = document.createElement('a');
