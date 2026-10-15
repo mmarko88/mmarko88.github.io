@@ -1,6 +1,6 @@
 // Waline reactions on feed cards — dev.to-style pill: up to 3 emoji
-// icons (top-voted types, still one-click toggles) with per-type counts,
-// plus a comments pill. The full 6-emoji row stays on post pages.
+// icons (top-voted types, still one-click toggles) with per-type counts.
+// The full 6-emoji row stays on post pages.
 // GET  /api/article?path=p1,p2&type=reaction0,...,reaction5
 //      -> {errno:0, data:[{reaction0..reaction5}, ...]} — items align
 //         positionally with the requested paths (no path field on items)
@@ -93,19 +93,6 @@
     pill.appendChild(icons);
     top.forEach(function (r) { makeIcon(card, icons, r.type, r.idx); });
     footer.insertBefore(pill, footer.children[0]);
-    // comments pill: "N comments" or "Add comment", links to the widget
-    var clink = document.createElement('a');
-    clink.className = 'feed_action feed_comments';
-    clink.href = card.dataset.path + '#waline';
-    clink.textContent = '💬';
-    footer.insertBefore(clink, pill.nextSibling);
-    fetch(server + '/api/comment?type=count&url=' + encodeURIComponent(card.dataset.path))
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        var n = (res && res.data && res.data[0]) || 0;
-        clink.textContent = n ? '💬 ' + n + (n === 1 ? ' comment' : ' comments') : '💬 Add comment';
-      })
-      .catch(function () { clink.textContent = '💬 Comments'; });
   }
 
   function fetchCounts() {
