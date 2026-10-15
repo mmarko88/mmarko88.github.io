@@ -67,18 +67,27 @@
     card._counts = TYPES.map(function (t) { return item[t] || 0; });
     var footer = card.querySelector('.feed_card_actions');
     if (!footer) return;
-    // reactions pill: icons with per-type counts (like button when empty)
+    // reactions pill: top-3 icons with per-type counts — seeds a like
+    // button when no reactions exist yet
     var pill = document.createElement('div');
     pill.className = 'feed_action feed_react_pill';
     // dev.to: reaction types with votes get an icon (top 3); a type the
-    // user already toggled stays visible even if its count reads 0
-    var top = TYPES.map(function (t, i) { return { type: t, idx: i, n: card._counts[i] }; })
-      .filter(function (r) { return r.n > 0 || localStorage.getItem(storeKey(card.dataset.path, r.type)); })
-      .sort(function (a, b) { return (b.n - a.n) || (a.idx - b.idx); })
+    // user already toggled stays visible even if its count reads 0 and
+    // sorts first so it can't be cut by the slice
+    var top = TYPES.map(function (t, i) {
+      return {
+        type: t,
+        idx: i,
+        n: card._counts[i],
+        mine: !!localStorage.getItem(storeKey(card.dataset.path, t))
+      };
+    })
+      .filter(function (r) { return r.n > 0 || r.mine; })
+      .sort(function (a, b) { return (b.mine - a.mine) || (b.n - a.n) || (a.idx - b.idx); })
       .slice(0, 3);
     // no reactions yet: seed the pill with the like button so the first
     // reaction can be cast straight from the feed
-    if (!top.length) top.push({ type: TYPES[0], idx: 0, n: 0 });
+    if (!top.length) top.push({ type: TYPES[0], idx: 0, n: 0, mine: false });
     var icons = document.createElement('span');
     icons.className = 'feed_react_icons';
     pill.appendChild(icons);
