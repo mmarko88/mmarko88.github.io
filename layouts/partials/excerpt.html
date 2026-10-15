@@ -25,13 +25,26 @@
           {{- $plain := htmlUnescape .Plain }}
           {{- $sentences := split $plain ". " }}
           {{- $acc := "" }}
+          {{- $fits := true }}
           {{- range $i, $sent := $sentences }}
-            {{- $cand := cond (eq $acc "") $sent (print $acc ". " $sent) }}
-            {{- if and (lt (len $cand) 300) (lt $i 4) }}
-              {{- $acc = $cand }}
+            {{- if and $fits (lt $i 4) }}
+              {{- $cand := cond (eq $acc "") $sent (print $acc ". " $sent) }}
+              {{- if lt (len $cand) 300 }}
+                {{- $acc = $cand }}
+              {{- else }}
+                {{- $fits = false }}
+              {{- end }}
             {{- end }}
           {{- end }}
-          {{- $summary = print $acc "." }}
+          {{- if $acc }}
+            {{- if not (or (hasSuffix $acc ".") (hasSuffix $acc "!") (hasSuffix $acc "?")) }}
+              {{- $acc = print $acc "." }}
+            {{- end }}
+            {{- $summary = $acc }}
+          {{- else if $plain }}
+            {{- /* first sentence alone exceeds 300 chars — hard-truncate instead of starting mid-paragraph */ -}}
+            {{- $summary = printf "%s…" (substr $plain 0 297 | strings.TrimRight " \n\t") }}
+          {{- end }}
         {{- end }}
         {{ if not ( strings.Contains $summary "<p>" ) }}
           <p>{{ $summary | markdownify }}</p>

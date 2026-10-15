@@ -699,8 +699,9 @@ button.feed_action
   touch-action: manipulation  // no double-tap-zoom delay on mobile
   transition: transform 0.1s ease, box-shadow 0.15s ease
 
-.feed_react:hover
-  transform: scale(1.12)
+@media (hover: hover)
+  .feed_react:hover
+    transform: scale(1.12)
 
 .feed_react:active
   transform: scale(0.95)

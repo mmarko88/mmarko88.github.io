@@ -19,9 +19,6 @@ series = "series"
 [pagination]
 pagerSize = 10
 
-[services.googleAnalytics]
-id = "G-QMH75S45WQ"
-
 [outputs]
 home = ["HTML", "RSS", "JSON"]
 
