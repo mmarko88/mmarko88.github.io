@@ -1,6 +1,7 @@
-// Waline likes on feed cards — a single heart button (Instagram-style
-// like) with the count beside it. Post pages use the same single heart
-// via the waline widget's reaction array.
+// Waline likes — a single heart button (Instagram-style like) with the
+// count beside it. Runs on feed cards (.feed_card[data-path]) and on the
+// post-page engagement bar (.post_like[data-path]); both write reaction0
+// so feed and post counts stay identical.
 // GET  /api/article?path=p1,p2&type=reaction0
 //      -> {errno:0, data:[{reaction0}, ...]} — items align
 //         positionally with the requested paths (no path field on items)
@@ -8,8 +9,9 @@
 // reaction0 keeps the original waline:liked:<path> keys from the heart era.
 (function () {
   var box = document.getElementById('feed_items');
-  if (!box) return;
-  var server = (box.dataset.walineServer || '').replace(/\/+$/, '');
+  var postLike = document.querySelector('.post_like[data-path]');
+  var server = (((box && box.dataset.walineServer) ||
+    (postLike && postLike.dataset.walineServer)) || '').replace(/\/+$/, '');
   if (!server) return;
 
   var KEY = 'waline:liked:';
@@ -93,14 +95,33 @@
       });
   }
 
-  // init counts now + for cards appended later by infinite scroll
-  fetchCounts();
-  new MutationObserver(fetchCounts).observe(box, { childList: true });
+  // feed: init counts now + for cards appended later by infinite scroll
+  if (box) {
+    fetchCounts();
+    new MutationObserver(fetchCounts).observe(box, { childList: true });
+  }
+
+  // post page: render the heart immediately, then fill in the count
+  if (postLike) {
+    postLike._counts = [0];
+    makeIcon(postLike, postLike.querySelector('.feed_react_icons'), TYPES[0], 0);
+    fetch(server + '/api/article?path=' + encodeURIComponent(postLike.dataset.path) +
+        '&type=' + TYPES.join(','))
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        var item = (res && res.data && res.data[0]) || {};
+        postLike._counts = TYPES.map(function (t) { return item[t] || 0; });
+        updateCounts(postLike);
+      })
+      .catch(function () {}); // heart still toggles; count stays hidden
+  }
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.feed_react');
-    if (!b || !box.contains(b)) return;
-    var card = b.closest('.feed_card');
+    if (!b) return;
+    // works for feed cards (.feed_card) and the post bar (.post_like)
+    var card = b.closest('[data-path]');
+    if (!card) return;
     var idx = b._idx;
     var type = b.dataset.type;
     var key = storeKey(card.dataset.path, type);

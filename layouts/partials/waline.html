@@ -2,6 +2,7 @@
      pageview counter, dark mode synced via html[data-mode="dim"] selector.
      Renders nothing until site.Params.walineServerURL is set. */ -}}
 {{- with site.Params.walineServerURL }}
+<h2 class="post_comments_title">Comments</h2>
 <div class="post_comments" id="waline"></div>
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
 <script type="module">

@@ -33,19 +33,18 @@
     {{- end }}
 
     {{- if eq .Section "post" }}
+      {{- $showComments := and (ne $s.comments false) (ne $p.comments false) }}
+      <div class="post_engagement">
+        {{- with $s.walineServerURL }}
+        <div class="feed_action feed_react_pill post_like" data-path="{{ $.RelPermalink }}" data-waline-server="{{ . }}"><span class="feed_react_icons"></span></div>
+        {{- end }}
+        <button class="feed_action feed_share" type="button" data-share="{{ .Permalink }}" data-title="{{ .Title }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>Share</button>
+        {{- if and $showComments $s.walineServerURL }}<a class="feed_action post_reply" href="#waline">💬 Reply</a>{{ end }}
+      </div>
       {{- partial "post-cta" . }}
-    {{- end }}
-
-    {{- $showComments := true }}
-    {{- if ne .Section "post" }}
-      {{- $showComments = false }}
-    {{- else if eq $s.comments false }}
-      {{- $showComments = false }}
-    {{- else if eq $p.comments false }}
-      {{- $showComments = false }}
-    {{- end }}
-    {{- if ne $showComments false }}
-      {{- partial "waline" . }}
+      {{- if $showComments }}
+        {{- partial "waline" . }}
+      {{- end }}
     {{- end }}
 
     {{- $showRelatedInArticle := $s.showRelatedInArticle }}
@@ -78,6 +77,9 @@
     </script>
     <script src="{{ (resources.Get "js/share.js" | fingerprint).RelPermalink }}" defer></script>
     <script src="{{ (resources.Get "js/visited.js" | fingerprint).RelPermalink }}" defer></script>
+    {{- if and (eq .Section "post") $s.walineServerURL }}
+    <script src="{{ (resources.Get "js/reactions.js" | fingerprint).RelPermalink }}" defer></script>
+    {{- end }}
 
     {{- partial "i18nlist" . }}
 

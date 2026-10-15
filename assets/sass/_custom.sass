@@ -14,12 +14,37 @@ li ::marker
   content: ''
   font-size: 1.2em
 
+// end-of-post vertical rhythm — shared by engagement bar, CTA, comments
+html
+  --section-gap: 2.5rem
+  scroll-behavior: smooth    // "Reply" link glides to #waline
+
+// engagement bar under the article body: like pill + share + reply
+.post_engagement
+  display: flex
+  align-items: center
+  gap: 0.25rem
+  margin-top: var(--section-gap)
+
+.post_reply
+  color: var(--pale, #888)   // quiet link; .feed_action gives it the 44px row
+
+#waline
+  scroll-margin-top: 4rem    // clear the sticky header when jumped to
+
 // end-of-post CTA block
 .post_cta
-  margin-top: 2.5rem
+  margin-top: var(--section-gap)
   padding: 1.25rem 1.5rem
   border: 1px solid var(--border-color, #ddd)
   border-radius: 8px
+
+// comments heading matches .post_latest h2 (plain theme h2)
+.post_comments_title
+  margin: var(--section-gap) 0 0.75rem
+
+.post_latest
+  margin-top: var(--section-gap)
 
 .post_cta_title
   margin-top: 0
@@ -731,84 +756,11 @@ button.feed_action
 .feed_react.liked
   opacity: 1  // voted = full-strength emoji, no ring
 
-// waline widget: restyle the single-heart reaction to match the feed
-// card's like button — bare emoji, plain-text count, left-aligned,
-// opacity voted state. #waline prefix needed: waline injects its
-// stylesheet at runtime, after ours — equal specificity would lose.
-// Verified waline v3 classes: .wl-reaction > ul.wl-reaction-list >
-// li.wl-reaction-item(.active when voted) > .wl-reaction-img >
-// img + span.wl-reaction-votes (badge), div.wl-reaction-text (label).
+// waline widget: the post page renders ONE like heart — in the
+// .post_engagement bar via reactions.js (same reaction0 count).
+// Waline's own reaction row is hidden to avoid a second heart.
 #waline .wl-reaction
-  overflow: visible          // unclip emoji (was auto hidden)
-  text-align: left
-
-#waline .wl-reaction-list
-  flex-wrap: wrap
-  justify-content: flex-start  // was center — align under post content
-  padding: 0
-
-#waline .wl-reaction-item
-  flex-direction: row          // was column — emoji + count side by side
-  justify-content: center
-  min-width: 2.75rem           // 44px touch target, same as .feed_react
-  min-height: 2.75rem
-  opacity: 0.65                // dimmed = not voted; .active raises to 1
-  touch-action: manipulation
-  transition: transform 0.1s ease, opacity 0.15s ease
-
-#waline .wl-reaction-item.active
-  opacity: 1
-
-// waline scales the img itself on hover/active — scale the item
-// instead so count + state move together like the feed button
-#waline .wl-reaction-item:hover img,
-#waline .wl-reaction-item.active img
-  transform: none
-
-#waline .wl-reaction-img
-  display: inline-flex
-  align-items: center
-  width: auto                  // was 32px box
-  height: auto
-
-#waline .wl-reaction-img img
-  width: 1.15rem               // same emoji size as the feed button
-  height: 1.15rem
-
-// votes badge -> plain-text count beside the emoji (like .feed_react_n)
-#waline .wl-reaction-votes
-  position: static
-  min-width: 0
-  padding: 0
-  margin-left: 0.15rem
-  border: none
-  border-radius: 0
-  background: transparent
-  color: var(--pale, #888)
-  font-weight: 400
-  font-size: 0.8rem
-  line-height: normal
-
-#waline .wl-reaction-item.active .wl-reaction-votes
-  background: transparent      // waline inverts bg/color on .active
-  color: var(--accent, #1d70a2)
-
-// emoji name label under the icon — feed shows no label
-#waline .wl-reaction-text
   display: none
-
-@media (hover: hover)
-  #waline .wl-reaction-item:hover
-    transform: scale(1.12)
-    opacity: 1
-
-#waline .wl-reaction-item:active
-  transform: scale(0.95)
-  opacity: 1
-
-#waline .wl-reaction-item:focus-visible
-  box-shadow: inset 0 0 0 2px rgba(29, 112, 162, 0.6)
-  outline: none
 
 // visited posts — dimmed until hover (RSS-reader convention)
 .feed_card.is_read .feed_title,

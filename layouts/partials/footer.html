@@ -6,10 +6,12 @@
 {{- $iconsDir := default "icons/" .Site.Params.iconsDir }}
 {{- $defaultFooterLogo := printf "%s%s" $iconsDir "apple-touch-icon.png"}}
 <footer class="footer">
+  {{- if ne .Section "post" }}
   <div class="footer_newsletter wrap" id="subscribe">
     <p><strong>Get new posts by email</strong> — Java, SQL Server &amp; testing, no spam.</p>
     {{ partial "newsletter-form" (dict "key" "footer") }}
   </div>
+  {{- end }}
   <div class="footer_inner wrap pale">
     <img src='{{ absURL (default $defaultFooterLogo $s.footerLogo) }}' class="icon icon_2 transparent" alt="{{ $c }}">
     <p>{{ T "copyright" | markdownify }}{{ with $s.since }}&nbsp;{{ . }}-{{ end }}&nbsp;<span class="year"></span>&nbsp;{{ upper $c }}. {{ T "all_rights" | markdownify }}</p>
