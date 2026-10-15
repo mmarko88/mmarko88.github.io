@@ -1,8 +1,8 @@
-// Waline reactions on feed cards — dev.to-style pill: up to 3 emoji
-// icons (top-voted types, still one-click toggles) with per-type counts.
-// The full 6-emoji row stays on post pages.
-// GET  /api/article?path=p1,p2&type=reaction0,...,reaction5
-//      -> {errno:0, data:[{reaction0..reaction5}, ...]} — items align
+// Waline likes on feed cards — a single heart button (Instagram-style
+// like) with the count beside it. Post pages use the same single heart
+// via the waline widget's reaction array.
+// GET  /api/article?path=p1,p2&type=reaction0
+//      -> {errno:0, data:[{reaction0}, ...]} — items align
 //         positionally with the requested paths (no path field on items)
 // POST /api/article  {path, type:'reactionN', action:'inc'|'desc'}
 // reaction0 keeps the original waline:liked:<path> keys from the heart era.
@@ -13,15 +13,10 @@
   if (!server) return;
 
   var KEY = 'waline:liked:';
-  // twemoji pack — same images + order as the widget's reaction row
+  // twemoji pack — same image as the widget's single reaction button
   var EMOJI_BASE = 'https://unpkg.com/@waline/emojis/tw/';
   var EMOJI = [
-    ['1f44d.png', 'Like'],
-    ['1f44e.png', 'Dislike'],
-    ['1f60e.png', 'Cool'],
-    ['1f612.png', 'Meh'],
-    ['1f62c.png', 'Awkward'],
-    ['1f634.png', 'Boring']
+    ['2764.png', 'Like']
   ];
   var TYPES = EMOJI.map(function (_, i) { return 'reaction' + i; });
 
@@ -67,31 +62,14 @@
     card._counts = TYPES.map(function (t) { return item[t] || 0; });
     var footer = card.querySelector('.feed_card_actions');
     if (!footer) return;
-    // reactions pill: top-3 icons with per-type counts — seeds a like
-    // button when no reactions exist yet
+    // reactions pill: a single heart like button, always shown — the
+    // count label stays empty until reaction0 has votes
     var pill = document.createElement('div');
     pill.className = 'feed_action feed_react_pill';
-    // dev.to: reaction types with votes get an icon (top 3); a type the
-    // user already toggled stays visible even if its count reads 0 and
-    // sorts first so it can't be cut by the slice
-    var top = TYPES.map(function (t, i) {
-      return {
-        type: t,
-        idx: i,
-        n: card._counts[i],
-        mine: !!localStorage.getItem(storeKey(card.dataset.path, t))
-      };
-    })
-      .filter(function (r) { return r.n > 0 || r.mine; })
-      .sort(function (a, b) { return (b.mine - a.mine) || (b.n - a.n) || (a.idx - b.idx); })
-      .slice(0, 3);
-    // no reactions yet: seed the pill with the like button so the first
-    // reaction can be cast straight from the feed
-    if (!top.length) top.push({ type: TYPES[0], idx: 0, n: 0, mine: false });
     var icons = document.createElement('span');
     icons.className = 'feed_react_icons';
     pill.appendChild(icons);
-    top.forEach(function (r) { makeIcon(card, icons, r.type, r.idx); });
+    makeIcon(card, icons, TYPES[0], 0);
     footer.insertBefore(pill, footer.children[0]);
   }
 
