@@ -7,7 +7,7 @@ tags: ["java", "functional programming", "design patterns", "data-oriented progr
 categories: ["java", "functional programming"]
 featureImage: 'fp_data_oriented.svg' # Top image on post.
 shareImage: 'fp_data_oriented.jpg' # For SEO and social media snippets.
-featureImageAlt: 'A car with a car-wash rig and a bloated method list welded onto it versus a car keeping only start() and lockDoors() while driving through scrub(car), wax(car), dry(car) stations — intrinsic stays on the object, services stay outside' # Alternative text for featured image.
+featureImageAlt: 'A car with a car-wash rig and a bloated method list welded onto it versus a car keeping only start(), lockDoors(), and unlockDoors() while driving through inspect(car), scrub(car), wax(car), dry(car) stations — intrinsic stays on the object, services stay outside' # Alternative text for featured image.
 sourceCode: 'https://github.com/mmarko88/blog-examples' # Renders source-code card above comments.
 toc: true
 ---
