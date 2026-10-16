@@ -329,9 +329,6 @@ flowchart LR
     S2 --> S3
     S3 --> S4
     S4 --> E@{ shape: "circ", label: "END" }
-    class F1,F2,F3,F4 fn
-    class C terminal
-    class E endcap
 ```
 
 ## What It Actually Costs: Measured
