@@ -14,13 +14,17 @@ toc: true
 
 Your `Car` class has twelve methods now. Washing, waxing, polishing, billing — everything that ever needed the car's fields got bolted onto it. Nobody remembers which ones mutate state, and testing `scrub` means constructing half the object graph first.
 
-It's the equivalent of welding the car wash onto the car: the object hauls its machinery everywhere it goes. Functional programming pushes in the opposite direction — keep the data inert, pass it to the functions. Instead of moving functions to where the data lives, you move the data to the functions. The car drives through the wash. Java records made this style practical — here's what it buys you, and what it costs.
+It's the equivalent of welding the car wash onto the car: the object hauls its machinery everywhere it goes.
 
-**TL;DR:** model data as plain immutable records and transform it with standalone pure functions. You get trivially testable, composable business logic; you pay with extra object allocations — measured at ~14 vs ~2 ns for the full wash cycle on JDK 24 — about 6x, still negligible for typical business code.
+But don't overcorrect — some methods *do* belong on a `Car`. `car.start()`, `car.lockDoors()`, `car.unlockDoors()` are intrinsic to what a car *is*: every car needs them forever, and they touch its own mechanical state. The absurdity isn't methods on objects — it's variable services welded into data.
+
+The boundary rule: would every instance need this behavior forever, and is it part of what the thing *is*? Engine start, door locks — keep them on the object. Washing, insuring, repairing are services the car passes through — shared logic that changes on its own schedule — so they belong outside. Functional programming gives you that clean outside: instead of moving functions to where the data lives, you move the data to the functions. The car drives through the wash. Java records made this style practical — here's what it buys you, and what it costs.
+
+**TL;DR:** model data as plain immutable records and transform it with standalone pure functions — variable, shared behavior (washing, quoting) moves off the object; intrinsic behavior (`start()`, `lockDoors()`) stays on. You get trivially testable, composable business logic; you pay with extra object allocations — measured at ~14 vs ~2 ns for the full wash cycle on JDK 24 — about 6x, still negligible for typical business code.
 
 ## What Does "Moving Data to Functions" Mean?
 
-The core idea is simple: instead of having data carry its behavior around (as in OOP), we keep data as plain values and have separate functions that operate on that data.
+The core idea is simple: instead of having data carry all of its behavior around (as in OOP), we keep data as plain values and have separate functions that operate on that data.
 
 ### OOP Style: Moving Functions to Data
 
@@ -49,7 +53,7 @@ BigDecimal price = car.quoteWash();
 Car cleaner = car.scrub();
 ```
 
-Here, the functions live on the data itself. When we call a method on the object, we send the operation to where the data is - the function travels to the data, which never moves. The car carries the wash around with it.
+Here, the functions live on the data itself. When we call a method on the object, we send the operation to where the data is - the function travels to the data, which never moves. The car carries the wash around with it — and a wash is exactly the kind of variable, external service the boundary rule says to pull off the object.
 
 ### Functional Style: Moving Data to Functions
 
@@ -82,7 +86,7 @@ BigDecimal price = quoteWash(car);
 Car cleaner = scrub(car);
 ```
 
-Here, the data is just a plain record - it stays inert, and we pass it to the functions that transform it. The car doesn't know how to wash itself; it just rides through the stations. We move data to functions.
+Here, the data is just a plain record - it stays inert, and we pass it to the functions that transform it. The wash is infrastructure; the car just rolls through it. We move data to functions.
 
 ## What You Actually Gain
 
@@ -380,7 +384,11 @@ Mutate in place there — a method that updates `this.dirtLevel` instead of retu
 
 ## When This Approach Doesn't Work
 
-This isn't a silver bullet. Reach for something else:
+The boundary rule cuts both ways — and here it's the payoff, not a disclaimer. The OOP `Car` wasn't wrong *in general*; it was wrong for *variable* behavior. `car.start()` mutating the car's own mechanical state is correctly a method — intrinsic, unchanging, part of what a car is. `car.wash()` isn't: washing is external to the car, changes independently (new wash types, new prices), and is shared logic rather than the car's identity.
+
+Two honest caveats. Gray zones exist — is `driveTo()` intrinsic? When in doubt, apply the test: *every car, forever* versus *one workflow among many*. And a `CarWash` service object holding the wash logic is classic, perfectly fine OOP — the question is where behavior *lives*, not OOP versus FP tribal war.
+
+Otherwise, reach for something else:
 
 1. **When you need encapsulation**: Sometimes you need to hide internal details and control access to data. In these cases, OOP's encapsulation can be beneficial.
 
@@ -392,7 +400,7 @@ This isn't a silver bullet. Reach for something else:
 
 ## The Takeaway
 
-Separate the data from the behavior: model state as immutable records, transform it with standalone pure functions, compose those functions into pipelines. The car shouldn't haul the wash around — it should just drive through it. The payoff is business logic you can test with a data literal and reason about one function at a time — at a cost that benchmarks show is negligible outside hot paths.
+Separate the *variable* behavior from the data — the intrinsic stuff (`start()`, `lockDoors()`) stays on the object where it belongs. Model state as immutable records, transform it with standalone pure functions, compose those functions into pipelines. The car shouldn't haul the wash around — it should just drive through it. The payoff is business logic you can test with a data literal and reason about one function at a time — at a cost that benchmarks show is negligible outside hot paths.
 
 Try it on one small class this week. Take a "god object" with a handful of transformation methods, turn it into a record, and move the methods out into static functions. Then write the tests — notice how short they get.
 
