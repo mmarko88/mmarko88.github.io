@@ -32,6 +32,8 @@
       .label { font-family: 'Segoe UI', Arial, 'DejaVu Sans', sans-serif; fill: #ffffff; }
       .tag { font-family: 'JetBrains Mono', 'Consolas', 'DejaVu Sans Mono', monospace; font-size: 10px; fill: #ffb3c1; }
       .station { font-family: 'JetBrains Mono', 'Consolas', 'DejaVu Sans Mono', monospace; font-size: 12px; fill: #cfe0ff; }
+      .plate { font-family: 'JetBrains Mono', 'Consolas', 'DejaVu Sans Mono', monospace; font-size: 9.5px; }
+      .plateHead { font-family: 'JetBrains Mono', 'Consolas', 'DejaVu Sans Mono', monospace; font-size: 11px; font-weight: bold; fill: #ffffff; }
     </style>
     <!-- intrinsic parts every car keeps: ignition key (start) + door keyhole (lockDoors) -->
     <g id="carIntrinsic">
@@ -44,6 +46,16 @@
       <circle cx="52" cy="27" r="1.6" fill="#1a1a2e" />
       <line x1="52" y1="28.4" x2="52" y2="31" stroke="#1a1a2e" stroke-width="1.2" stroke-linecap="round" />
     </g>
+    <!-- plain car body (unscaled) -->
+    <g id="carBody">
+      <path d="M 0 40 L 0 22 Q 0 14 10 12 L 28 9 L 38 0 Q 41 -3 47 -3 L 66 -3 Q 72 -3 75 0 L 85 9 L 96 12 Q 104 14 104 22 L 104 40 Q 104 46 98 46 L 6 46 Q 0 46 0 40 Z" fill="url(#dataGradient)" stroke="#fff" stroke-width="1.2" />
+      <path d="M 33 9 L 41 -1 L 63 -1 L 71 9 Z" fill="#bfe6f5" opacity="0.8" />
+      <use xlink:href="#carIntrinsic" />
+      <circle cx="24" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
+      <circle cx="24" cy="46" r="5" fill="#8b93b0" />
+      <circle cx="80" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
+      <circle cx="80" cy="46" r="5" fill="#8b93b0" />
+    </g>
   </defs>
 
   <!-- Background -->
@@ -51,10 +63,10 @@
   <circle cx="90" cy="90" r="70" fill="#ffffff" opacity="0.06" />
   <circle cx="1120" cy="560" r="90" fill="#ffffff" opacity="0.06" />
 
-  <!-- ===================== LEFT: OOP ===================== -->
+  <!-- ===================== LEFT: methods welded into the object ===================== -->
   <rect x="110" y="30" width="390" height="42" rx="21" fill="#ff4757" opacity="0.14" stroke="#ff6b81" stroke-width="1.5" />
   <text x="305" y="58" text-anchor="middle" class="label" font-size="19" font-weight="bold">
-    <tspan fill="#ff6b81">✗</tspan><tspan dx="8">OOP — the wash rides on the car</tspan>
+    <tspan fill="#ff6b81">✗</tspan><tspan dx="8">the wash rides on the car</tspan>
   </text>
 
   <!-- ground -->
@@ -68,14 +80,8 @@
 
   <!-- CAR (the data) — with its wash rig bolted on -->
   <g transform="translate(195,272) scale(1.8)" filter="url(#shadow)">
-    <path d="M 0 40 L 0 22 Q 0 14 10 12 L 28 9 L 38 0 Q 41 -3 47 -3 L 66 -3 Q 72 -3 75 0 L 85 9 L 96 12 Q 104 14 104 22 L 104 40 Q 104 46 98 46 L 6 46 Q 0 46 0 40 Z" fill="url(#dataGradient)" stroke="#fff" stroke-width="1.2" />
-    <path d="M 33 9 L 41 -1 L 63 -1 L 71 9 Z" fill="#bfe6f5" opacity="0.85" />
-    <use xlink:href="#carIntrinsic" />
+    <use xlink:href="#carBody" />
     <rect x="52" y="14" width="10" height="3" rx="1.5" fill="#1a1a2e" opacity="0.4" />
-    <circle cx="24" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
-    <circle cx="24" cy="46" r="5" fill="#8b93b0" />
-    <circle cx="80" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
-    <circle cx="80" cy="46" r="5" fill="#8b93b0" />
     <path d="M 14 28 q 3 -4 6 0" stroke="#7a2c3e" stroke-width="1.5" fill="none" opacity="0.7" />
     <path d="M 90 28 q 3 -4 6 0" stroke="#7a2c3e" stroke-width="1.5" fill="none" opacity="0.7" />
   </g>
@@ -95,7 +101,7 @@
     <path d="M 370 174 L 348 288" stroke="#3a3f5c" stroke-width="4" />
   </g>
 
-  <!-- hanging brush: scrub() -->
+  <!-- hanging brush: car.scrub() -->
   <line x1="290" y1="174" x2="290" y2="222" stroke="#3a3f5c" stroke-width="5" />
   <g filter="url(#shadow)">
     <circle cx="290" cy="248" r="26" fill="#3fd0c9" stroke="#fff" stroke-width="1.5" />
@@ -111,21 +117,19 @@
       <line x1="280" y1="258" x2="273" y2="265" />
     </g>
   </g>
-  <line x1="312" y1="226" x2="320" y2="212" stroke="#ffb3c1" stroke-width="0.8" opacity="0.6" />
-  <text x="322" y="212" class="tag">scrub()</text>
+  <line x1="290" y1="152" x2="290" y2="170" stroke="#ffb3c1" stroke-width="0.8" opacity="0.6" />
+  <text x="290" y="146" text-anchor="middle" class="tag">car.scrub()</text>
 
-  <!-- soap tank on the trunk: wax() -->
+  <!-- soap tank on the trunk: car.wax() -->
   <g filter="url(#shadow)">
     <rect x="312" y="228" width="56" height="56" rx="8" fill="url(#metalGradient)" stroke="#fff" stroke-width="1.5" />
     <rect x="326" y="220" width="28" height="10" rx="3" fill="#7a82a8" stroke="#fff" stroke-width="1" />
-    <text x="340" y="254" text-anchor="middle" class="mono" font-size="11" font-weight="bold" fill="#1a1a2e">WAX</text>
+    <text x="340" y="255" text-anchor="middle" class="mono" font-size="9" font-weight="bold" fill="#1a1a2e">car.wax()</text>
     <text x="340" y="270" text-anchor="middle" class="mono" font-size="9" fill="#1a1a2e">carnauba</text>
   </g>
   <path d="M 324 230 C 312 214 298 216 294 220" stroke="#3fd0c9" stroke-width="3" fill="none" opacity="0.8" />
-  <line x1="368" y1="230" x2="388" y2="224" stroke="#ffb3c1" stroke-width="0.8" opacity="0.6" />
-  <text x="392" y="226" text-anchor="start" class="tag">wax()</text>
 
-  <!-- dryer fan on the hood: dry() -->
+  <!-- dryer fan on the hood: car.dry() -->
   <line x1="222" y1="292" x2="222" y2="256" stroke="#3a3f5c" stroke-width="5" />
   <g filter="url(#shadow)">
     <circle cx="222" cy="240" r="20" fill="url(#metalGradient)" stroke="#fff" stroke-width="1.5" />
@@ -133,10 +137,24 @@
     <circle cx="222" cy="240" r="5" fill="#4a5070" />
   </g>
   <line x1="200" y1="240" x2="172" y2="240" stroke="#ffb3c1" stroke-width="0.8" opacity="0.6" />
-  <text x="168" y="244" text-anchor="end" class="tag">dry()</text>
+  <text x="168" y="244" text-anchor="end" class="tag">car.dry()</text>
+
+  <!-- welded-on method list: every service stacked into the object -->
+  <g filter="url(#shadow)">
+    <rect x="408" y="188" width="132" height="118" rx="8" fill="#232742" stroke="#ff6b81" stroke-width="1.5" />
+  </g>
+  <line x1="382" y1="228" x2="408" y2="228" stroke="#3a3f5c" stroke-width="4" />
+  <line x1="382" y1="268" x2="408" y2="268" stroke="#3a3f5c" stroke-width="4" />
+  <text x="418" y="208" class="plateHead">class Car</text>
+  <line x1="416" y1="215" x2="532" y2="215" stroke="#3a3f5c" stroke-width="1" />
+  <text x="418" y="231" class="plate" fill="#9adfff">+ start()</text>
+  <text x="418" y="246" class="plate" fill="#9adfff">+ lockDoors()</text>
+  <text x="418" y="261" class="plate" fill="#ff6b81">+ scrub()</text>
+  <text x="418" y="276" class="plate" fill="#ff6b81">+ wax()</text>
+  <text x="418" y="291" class="plate" fill="#ff6b81">+ dry() insure() +7…</text>
 
   <!-- OOP caption -->
-  <text x="305" y="440" text-anchor="middle" class="mono" font-size="12" fill="#ff8fa3" font-style="italic" opacity="0.9">// +9 more attachments to strap on…</text>
+  <text x="305" y="440" text-anchor="middle" class="mono" font-size="12" fill="#ff8fa3" font-style="italic" opacity="0.9">// the wash became methods on the object</text>
   <text x="305" y="468" text-anchor="middle" class="mono" font-size="16" fill="#fff">car.scrub()</text>
   <text x="305" y="491" text-anchor="middle" class="label" font-size="13" opacity="0.65">a variable service welded into the data</text>
 
@@ -146,10 +164,10 @@
   <circle cx="600" cy="255" r="56" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.15" />
   <text x="600" y="267" text-anchor="middle" class="title" font-size="30">VS</text>
 
-  <!-- ===================== RIGHT: FP ===================== -->
+  <!-- ===================== RIGHT: data rides through functions ===================== -->
   <rect x="705" y="30" width="410" height="42" rx="21" fill="#2ed573" opacity="0.14" stroke="#7bed9f" stroke-width="1.5" />
   <text x="910" y="58" text-anchor="middle" class="label" font-size="19" font-weight="bold">
-    <tspan fill="#7bed9f">✓</tspan><tspan dx="8">FP — the car drives through the wash</tspan>
+    <tspan fill="#7bed9f">✓</tspan><tspan dx="8">the car drives through the wash</tspan>
   </text>
 
   <!-- conveyor belt -->
@@ -164,44 +182,51 @@
     <line x1="1140" y1="371" x2="1140" y2="378" />
   </g>
 
-  <!-- car 1: dirty, inside station 1 -->
-  <g transform="translate(648,311)">
-    <path d="M 0 40 L 0 22 Q 0 14 10 12 L 28 9 L 38 0 Q 41 -3 47 -3 L 66 -3 Q 72 -3 75 0 L 85 9 L 96 12 Q 104 14 104 22 L 104 40 Q 104 46 98 46 L 6 46 Q 0 46 0 40 Z" fill="url(#dataGradient)" stroke="#fff" stroke-width="1.2" />
-    <path d="M 33 9 L 41 -1 L 63 -1 L 71 9 Z" fill="#bfe6f5" opacity="0.7" />
-    <use xlink:href="#carIntrinsic" />
+  <!-- hero car: the plain data, waiting at the entrance — keeps its intrinsic methods -->
+  <g transform="translate(644,311)">
+    <use xlink:href="#carBody" />
     <ellipse cx="26" cy="30" rx="12" ry="6" fill="#4a3b2c" opacity="0.6" />
     <ellipse cx="62" cy="20" rx="9" ry="5" fill="#4a3b2c" opacity="0.6" />
     <ellipse cx="84" cy="36" rx="10" ry="5" fill="#4a3b2c" opacity="0.6" />
     <ellipse cx="50" cy="42" rx="8" ry="4" fill="#4a3b2c" opacity="0.5" />
-    <circle cx="24" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
-    <circle cx="24" cy="46" r="5" fill="#8b93b0" />
-    <circle cx="80" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
-    <circle cx="80" cy="46" r="5" fill="#8b93b0" />
   </g>
-  <circle cx="640" cy="345" r="5" fill="#9aa3b8" opacity="0.3" />
-  <circle cx="628" cy="340" r="8" fill="#9aa3b8" opacity="0.2" />
-  <text x="700" y="405" text-anchor="middle" class="mono" font-size="11" fill="#ffa502">DIRTY</text>
+  <circle cx="632" cy="345" r="5" fill="#9aa3b8" opacity="0.3" />
+  <circle cx="620" cy="340" r="8" fill="#9aa3b8" opacity="0.2" />
 
-  <!-- car 2: soapy, inside station 2 -->
-  <g transform="translate(848,311)">
-    <path d="M 0 40 L 0 22 Q 0 14 10 12 L 28 9 L 38 0 Q 41 -3 47 -3 L 66 -3 Q 72 -3 75 0 L 85 9 L 96 12 Q 104 14 104 22 L 104 40 Q 104 46 98 46 L 6 46 Q 0 46 0 40 Z" fill="url(#dataGradient)" stroke="#fff" stroke-width="1.2" />
-    <path d="M 33 9 L 41 -1 L 63 -1 L 71 9 Z" fill="#bfe6f5" opacity="0.8" />
-    <use xlink:href="#carIntrinsic" />
+  <!-- the clean method list — only intrinsic behavior stays on -->
+  <g filter="url(#shadow)">
+    <rect x="638" y="212" width="112" height="62" rx="8" fill="#232742" stroke="#7bed9f" stroke-width="1.5" />
+  </g>
+  <text x="648" y="231" class="plateHead">class Car</text>
+  <text x="648" y="250" class="plate" fill="#9adfff">+ start()</text>
+  <text x="648" y="266" class="plate" fill="#9adfff">+ lockDoors()</text>
+  <line x1="694" y1="276" x2="694" y2="304" stroke="#9adfff" stroke-width="0.8" opacity="0.6" />
+  <line x1="706" y1="276" x2="699" y2="330" stroke="#9adfff" stroke-width="0.8" opacity="0.6" />
+
+  <!-- car inside station 1 (being scrubbed) -->
+  <g transform="translate(748,311)">
+    <use xlink:href="#carBody" />
+    <ellipse cx="62" cy="20" rx="9" ry="5" fill="#4a3b2c" opacity="0.5" />
+    <ellipse cx="84" cy="36" rx="10" ry="5" fill="#4a3b2c" opacity="0.5" />
+    <circle cx="30" cy="14" r="4" fill="#ffffff" opacity="0.85" />
+    <circle cx="58" cy="8" r="5" fill="#ffffff" opacity="0.85" />
+  </g>
+  <text x="800" y="405" text-anchor="middle" class="mono" font-size="11" fill="#ffa502">DIRTY</text>
+
+  <!-- car inside station 2 (being waxed) -->
+  <g transform="translate(888,311)">
+    <use xlink:href="#carBody" />
     <ellipse cx="70" cy="38" rx="8" ry="4" fill="#4a3b2c" opacity="0.35" />
     <circle cx="30" cy="14" r="4" fill="#ffffff" opacity="0.85" />
     <circle cx="58" cy="8" r="5" fill="#ffffff" opacity="0.85" />
     <circle cx="86" cy="24" r="4" fill="#ffffff" opacity="0.85" />
     <circle cx="44" cy="26" r="3" fill="#ffffff" opacity="0.7" />
     <circle cx="72" cy="12" r="3" fill="#ffffff" opacity="0.7" />
-    <circle cx="24" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
-    <circle cx="24" cy="46" r="5" fill="#8b93b0" />
-    <circle cx="80" cy="46" r="13" fill="#1a1a22" stroke="#0d0d14" stroke-width="2" />
-    <circle cx="80" cy="46" r="5" fill="#8b93b0" />
   </g>
-  <text x="900" y="405" text-anchor="middle" class="mono" font-size="11" fill="#7bed9f">SCRUBBED</text>
+  <text x="940" y="405" text-anchor="middle" class="mono" font-size="11" fill="#7bed9f">SCRUBBED</text>
 
-  <!-- car 3: sparkling clean, leaving station 3 -->
-  <g transform="translate(1048,311)">
+  <!-- car inside station 3 (being dried): sparkling clean -->
+  <g transform="translate(1028,311)">
     <path d="M 0 40 L 0 22 Q 0 14 10 12 L 28 9 L 38 0 Q 41 -3 47 -3 L 66 -3 Q 72 -3 75 0 L 85 9 L 96 12 Q 104 14 104 22 L 104 40 Q 104 46 98 46 L 6 46 Q 0 46 0 40 Z" fill="url(#dataGradient)" stroke="#fff" stroke-width="1.5" filter="url(#glow)" />
     <path d="M 33 9 L 41 -1 L 63 -1 L 71 9 Z" fill="#e8f7ff" opacity="0.95" />
     <use xlink:href="#carIntrinsic" />
@@ -212,57 +237,57 @@
     <circle cx="80" cy="46" r="5" fill="#8b93b0" />
   </g>
   <!-- sparkles -->
-  <path d="M 0 -9 L 2.2 -2.2 L 9 0 L 2.2 2.2 L 0 9 L -2.2 2.2 L -9 0 L -2.2 -2.2 Z" transform="translate(1045,290)" fill="#ffffff" filter="url(#glow)" />
-  <path d="M 0 -7 L 1.8 -1.8 L 7 0 L 1.8 1.8 L 0 7 L -1.8 1.8 L -7 0 L -1.8 -1.8 Z" transform="translate(1172,296)" fill="#ffffff" opacity="0.9" />
-  <path d="M 0 -5 L 1.3 -1.3 L 5 0 L 1.3 1.3 L 0 5 L -1.3 1.3 L -5 0 L -1.3 -1.3 Z" transform="translate(1102,272)" fill="#ffffff" opacity="0.8" />
-  <text x="1100" y="405" text-anchor="middle" class="mono" font-size="11" fill="#7bed9f">WAXED</text>
+  <path d="M 0 -9 L 2.2 -2.2 L 9 0 L 2.2 2.2 L 0 9 L -2.2 2.2 L -9 0 L -2.2 -2.2 Z" transform="translate(1025,290)" fill="#ffffff" filter="url(#glow)" />
+  <path d="M 0 -7 L 1.8 -1.8 L 7 0 L 1.8 1.8 L 0 7 L -1.8 1.8 L -7 0 L -1.8 -1.8 Z" transform="translate(1152,296)" fill="#ffffff" opacity="0.9" />
+  <path d="M 0 -5 L 1.3 -1.3 L 5 0 L 1.3 1.3 L 0 5 L -1.3 1.3 L -5 0 L -1.3 -1.3 Z" transform="translate(1082,272)" fill="#ffffff" opacity="0.8" />
+  <text x="1080" y="405" text-anchor="middle" class="mono" font-size="11" fill="#7bed9f">WAXED</text>
 
   <!-- wash stations: standalone functions the data passes through -->
-  <!-- station 1: scrub() — hanging brushes -->
+  <!-- station 1: scrub(car) — hanging brushes -->
   <g filter="url(#shadow)">
-    <rect x="652" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <rect x="742" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <rect x="645" y="172" width="112" height="14" rx="5" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <line x1="700" y1="186" x2="700" y2="268" stroke="#3a3f5c" stroke-width="4" />
-    <rect x="665" y="268" width="70" height="30" rx="12" fill="#3fd0c9" stroke="#fff" stroke-width="1.5" />
-    <line x1="682" y1="270" x2="682" y2="296" stroke="#2a9d97" stroke-width="3" />
-    <line x1="700" y1="270" x2="700" y2="296" stroke="#2a9d97" stroke-width="3" />
-    <line x1="718" y1="270" x2="718" y2="296" stroke="#2a9d97" stroke-width="3" />
+    <rect x="752" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <rect x="842" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <rect x="745" y="172" width="112" height="14" rx="5" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <line x1="800" y1="186" x2="800" y2="268" stroke="#3a3f5c" stroke-width="4" />
+    <rect x="765" y="268" width="70" height="30" rx="12" fill="#3fd0c9" stroke="#fff" stroke-width="1.5" />
+    <line x1="782" y1="270" x2="782" y2="296" stroke="#2a9d97" stroke-width="3" />
+    <line x1="800" y1="270" x2="800" y2="296" stroke="#2a9d97" stroke-width="3" />
+    <line x1="818" y1="270" x2="818" y2="296" stroke="#2a9d97" stroke-width="3" />
   </g>
-  <text x="700" y="163" text-anchor="middle" class="station">scrub()</text>
+  <text x="800" y="163" text-anchor="middle" class="station">scrub(car)</text>
 
-  <!-- station 2: wax() — soap nozzles raining foam -->
+  <!-- station 2: wax(car) — soap nozzles raining foam -->
   <g filter="url(#shadow)">
-    <rect x="852" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <rect x="942" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <rect x="845" y="172" width="112" height="14" rx="5" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <path d="M 875 186 l 8 12 l -16 0 z" fill="#4a5070" />
-    <path d="M 900 186 l 8 12 l -16 0 z" fill="#4a5070" />
-    <path d="M 925 186 l 8 12 l -16 0 z" fill="#4a5070" />
+    <rect x="892" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <rect x="982" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <rect x="885" y="172" width="112" height="14" rx="5" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <path d="M 915 186 l 8 12 l -16 0 z" fill="#4a5070" />
+    <path d="M 940 186 l 8 12 l -16 0 z" fill="#4a5070" />
+    <path d="M 965 186 l 8 12 l -16 0 z" fill="#4a5070" />
   </g>
   <g fill="#ffffff" opacity="0.75">
-    <circle cx="878" cy="215" r="4" /><circle cx="902" cy="225" r="5" />
-    <circle cx="928" cy="212" r="4" /><circle cx="890" cy="250" r="4" />
-    <circle cx="915" cy="265" r="5" /><circle cx="882" cy="285" r="4" />
-    <circle cx="905" cy="298" r="4" /><circle cx="930" cy="250" r="3" />
+    <circle cx="918" cy="215" r="4" /><circle cx="942" cy="225" r="5" />
+    <circle cx="968" cy="212" r="4" /><circle cx="930" cy="250" r="4" />
+    <circle cx="955" cy="265" r="5" /><circle cx="922" cy="285" r="4" />
+    <circle cx="945" cy="298" r="4" /><circle cx="970" cy="250" r="3" />
   </g>
-  <text x="900" y="163" text-anchor="middle" class="station">wax()</text>
+  <text x="940" y="163" text-anchor="middle" class="station">wax(car)</text>
 
-  <!-- station 3: dry() — dryer fan + airflow -->
+  <!-- station 3: dry(car) — dryer fan + airflow -->
   <g filter="url(#shadow)">
-    <rect x="1052" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <rect x="1142" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <rect x="1045" y="172" width="112" height="14" rx="5" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
-    <circle cx="1100" cy="208" r="16" fill="url(#metalGradient)" stroke="#fff" stroke-width="1.5" />
-    <path d="M 1100 208 L 1100 196 M 1100 208 L 1110 214 M 1100 208 L 1090 214" stroke="#4a5070" stroke-width="3.5" stroke-linecap="round" />
-    <circle cx="1100" cy="208" r="4" fill="#4a5070" />
+    <rect x="1032" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <rect x="1122" y="185" width="12" height="185" rx="4" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <rect x="1025" y="172" width="112" height="14" rx="5" fill="url(#metalGradient)" stroke="#fff" stroke-width="1" />
+    <circle cx="1080" cy="208" r="16" fill="url(#metalGradient)" stroke="#fff" stroke-width="1.5" />
+    <path d="M 1080 208 L 1080 196 M 1080 208 L 1090 214 M 1080 208 L 1070 214" stroke="#4a5070" stroke-width="3.5" stroke-linecap="round" />
+    <circle cx="1080" cy="208" r="4" fill="#4a5070" />
   </g>
   <g stroke="#9adfff" stroke-width="2" opacity="0.6" stroke-linecap="round">
-    <line x1="1078" y1="232" x2="1078" y2="288" />
-    <line x1="1100" y1="232" x2="1100" y2="292" />
-    <line x1="1122" y1="232" x2="1122" y2="288" />
+    <line x1="1058" y1="232" x2="1058" y2="288" />
+    <line x1="1080" y1="232" x2="1080" y2="292" />
+    <line x1="1102" y1="232" x2="1102" y2="288" />
   </g>
-  <text x="1100" y="163" text-anchor="middle" class="station">dry()</text>
+  <text x="1080" y="163" text-anchor="middle" class="station">dry(car)</text>
 
   <!-- FP caption -->
   <text x="905" y="432" text-anchor="middle" class="label" font-size="12" opacity="0.55">it still keeps <tspan class="mono">start()</tspan> and <tspan class="mono">lockDoors()</tspan> — that's what a car is</text>
