@@ -1,12 +1,12 @@
 ---
-title: "Data-Oriented Programming in Java: Move Data to Functions, Not Functions to Data"
+title: "Data-Oriented Programming in Java: Move Data to Functions"
 date: 2026-10-11
 draft: true
 description: "Separate data from behavior in Java: immutable records through pure functions — simpler tests, easy composition. Measured benchmark of the real cost."
 tags: ["java", "functional programming", "design patterns", "data-oriented programming"]
 categories: ["java", "functional programming"]
 featureImage: 'fp_data_oriented.svg' # Top image on post.
-shareImage: 'fp_data_oriented.png' # For SEO and social media snippets.
+shareImage: 'fp_data_oriented.jpg' # For SEO and social media snippets.
 featureImageAlt: 'Data-oriented programming in Java: moving data to functions' # Alternative text for featured image.
 sourceCode: 'https://github.com/mmarko88/blog-examples' # Renders source-code card above comments.
 toc: true
@@ -33,7 +33,7 @@ class Order {
     
     public BigDecimal calculateTotal() {
         return items.stream()
-            .map(Item::price)
+            .map(item -> item.price().multiply(BigDecimal.valueOf(item.quantity())))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     
@@ -63,7 +63,7 @@ record Order(List<Item> items, Customer customer) {}
 // Functions are separate and operate on data
 BigDecimal calculateTotal(Order order) {
     return order.items().stream()
-        .map(Item::price)
+        .map(item -> item.price().multiply(BigDecimal.valueOf(item.quantity())))
         .reduce(BigDecimal.ZERO, BigDecimal::add);
 }
 
@@ -97,7 +97,7 @@ interface ItemContainer {
 // Now the function works with any type implementing ItemContainer
 BigDecimal calculateTotal(ItemContainer container) {
     return container.items().stream()
-        .map(Item::price)
+        .map(item -> item.price().multiply(BigDecimal.valueOf(item.quantity())))
         .reduce(BigDecimal.ZERO, BigDecimal::add);
 }
 
@@ -119,13 +119,14 @@ The benefit is that functions are decoupled from specific classes - they depend 
 Functions can be easily composed together to create complex transformations:
 
 ```java
-Order processOrder(Order order) {
-    return Optional.of(order)
-        .map(o -> validateOrder(o))
-        .map(o -> applyDiscount(o, new BigDecimal("0.9")))
-        .map(o -> calculateTax(o, new BigDecimal("0.21")))
-        .orElseThrow(() -> new IllegalArgumentException("Invalid order"));
-}
+// Compose small functions into a pipeline
+Function<Order, Order> discount10 =
+    order -> applyDiscount(order, new BigDecimal("0.9"));
+
+Function<Order, BigDecimal> totalAfterDiscount =
+    discount10.andThen(o -> calculateTotal(o));
+
+BigDecimal total = totalAfterDiscount.apply(order);
 ```
 
 Each function takes data, transforms it, and passes the result to the next function. The data flows through a pipeline of functions.
@@ -291,12 +292,12 @@ Order completeOrder(Order order) {
 
 ```java
 Order processOrder(Order order, BigDecimal discountRate, BigDecimal taxRate) {
-    return Optional.of(order)
+    return Optional.ofNullable(order)
         .map(this::validateOrder)
         .map(o -> applyDiscount(o, discountRate))
         .map(o -> calculateTax(o, taxRate))
         .map(this::completeOrder)
-        .orElseThrow(() -> new IllegalArgumentException("Order processing failed"));
+        .orElseThrow(() -> new IllegalArgumentException("Order must not be null"));
 }
 ```
 
@@ -328,13 +329,9 @@ flowchart LR
     S2 --> S3
     S3 --> S4
     S4 --> E@{ shape: "circ", label: "END" }
-    classDef fn fill:transparent,stroke:#1d70a2,stroke-dasharray:4 4
-    classDef terminal fill:#1d70a2,color:#fff,stroke:#1d70a2
     class F1,F2,F3,F4 fn
     class C terminal
-    classDef endcap fill:#1d70a2,color:#fff,stroke:#1d70a2,font-size:11px
     class E endcap
-    linkStyle 4,5,6,7,8 stroke:#1d70a2,stroke-width:6px
 ```
 
 ## What It Actually Costs: Measured
