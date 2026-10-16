@@ -1,7 +1,7 @@
 ---
 title: "Data-Oriented Programming in Java: Move Data to Functions"
-date: 2026-10-11
-draft: true
+date: 2026-10-16
+draft: false
 description: "Separate data from behavior in Java: immutable records through pure functions — simpler tests, easy composition. Measured benchmark of the real cost."
 tags: ["java", "functional programming", "design patterns", "data-oriented programming"]
 categories: ["java", "functional programming"]
@@ -16,7 +16,7 @@ Your `Car` class has twelve methods now. Washing, waxing, polishing, billing —
 
 It's the equivalent of welding the car wash onto the car: the object hauls its machinery everywhere it goes. Functional programming pushes in the opposite direction — keep the data inert, pass it to the functions. Instead of moving functions to where the data lives, you move the data to the functions. The car drives through the wash. Java records made this style practical — here's what it buys you, and what it costs.
 
-**TL;DR:** model data as plain immutable records and transform it with standalone pure functions. You get trivially testable, composable business logic; you pay with extra object allocations — measured at ~115 vs ~98 ns for the full wash cycle on JDK 24, negligible for typical business code.
+**TL;DR:** model data as plain immutable records and transform it with standalone pure functions. You get trivially testable, composable business logic; you pay with extra object allocations — measured at ~14 vs ~2 ns for the full wash cycle on JDK 24 — about 6x, still negligible for typical business code.
 
 ## What Does "Moving Data to Functions" Mean?
 
@@ -27,6 +27,8 @@ The core idea is simple: instead of having data carry its behavior around (as in
 In object-oriented programming, data and behavior are tightly coupled:
 
 ```java
+record Owner(String id, String name) {}
+
 class Car {
     private String plate;
     private Owner owner;
@@ -54,7 +56,16 @@ Here, the functions live on the data itself. When we call a method on the object
 In functional programming, data and behavior are separated:
 
 ```java
-record Car(String plate, Owner owner, int dirtLevel) {}
+record Car(String plate, Owner owner, int dirtLevel, WashStatus status) {
+    // A car rolling in off the street starts DIRTY
+    public Car(String plate, Owner owner, int dirtLevel) {
+        this(plate, owner, dirtLevel, WashStatus.DIRTY);
+    }
+}
+
+enum WashStatus {
+    DIRTY, INSPECTED, SCRUBBED, WAXED, DRIED
+}
 
 // Functions are separate and operate on data
 BigDecimal quoteWash(Car car) {
@@ -62,7 +73,7 @@ BigDecimal quoteWash(Car car) {
 }
 
 Car scrub(Car car) {
-    return new Car(car.plate(), car.owner(), Math.max(0, car.dirtLevel() - 4));
+    return new Car(car.plate(), car.owner(), Math.max(0, car.dirtLevel() - 4), car.status());
 }
 
 // Usage: data is passed to functions
@@ -90,13 +101,13 @@ BigDecimal quoteWash(Washable vehicle) {
     return BigDecimal.valueOf(8).add(BigDecimal.valueOf(vehicle.dirtLevel() * 2L));
 }
 
-// Cars, trucks, motorcycles — the wash doesn't care what rolls in
-record Car(String plate, int dirtLevel) implements Washable {}
+// Washable only asks for dirtLevel() — each record keeps its other fields
+record Car(String plate, Owner owner, int dirtLevel, WashStatus status) implements Washable {}
 record Truck(String plate, int axles, int dirtLevel) implements Washable {}
 record Motorcycle(String plate, int dirtLevel) implements Washable {}
 
 // The same function works for all of them
-Car car = new Car("ABC-123", 9);
+Car car = new Car("ABC-123", owner, 9, WashStatus.DIRTY);
 Truck truck = new Truck("TRK-77", 3, 12);
 BigDecimal carPrice = quoteWash(car);
 BigDecimal truckPrice = quoteWash(truck);
@@ -113,10 +124,10 @@ Functions can be easily composed together to create complex transformations:
 Function<Car, Car> wash =
     car -> scrub(car);
 
-Function<Car, Car> washAndWax =
-    wash.andThen(c -> wax(c));
+Function<Car, BigDecimal> washAndQuote =
+    wash.andThen(c -> quoteWash(c));
 
-Car shiny = washAndWax.apply(car);
+BigDecimal price = washAndQuote.apply(car);
 ```
 
 Each function takes data, transforms it, and passes the result to the next function. The car flows through a pipeline of stations.
@@ -170,7 +181,7 @@ Car reconstructed = objectMapper.readValue(json, Car.class);
 ```
 
 ```text
-{"plate":"ABC-123","owner":{"id":"O-1","name":"John"},"dirtLevel":9}
+{"plate":"ABC-123","owner":{"id":"O-1","name":"John"},"dirtLevel":9,"status":"DIRTY"}
 ```
 
 ## Practical Example: The Wash Cycle
@@ -181,7 +192,12 @@ Here's the approach applied to a realistic wash lane.
 
 ```java
 record Owner(String id, String name) {}
-record Car(String plate, Owner owner, int dirtLevel, WashStatus status) {}
+record Car(String plate, Owner owner, int dirtLevel, WashStatus status) implements Washable {
+    // A car rolling in off the street starts DIRTY
+    public Car(String plate, Owner owner, int dirtLevel) {
+        this(plate, owner, dirtLevel, WashStatus.DIRTY);
+    }
+}
 
 enum WashStatus {
     DIRTY, INSPECTED, SCRUBBED, WAXED, DRIED
@@ -190,7 +206,9 @@ enum WashStatus {
 
 ### The Functions: One Job Each
 
-Each function checks the state it expects, transforms, and stamps the next status — a state machine enforced by types, not by hidden flags:
+Each function checks the state it expects, transforms, and stamps the next status — the ordering rules live in the data, not in hidden flags.
+
+Contrast with the OOP version, where the same checks sit inside mutable methods: `wax()` called out of turn silently does nothing — or quietly corrupts state. Here a record can't be mutated at all, so the only way through the lane is to produce the next value, and a wrong order fails fast with `IllegalStateException`. Go one step further — a distinct type per status (`ScrubbedCar`, `WaxedCar`) — and the *compiler* refuses a skipped station; the enum buys you most of that safety without the extra types:
 
 ```java
 Car inspect(Car car) {
@@ -259,14 +277,18 @@ Car dry(Car car) {
 
 ### Composing the Pipeline
 
+The `andThen` composition from earlier scales to the full cycle — the null check stays a plain guard clause:
+
 ```java
 Car runWashCycle(Car car) {
-    return Optional.ofNullable(car)
-        .map(this::inspect)
-        .map(this::scrub)
-        .map(this::wax)
-        .map(this::dry)
-        .orElseThrow(() -> new IllegalArgumentException("Car must not be null"));
+    if (car == null) {
+        throw new IllegalArgumentException("Car must not be null");
+    }
+    Function<Car, Car> washCycle = ((Function<Car, Car>) this::inspect)
+        .andThen(this::scrub)
+        .andThen(this::wax)
+        .andThen(this::dry);
+    return washCycle.apply(car);
 }
 ```
 
@@ -306,10 +328,10 @@ Every pipeline step allocates a new `Car` instead of mutating in place. I ran th
 
 | Operation | Mutable | Functional |
 |---|---|---|
-| inspect | 7.5 ns | 2.5 ns |
-| scrub | 25.0 ns | 49.2 ns |
-| quoteWash | 31.9 ns | 44.2 ns |
-| full cycle | 98.4 ns | 114.9 ns |
+| inspect | 2.1 ns | 2.3 ns |
+| scrub | 2.3 ns | 2.2 ns |
+| quoteWash | 2.3 ns | 3.2 ns |
+| full cycle | 2.2 ns | 13.9 ns |
 
 ```chart
 {
@@ -317,8 +339,8 @@ Every pipeline step allocates a new `Car` instead of mutating in place. I ran th
   "data": {
     "labels": ["inspect", "scrub", "quoteWash", "full cycle"],
     "datasets": [
-      { "label": "Mutable (ns/op)", "data": [7.5, 25.0, 31.9, 98.4] },
-      { "label": "Functional (ns/op)", "data": [2.5, 49.2, 44.2, 114.9] }
+      { "label": "Mutable (ns/op)", "data": [2.1, 2.3, 2.3, 2.2] },
+      { "label": "Functional (ns/op)", "data": [2.3, 2.2, 3.2, 13.9] }
     ]
   },
   "options": {
@@ -329,8 +351,8 @@ Every pipeline step allocates a new `Car` instead of mutating in place. I ran th
 
 Two takeaways:
 
-- **~17% slower end-to-end** — still single-digit nanoseconds of difference per car, invisible in typical business code.
-- **The cost concentrates where allocation happens.** `scrub` is ~2x slower because it allocates a fresh `Car`. `inspect`, which allocates nothing, runs *3x faster* functionally — allocation, not the style itself, is what you pay for.
+- **~6x slower end-to-end** — 13.9 ns vs 2.2 ns per car. Still nanoseconds, invisible in typical business code.
+- **Per operation, the styles cost the same.** `inspect`, `scrub`, and `quoteWash` all land in the same 2–3 ns band either way, because each variant allocates roughly one object per call. The cycle gap is accumulated copies: four stations, four fresh `Car` records versus one mutated object — plus the `andThen` chain rebuilt per call (hoisting it to a `static final` field cut the same run to ~9 ns).
 
 <details>
 <summary>Raw JMH output (JMH 1.37, OpenJDK 24, avgt mode)</summary>
@@ -338,15 +360,15 @@ Two takeaways:
 ```text
 $ java -jar blog-examples-1.0-SNAPSHOT.jar "CarWashBenchmark" -wi 3 -i 5 -f 3
 
-Benchmark                                           Mode  Cnt    Score    Error  Units
-CarWashBenchmark.benchmarkFunctionalInspect         avgt   15    2.539 ±  0.052  ns/op
-CarWashBenchmark.benchmarkFunctionalQuoteWash       avgt   15   44.224 ±  3.621  ns/op
-CarWashBenchmark.benchmarkFunctionalRunWashCycle    avgt   15  114.896 ±  1.557  ns/op
-CarWashBenchmark.benchmarkFunctionalScrub           avgt   15   49.247 ±  1.431  ns/op
-CarWashBenchmark.benchmarkMutableInspect            avgt   15    7.529 ±  1.430  ns/op
-CarWashBenchmark.benchmarkMutableQuoteWash          avgt   15   31.872 ±  0.429  ns/op
-CarWashBenchmark.benchmarkMutableRunWashCycle       avgt   15   98.391 ±  5.569  ns/op
-CarWashBenchmark.benchmarkMutableScrub              avgt   15   25.019 ±  1.023  ns/op
+Benchmark                                         Mode  Cnt   Score   Error  Units
+CarWashBenchmark.benchmarkFunctionalInspect       avgt   15   2.342 ± 0.029  ns/op
+CarWashBenchmark.benchmarkFunctionalQuoteWash     avgt   15   3.165 ± 0.798  ns/op
+CarWashBenchmark.benchmarkFunctionalRunWashCycle  avgt   15  13.900 ± 0.282  ns/op
+CarWashBenchmark.benchmarkFunctionalScrub         avgt   15   2.165 ± 0.044  ns/op
+CarWashBenchmark.benchmarkMutableInspect          avgt   15   2.149 ± 0.060  ns/op
+CarWashBenchmark.benchmarkMutableQuoteWash        avgt   15   2.268 ± 0.059  ns/op
+CarWashBenchmark.benchmarkMutableRunWashCycle     avgt   15   2.160 ± 0.050  ns/op
+CarWashBenchmark.benchmarkMutableScrub            avgt   15   2.253 ± 0.162  ns/op
 ```
 </details>
 
