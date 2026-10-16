@@ -1,12 +1,12 @@
 ---
-title: "Data-Oriented Programming in Java: Move Data to Functions, Not Functions to Data"
+title: "Data-Oriented Programming in Java: Move Data to Functions"
 date: 2026-10-11
 draft: true
 description: "Separate data from behavior in Java: immutable records through pure functions — simpler tests, easy composition. Measured benchmark of the real cost."
 tags: ["java", "functional programming", "design patterns", "data-oriented programming"]
 categories: ["java", "functional programming"]
 featureImage: 'fp_data_oriented.svg' # Top image on post.
-shareImage: 'fp_data_oriented.png' # For SEO and social media snippets.
+shareImage: 'fp_data_oriented.jpg' # For SEO and social media snippets.
 featureImageAlt: 'A car with a whole car wash bolted onto it versus a car driving through the wash — moving data to functions' # Alternative text for featured image.
 sourceCode: 'https://github.com/mmarko88/blog-examples' # Renders source-code card above comments.
 toc: true
@@ -109,13 +109,14 @@ The benefit is that functions are decoupled from specific classes - they depend 
 Functions can be easily composed together to create complex transformations:
 
 ```java
-Car runWashCycle(Car car) {
-    return Optional.of(car)
-        .map(o -> inspect(o))
-        .map(o -> scrub(o))
-        .map(o -> wax(o))
-        .orElseThrow(() -> new IllegalArgumentException("Wash refused"));
-}
+// Compose small functions into a pipeline
+Function<Car, Car> wash =
+    car -> scrub(car);
+
+Function<Car, Car> washAndWax =
+    wash.andThen(c -> wax(c));
+
+Car shiny = washAndWax.apply(car);
 ```
 
 Each function takes data, transforms it, and passes the result to the next function. The car flows through a pipeline of stations.
@@ -260,12 +261,12 @@ Car dry(Car car) {
 
 ```java
 Car runWashCycle(Car car) {
-    return Optional.of(car)
+    return Optional.ofNullable(car)
         .map(this::inspect)
         .map(this::scrub)
         .map(this::wax)
         .map(this::dry)
-        .orElseThrow(() -> new IllegalArgumentException("Wash cycle failed"));
+        .orElseThrow(() -> new IllegalArgumentException("Car must not be null"));
 }
 ```
 
@@ -297,13 +298,6 @@ flowchart LR
     S2 --> S3
     S3 --> S4
     S4 --> E@{ shape: "circ", label: "END" }
-    classDef fn fill:transparent,stroke:#1d70a2,stroke-dasharray:4 4
-    classDef terminal fill:#1d70a2,color:#fff,stroke:#1d70a2
-    class F1,F2,F3,F4 fn
-    class C terminal
-    classDef endcap fill:#1d70a2,color:#fff,stroke:#1d70a2,font-size:11px
-    class E endcap
-    linkStyle 4,5,6,7,8 stroke:#1d70a2,stroke-width:6px
 ```
 
 ## What It Actually Costs: Measured
