@@ -10,6 +10,7 @@ tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
 featured: true
+sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part4-bulk-copy-parameter'
 ---
 
 In previous discussions, we established that bulk insert and multi-value batched inserts represent the 

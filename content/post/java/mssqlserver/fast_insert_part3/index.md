@@ -9,6 +9,7 @@ shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media s
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part3-multivalue-insert'
 ---
 
 In a previous post, we concluded that the Bulk API insert is the fastest way
