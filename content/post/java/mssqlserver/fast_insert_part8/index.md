@@ -180,6 +180,8 @@ This means you must choose one or the other:
 
 Both are excellent optimizations, but they cannot be combined.
 
+![Strategy Ranking](strategy_ranking.svg)
+
 ## Final Rankings: All Strategies Combined
 
 | Rank | Strategy | 100k avg ms | Part | Notes |
@@ -231,6 +233,21 @@ Both are excellent optimizations, but they cannot be combined.
 
 8. **Batch size sweet spot is 500-1000** for most strategies. Below 200, overhead dominates; above
    1000, diminishing returns.
+
+9. **Multi-value objectsPerInsert sweet spot is 200** — beyond that, SQL parser overhead increases
+   faster than network savings decrease.
+
+10. **Compression hurts inserts** — ROW (+7%) and PAGE (+33%) compression add CPU overhead that
+    outweighs I/O savings for writes. Save compression for read-heavy tables.
+
+11. **BCP (843ms) is slower than Java Bulk API (691ms)** for in-memory data — file I/O is the
+    bottleneck, not the protocol.
+
+12. **Concurrent readers slow inserts 2.5x** — use TABLOCK for dedicated bulk-load windows to
+    prevent reader contention.
+
+13. **Columnstore tables are 3.5x slower** for OLTP-style inserts — the delta store overhead only
+    pays off at analytical query time.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.

@@ -64,6 +64,8 @@ for connections. The default pool size (10) is fine for up to 10 threads.
 | 8 | 434 | 2.7x |
 | 16 | 442 | 2.6x |
 
+![Thread Count Scaling](thread_scaling.svg)
+
 **4 threads is the sweet spot** for Bulk API. Going to 8 threads helps slightly, but 16 threads is
 actually marginally slower — the SQL Server bulk copy engine saturates the I/O subsystem and
 additional threads just add contention.
@@ -127,6 +129,30 @@ test, each thread gets a distinct partition so IDs don't overlap.
 **Lock contention:** SQL Server uses row-level locking for INSERTs by default. You won't get table
 locks unless you're inserting into the same page from many threads simultaneously with very small
 rows.
+
+## Concurrent Reads During Insert
+
+In production, tables aren't idle during bulk loads — other sessions are reading. How much does
+concurrent reading impact insert performance?
+
+| Scenario | Bulk API (avg ms) |
+|----------|------------------|
+| No concurrent reads | 814 |
+| 4 reader threads (SELECT COUNT/AVG) | **2,037** (2.5x slower) |
+
+**Concurrent readers slow inserts by 2.5x**, even when readers use `WITH (NOLOCK)`. The slowdown
+comes from I/O contention and SQL Server's latch management on the data pages being written.
+
+**TABLOCK hint** can help here — it acquires a table-level lock that prevents readers entirely,
+allowing uninterrupted bulk insertion:
+
+| Hint | JDBC batch (avg ms) |
+|------|-------------------|
+| No hint (row locks) | 4,240 |
+| `WITH (TABLOCK)` | **2,991** (30% faster) |
+
+Trade-off: TABLOCK blocks all other writers AND readers during the insert. Use it only for dedicated
+bulk load windows.
 
 ## Summary
 

@@ -80,6 +80,8 @@ The indexes represent a mix of:
 | 3 | 7,563 | +136% |
 | 5 | 8,564 | +167% |
 
+![Index Impact](index_impact.svg)
+
 ## Analysis
 
 ### Bulk API is the most sensitive
@@ -127,6 +129,99 @@ when index maintenance dominates the insert cost.
 
 Indexes are the hidden cost of bulk inserts. A table with 5 non-clustered indexes is **6-7x slower**
 to insert into than a table with only a primary key, regardless of strategy.
+
+## Bonus: Row Size, Compression, and Columnstore
+
+### Row size impact
+
+Wider rows = proportionally slower inserts, regardless of strategy:
+
+| Row Type | Columns | ~Row Size | 100k rows (avg ms) |
+|----------|---------|-----------|-------------------|
+| Narrow (person) | 5 | ~60 bytes | 3,699 |
+| Wide (20 cols) | 17 | ~1.5 KB | 6,952 (1.9x slower) |
+| LOB (NVARCHAR(MAX)) | 7 | ~3 KB | 9,834 (2.7x slower per row, 50k rows) |
+
+LOB columns (NVARCHAR(MAX)) force row-overflow storage and out-of-row allocation, adding
+significant I/O overhead beyond the raw data size increase.
+
+![Row Size & Compression](row_compression.svg)
+
+### Data compression
+
+SQL Server supports ROW and PAGE compression on tables:
+
+| Compression | 100k rows (avg ms) | vs None |
+|-------------|-------------------|---------|
+| None | 2,417 | — |
+| ROW | 2,595 | +7% slower |
+| PAGE | 3,229 | +33% slower |
+
+**Compression makes inserts slower**, not faster. The CPU overhead of compressing each row or page
+outweighs any I/O savings. For narrow rows like our `person` table, compression adds cost without
+meaningful space savings. Compression is a read optimization (smaller pages = faster scans), not a
+write optimization.
+
+### Columnstore index
+
+Columnstore indexes store data in compressed column segments rather than row pages. They excel at
+analytical queries but have different insert characteristics:
+
+| Table Type | Batch Size | 100k rows (avg ms) |
+|------------|-----------|-------------------|
+| B-tree (clustered PK) | 1,000 | 2,417 |
+| Columnstore | 1,000 | 8,402 (3.5x slower) |
+| Columnstore | 5,000 | 4,880 (2x slower) |
+
+Columnstore inserts are slower because data goes into a **delta store** (a hidden B-tree rowgroup)
+until it reaches ~1 million rows, then gets compressed into a columnstore segment. Larger batch
+sizes help because they fill the delta store faster, triggering compression sooner.
+
+### Heap + TABLOCK (minimal logging)
+
+A heap table (no clustered index) with the TABLOCK hint enables minimal logging in SIMPLE/BULK_LOGGED
+recovery mode:
+
+| Table | Hint | 100k rows (avg ms) |
+|-------|------|-------------------|
+| Clustered PK (person) | None | 2,401 |
+| Clustered PK (person) | TABLOCK | 2,185 (9% faster) |
+| Heap (no PK) | None | 4,073 |
+| Heap (no PK) | TABLOCK | 2,579 (37% faster) |
+
+The heap without TABLOCK is surprisingly slow — without a clustered index, SQL Server uses IAM-driven
+allocation which leads to page contention. TABLOCK fixes this by allowing bulk allocation. But a
+clustered table with TABLOCK is still fastest overall.
+
+### BCP (bcp.exe) — the external baseline
+
+The `bcp` command-line utility is SQL Server's native bulk loader:
+
+```bash
+bcp testdb.dbo.person in data.txt -c -t"\t" -S localhost,1433 -U weblogic -P weblogic -b 1000
+```
+
+| Method | 100k rows (avg ms) |
+|--------|-------------------|
+| BCP utility | **843** |
+| Java Bulk API | 691 |
+| Java parallel Bulk API 4t | 330 |
+
+**BCP (843ms) is slower than the Java Bulk API (691ms).** This is because BCP reads from a flat file
+(disk I/O) while our Java tests generate data in memory. BCP also does not parallelize across
+connections. The Java Bulk API over in-memory data is the actual performance ceiling.
+
+### Temp table staging
+
+A common ETL pattern: INSERT into a heap temp table, then INSERT-SELECT into the real table:
+
+| Method | 100k rows (avg ms) |
+|--------|-------------------|
+| Direct insert | 2,401 |
+| Temp table staging | 4,822 (2x slower) |
+
+**Staging is slower for simple inserts** because you're writing data twice. It's useful when you need
+to validate, deduplicate, or transform data before loading — not for raw throughput.
 
 Next: [Part 8 — TVP and Plain JDBC](/post/java/mssqlserver/fast_insert_part8/) explores
 Table-Valued Parameters and bare-metal JDBC without any ORM overhead.

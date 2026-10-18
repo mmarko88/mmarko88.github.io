@@ -172,6 +172,8 @@ of 50) reveals the actual inflection points:
 | 400 | 1,196 | | 1400 | 675 |
 | 500 | 980 | | 2000 | **618** |
 
+![Batch Size Sweep](batch_sweep.svg)
+
 **Bulk API:** diminishing returns past 500. The sweet spot is 500-2000 with wide variance
 (single-run noise). Use 1000 as a safe default.
 
@@ -187,6 +189,44 @@ of 50) reveals the actual inflection points:
 **JdbcTemplate:** optimal at 700, with minimal improvement past 500. Larger batches (1000+) don't
 help because the driver's TCP buffer and SQL Server's batch processing saturate around 500-800 rows.
 
+## Multi-Value Sweet Spot
+
+[Part 3](/post/java/mssqlserver/fast_insert_part3/) showed that multi-value INSERT
+(`objectsPerInsert > 1`) is much faster than single-row inserts. But what's the optimal value?
+A fine-grained sweep reveals:
+
+| objectsPerInsert | Avg ms | vs single-row |
+|-----------------|--------|---------------|
+| 1 | 3,984 | — |
+| 10 | 1,711 | 2.3x faster |
+| 50 | 1,038 | 3.8x |
+| 100 | 983 | 4.1x |
+| **200** | **828** | **4.8x fastest** |
+| 300 | 1,033 | 3.9x |
+| 400 | 1,360 | 2.9x |
+
+![Multi-Value Sweep](multivalue_sweep.svg)
+
+**Optimal: 200 values per INSERT.** After 200, SQL Server's query parser overhead for the growing
+SQL string outweighs the network round-trip savings. The sweet spot is 100-200 — enough to amortize
+per-statement overhead without overwhelming the parser.
+
+Remember: SQL Server's maximum parameter count is 2,100. With 5 columns per row,
+`objectsPerInsert` cannot exceed 420 (2100/5 = 420).
+
+## Connection String: sendStringParametersAsUnicode
+
+Setting `sendStringParametersAsUnicode=false` in the JDBC URL tells the driver to send string
+parameters as VARCHAR instead of NVARCHAR. This can help when your table has VARCHAR columns
+(avoids implicit conversion), but **has no effect on NVARCHAR columns**:
+
+| Strategy | Unicode (default) | sendStringParametersAsUnicode=false |
+|----------|-------------------|-------------------------------------|
+| Bulk API | 691ms | 812ms (no improvement) |
+| JdbcTemplate | 3,699ms | 3,892ms (no improvement) |
+
+If your columns are NVARCHAR, skip this setting.
+
 ## Summary
 
 | Technique | What it does | Impact |
@@ -196,6 +236,7 @@ help because the driver's TCP buffer and SQL Server's batch processing saturate 
 | `+ bulkCopy=true` | Transparent bulk copy for all batch strategies | **2-2.5x faster** everything |
 | `provider_disables_autocommit` | Skips setAutoCommit round-trip | **14% faster** saveAll only |
 | Batch size 500-1000 | Sweet spot for most strategies | Diminishing returns past 1000 |
+| objectsPerInsert = 200 | Multi-value INSERT sweet spot | **4.8x faster** than single-row |
 
 The answer to "how close can Hibernate get to raw JDBC?" is: **very close**. StatelessSession with
 bulkCopy=true closes 80% of the gap. The remaining 20% is the price of Hibernate's SQL generation
