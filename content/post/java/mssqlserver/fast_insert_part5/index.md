@@ -136,6 +136,57 @@ batches to SQL Server's Bulk Copy protocol. It works with StatelessSession too:
 (492ms), while still using Hibernate's mapping metadata. For applications that need ORM convenience
 with near-JDBC performance, this is the sweet spot.
 
+## provider_disables_autocommit
+
+The `hibernate.connection.provider_disables_autocommit` setting tells Hibernate that the connection
+pool already disabled auto-commit, skipping the `setAutoCommit(false)` JDBC round-trip per
+transaction. To use it, you need both:
+
+```properties
+spring.jpa.properties.hibernate.connection.provider_disables_autocommit=true
+spring.datasource.hikari.auto-commit=false
+```
+
+| Strategy | Normal | +noAutoCommit | Speedup |
+|----------|--------|---------------|---------|
+| Hibernate persist | 4,048 | 4,094 | None |
+| Persistable saveAll | 3,426 | **2,956** | **14%** |
+
+**Verdict: negligible for persist, modest for saveAll.** The saved round-trip is only measurable
+when there are many small transactions (saveAll with frequent flushes) rather than one large batch
+(persist). Not worth the configuration complexity unless you have a very specific transactional
+pattern.
+
+## Batch Size Sweet Spot
+
+Parts 1-4 tested batch sizes of 10, 100, 1000, and 5000. A fine-grained sweep (50-2000 in steps
+of 50) reveals the actual inflection points:
+
+### Bulk API
+
+| Batch | Avg ms | | Batch | Avg ms |
+|-------|--------|---|-------|--------|
+| 50 | 4,565 | | 600 | **834** |
+| 100 | 3,119 | | 800 | 1,194 |
+| 200 | 1,874 | | 1000 | 1,099 |
+| 400 | 1,196 | | 1400 | 675 |
+| 500 | 980 | | 2000 | **618** |
+
+**Bulk API:** diminishing returns past 500. The sweet spot is 500-2000 with wide variance
+(single-run noise). Use 1000 as a safe default.
+
+### JdbcTemplate
+
+| Batch | Avg ms | | Batch | Avg ms |
+|-------|--------|---|-------|--------|
+| 50 | 6,471 | | 600 | 2,989 |
+| 100 | 6,036 | | **700** | **2,847** |
+| 200 | 5,291 | | 800 | 2,975 |
+| 500 | 3,062 | | 1600 | 2,996 |
+
+**JdbcTemplate:** optimal at 700, with minimal improvement past 500. Larger batches (1000+) don't
+help because the driver's TCP buffer and SQL Server's batch processing saturate around 500-800 rows.
+
 ## Summary
 
 | Technique | What it does | Impact |
@@ -143,6 +194,8 @@ with near-JDBC performance, this is the sweet spot.
 | `Persistable` | Eliminates SELECT-before-INSERT in saveAll | **8x faster** saveAll |
 | `StatelessSession` | Bypasses 1st-level cache + dirty checking | **35% faster** than persist |
 | `+ bulkCopy=true` | Transparent bulk copy for all batch strategies | **2-2.5x faster** everything |
+| `provider_disables_autocommit` | Skips setAutoCommit round-trip | **14% faster** saveAll only |
+| Batch size 500-1000 | Sweet spot for most strategies | Diminishing returns past 1000 |
 
 The answer to "how close can Hibernate get to raw JDBC?" is: **very close**. StatelessSession with
 bulkCopy=true closes 80% of the gap. The remaining 20% is the price of Hibernate's SQL generation

@@ -166,46 +166,71 @@ uses optimized batch parameter binding that the JDBC driver can optimize further
 With `bulkCopy=true`, all JDBC-based strategies converge to similar performance. The driver's bulk
 copy conversion is the dominant factor, not the Java-side abstraction.
 
+## Important: Multi-Value INSERT + useBulkCopyForBatchInsert Incompatibility
+
+During testing, we discovered that **multi-value INSERT** (`objectsPerInsert > 1`) is
+**incompatible** with `useBulkCopyForBatchInsert=true`. When this driver flag is enabled, it
+rewrites `PreparedStatement.addBatch()` calls into Bulk Copy protocol — but it expects single-row
+INSERT statements with exactly `(columns)` parameters per batch entry. Multi-value INSERT SQL
+(`VALUES (?,?,?),(?,?,?),(?,?,?)...`) confuses the driver because it has `(columns * N)` parameters.
+
+This means you must choose one or the other:
+- **Multi-value INSERT (400 values/statement)** — works only with `bulkCopy=false`
+- **useBulkCopyForBatchInsert=true** — works only with single-row INSERT statements
+
+Both are excellent optimizations, but they cannot be combined.
+
 ## Final Rankings: All Strategies Combined
 
-| Rank | Strategy | 100k avg ms | Part |
-|------|----------|-------------|------|
-| 1 | Multi-value 400 + bulkCopy=true | **135** | 3+4 |
-| 2 | Parallel Bulk API 4t | 330 | 6 |
-| 3 | Multi-value 400 + 8 threads | 368 | 3+6 |
-| 4 | Parallel Bulk API 8t | 434 | 6 |
-| 5 | Bulk API | 492 | 2 |
-| 6 | Parallel JdbcTemplate 16t | 608 | 6 |
-| 7 | TVP (batch=5000) | 818 | 8 |
-| 8 | StatelessSession + bulkCopy | 1,075 | 5+4 |
-| 9 | JdbcTemplate + bulkCopy | 1,373 | 4 |
-| 10 | Plain JDBC + bulkCopy | 1,516 | 8+4 |
-| 11 | Hibernate + bulkCopy | 2,144 | 4 |
-| 12 | JDBC PreparedStatement | 2,423 | 2 |
-| 13 | StatelessSession | 2,650 | 5 |
-| 14 | JdbcTemplate | 2,985 | 2 |
-| 15 | Persistable saveAll | 3,426 | 5 |
-| 16 | Plain JDBC | 3,905 | 8 |
-| 17 | Hibernate persist | 4,048 | 1 |
-| 18 | saveAll (original) | 27,794 | 1 |
+| Rank | Strategy | 100k avg ms | Part | Notes |
+|------|----------|-------------|------|-------|
+| 1 | Parallel Bulk API 4t | **330** | 6 | Fastest overall |
+| 2 | Multi-value 400 + 8 threads | 368 | 3+6 | No bulkCopy needed |
+| 3 | Multi-value 400 + 4 threads | 426 | 3+6 | No bulkCopy needed |
+| 4 | Parallel Bulk API 8t | 434 | 6 | Diminishing returns |
+| 5 | Bulk API | 492 | 2 | Fastest single-thread |
+| 6 | Parallel Bulk API 4t + bulkCopy | 603 | 6+4 | bulkCopy on bulk API is redundant |
+| 7 | Parallel JdbcTemplate 16t | 608 | 6 | JdbcTemplate benefits most from threads |
+| 8 | Parallel JdbcTemplate 4t + bulkCopy | 731 | 6+4 | |
+| 9 | TVP (batch=5000) | 818 | 8 | Best portable single-thread |
+| 10 | Multi-value 400 single thread | 1,058 | 3 | No bulkCopy, no threads |
+| 11 | StatelessSession + bulkCopy | 1,075 | 5+4 | Best Hibernate option |
+| 12 | JdbcTemplate + bulkCopy | 1,373 | 4 | |
+| 13 | Plain JDBC + bulkCopy | 1,516 | 8+4 | |
+| 14 | Hibernate + bulkCopy | 2,144 | 4 | |
+| 15 | JDBC PreparedStatement | 2,423 | 2 | |
+| 16 | StatelessSession | 2,650 | 5 | |
+| 17 | JdbcTemplate | 2,985 | 2 | |
+| 18 | Persistable saveAll | 3,426 | 5 | |
+| 19 | Plain JDBC | 3,905 | 8 | |
+| 20 | Hibernate persist | 4,048 | 1 | |
+| 21 | saveAll (original) | 27,794 | 1 | SELECT per entity |
 
 ## Key Takeaways from the Series
 
-1. **`useBulkCopyForBatchInsert=true`** is the single most impactful optimization — one connection
-   string parameter gives 2-2.5x speedup to ALL strategies.
+1. **Parallel Bulk API** is the overall winner (330ms for 100k rows). The Bulk Copy API already uses
+   an optimized protocol; splitting across threads adds connection-level parallelism.
 
-2. **Multi-value INSERT + bulkCopy (135ms)** is the absolute fastest — combining SQL batching with
-   the bulk copy protocol.
+2. **Multi-value INSERT + parallel threads** (368ms) is a close second and **doesn't require
+   `useBulkCopyForBatchInsert`** or the Bulk Copy API — it works with any JDBC driver.
 
-3. **Hibernate's overhead is ~3%** for batch inserts. The ORM is not the bottleneck; the network
+3. **`useBulkCopyForBatchInsert=true`** gives 2-2.5x speedup to single-row batch strategies. One
+   connection string parameter is the easiest win. But it's incompatible with multi-value INSERT.
+
+4. **Hibernate's overhead is ~3%** for batch inserts. The ORM is not the bottleneck; the network
    and database engine are.
 
-4. **Parallelism helps 2-7x** depending on the strategy and thread count.
+5. **Parallelism helps 2-7x** depending on the strategy and thread count. 4 threads is the safe
+   default; 8-16 helps JdbcTemplate more than Bulk API.
 
-5. **Indexes are the hidden cost** — 5 non-clustered indexes make inserts 6-7x slower regardless
-   of strategy.
+6. **Indexes are the hidden cost** — 5 non-clustered indexes make inserts 6-7x slower regardless
+   of strategy. Drop and rebuild indexes for bulk loads.
 
-6. **TVPs are underrated** — 3rd fastest single-thread strategy with a clean API.
+7. **TVPs are underrated** — 3rd fastest single-thread strategy with a clean API, no parameter
+   count limits, and works inside transactions.
+
+8. **Batch size sweet spot is 500-1000** for most strategies. Below 200, overhead dominates; above
+   1000, diminishing returns.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.

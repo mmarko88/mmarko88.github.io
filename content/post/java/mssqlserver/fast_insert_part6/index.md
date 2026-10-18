@@ -97,6 +97,10 @@ What happens when we combine multi-value inserts (400 values per INSERT, from
 Multi-value 400 + 8 threads (368ms) is competitive with parallel Bulk API (330ms) — and the
 multi-value approach works with any JDBC driver, not just MS SQL Server's Bulk API.
 
+**Important caveat:** Multi-value INSERT is **incompatible** with `useBulkCopyForBatchInsert=true`
+(see [Part 8](/post/java/mssqlserver/fast_insert_part8/) for details). You must choose one or the
+other — both are excellent, but they cannot be combined.
+
 ## Scaling to 1 Million Rows
 
 | Strategy | 100k rows | 1M rows | Scales linearly? |
