@@ -9,6 +9,7 @@ shareImage: 'extract_zip.jpg' # For SEO and social media snippets.
 featured: true
 tags: ["zip", "java"]
 categories: [ "java"]
+sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/extract-zip-stream'
 ---
 Extracting archive files without controlling resource consumption is security-sensitive and can lead to denial of service.
 
