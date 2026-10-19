@@ -118,9 +118,10 @@ The site reads as "a Java engineer's blog" — good for Google but light on reas
 |---|--------|--------|--------|
 | 1 | ~~Create About page~~ **already exists** — maybe add a photo if not present | — | — |
 | 2 | ~~Add social links~~ **already in `menu.en.toml`** — maybe verify they render in header | — | — |
-| 3 | **Enable `enableGitInfo = true` + `showLastmod = true`** — git-driven "Last updated" badge on every post, maintenance-free | 5m | MEDIUM — freshness signal + SEO |
-| 4 | **Cross-link one-off posts** (zip ↔ memory_churn, teen_mistakes ↔ soft_skills) | 1h | MEDIUM — internal SEO |
-| 5 | **Add Mermaid flow diagram** to zip extraction post + Hibernate state diagram to Part 1 | 2h | MEDIUM — engagement |
+| 3 | ✅ **DONE** — `enableGitInfo = true` + `showLastmod = true` (commit `7eb526d`) | — | — |
+| 4 | ✅ **DONE** — cross-linked 5 one-off posts (commit `2acc04b`) | — | — |
+| 5 | ✅ **DONE** — Mermaid flow (zip) + state diagram (Part 1) (commit `2acc04b`) | — | — |
+| 6 | **Compress oversized shareImages** — 2 huge JPGs: `soft_skills.jpg` (758 KB) and `extract_zip.jpg` (648 KB). See image-optimization section below. | 15m | MEDIUM — social share perf |
 
 ### Priority 2 — Next 2 weeks (interactive differentiation)
 
@@ -180,6 +181,66 @@ The site reads as "a Java engineer's blog" — good for Google but light on reas
 | 7 | Ahrefs SEO for Blog | ahrefs.com/blog/seo-for-blog | 3 | 2024 | CONFIRMED |
 | 8 | Backlinko content length | backlinko.com/hub/content/length | 3 | 2024 | CONFIRMED |
 | 9 | ARTICLE_WRITING_STANDARDS.md | repo-local | 5 (own standards) | 2025 | CONFIRMED |
+
+## Image Optimization (new finding)
+
+Post-image audit found two shareImages far over the 200 KB target for social-media crawlers:
+
+| File | Current JPG | Matching WebP | Target |
+|------|-------------|---------------|--------|
+| `content/post/soft_skills/soft_skills.jpg` | **758 KB** | 33 KB | ≤ 150 KB |
+| `content/post/java/extract_zip_stream_best_practices/extract_zip.jpg` | **648 KB** | 18 KB | ≤ 150 KB |
+
+### Why these matter
+Social crawlers (Twitter, LinkedIn, Facebook, Mastodon) fetch the full-size JPG every time a post
+is shared — not the WebP. 758 KB per fetch × thousands of previews is wasteful bandwidth.
+Standards state `shareImage` must be PNG/JPG (crawlers reject SVG/WebP), so the fix is to recompress
+the JPGs at the same resolution with a lower quality setting.
+
+### Fixing locally (user action)
+
+Three options, pick one:
+
+**A. Install `cwebp` + `cjpeg` via chocolatey (admin shell):**
+```
+choco install imagemagick -y
+magick convert soft_skills.jpg -quality 80 -resize 1200x630^ -gravity center -extent 1200x630 soft_skills.jpg
+magick convert extract_zip.jpg -quality 80 -resize 1200x630^ -gravity center -extent 1200x630 extract_zip.jpg
+```
+
+**B. Online tool for a one-off:** [squoosh.app](https://squoosh.app) — drag the JPG in, set
+MozJPEG quality 80, download. ~30 seconds per file.
+
+**C. GitHub Action:** add a `.github/workflows/optimize-images.yml` that runs
+`image-actions/action` on push — automatic for future posts too.
+
+Option B is the fastest; A is the right long-term setup if you'll add more posts.
+
+### Hugo-pipeline alternative (not applied)
+
+I prototyped a change to `layouts/partials/opengraph.html` that resizes `shareImage` resources to
+1200×630 at quality 80 using Hugo's built-in `.Resize` method. **Not pushed** — needs validation
+against a real `hugo build` which isn't available in this environment. If you want to try it, the
+pattern is:
+
+```go-html-template
+{{- $ext := path.Ext . | lower -}}
+{{- if in (slice ".jpg" ".jpeg" ".png") $ext -}}
+  {{- with $.Resources.GetMatch . -}}
+    {{- with .Resize "1200x630 q80 jpg" -}}
+      {{- $image = .Permalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+```
+
+Caveats:
+- Hugo's image pipeline requires the shareImage to be in the same page bundle (currently true for
+  all posts here).
+- SVG and WebP shareImages must be skipped (vectors can't be resized; WebP needs re-encoding).
+- Build-time only — no runtime fallback if `.Resize` fails.
+
+Run `hugo build` locally to confirm the template compiles before deploying.
 
 ## Not researched (bounded scope)
 
