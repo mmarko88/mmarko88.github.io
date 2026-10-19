@@ -195,6 +195,63 @@ All five of these are in the `blog-examples` reference implementation linked at 
 the post — the simpler variants in sections 1–6 are the clean teaching versions; the full
 code reflects what shipped.
 
+## What's the current best practice?
+
+I keep updating this post as I run into fresh pitfalls. The 2026 version of my advice looks
+like this.
+
+### Should you use the JDK or a library?
+
+For most teams: **`java.util.zip.ZipInputStream` from the JDK, with every hardening in this
+post, is the right answer.** It's audited, zero-dependency, and the attack surface is
+narrow. The hardenings do the heavy lifting; the library choice doesn't.
+
+Reach for a third-party library only when you have a concrete feature need:
+
+| Library | Reach for it when… | Still need the hardenings? |
+|---------|-------------------|---------------------------|
+| `java.util.zip` (JDK) | Default — plain Deflate zips, no exotic features | **Yes** |
+| [Apache Commons Compress](https://commons.apache.org/proper/commons-compress/) | PPMd, LZMA, Zstandard entries · tar/7z/bzip2 formats · better split-zip support | **Yes** — library doesn't block zip bombs by default |
+| [zip4j](https://github.com/srikanth-lingala/zip4j) | AES-encrypted zips · multi-threaded compression · simpler API if you're writing a tool | **Yes** — same |
+
+One trap worth calling out: `java.util.zip.ZipFile` (random-access, needs a `File` on disk)
+decompresses the central directory into memory on open, before you've validated anything.
+On untrusted uploads prefer `ZipInputStream` which processes entries sequentially — you can
+abort before the directory parsing finishes.
+
+### Defense in depth around the extractor
+
+The extractor itself is only one layer. In 2026 production systems:
+
+1. **Antivirus scan first.** Run ClamAV (or a managed scanner) over the raw bytes before
+   extraction. Many zip bombs are blocked by signature.
+2. **Extract into a sandbox.** A tmpfs mount with a hard size cap, a disposable container,
+   or a dedicated worker process. Even with every check in this post, running extraction
+   in the same JVM as your API is a bigger blast radius than you need.
+3. **Separate privileges.** The process that extracts should not have the same filesystem
+   or network permissions as the process that serves user traffic.
+4. **Log every rejection.** When your thresholds trip, you want to know (metric + trace
+   context). Repeated rejections from the same source are a signal, not noise.
+5. **Reconsider whether you need to extract at all.** If you only need metadata or a
+   subset of entries, parse the central directory without decompressing — most archive
+   libraries let you list entries without reading their bytes.
+6. **If you handle sensitive uploads**, look at a Content Disarm &amp; Reconstruction (CDR)
+   service. These rebuild documents from scratch, dropping anything that doesn't match a
+   known-good schema. More expensive, but immune to the attacks in this post.
+
+### What changed since this post was first published
+
+- **2022** — Original post, six sections.
+- **2024** — I kept hitting production issues the original examples didn't cover; added
+  Section 7 with the Cp437 charset, inside-loop ratio check, `-1` compressed-size fallback,
+  directory skip, and cleanup-on-exception.
+- **2026** — Added this follow-up on library choice and defense in depth. The hardenings
+  haven't changed much; what has changed is the ecosystem's expectations about *where*
+  extraction runs (sandboxes, dedicated workers, AV scanning).
+
+If you spot something I've missed, [open an issue](https://github.com/mmarko88/blog-examples/issues) —
+I treat this as a living post.
+
 ## Related reading
 
 - [What Is Memory Churn and How to Avoid It in Java](/post/java/memory_churn/) — the extraction
