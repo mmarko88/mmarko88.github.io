@@ -1,8 +1,9 @@
 ---
-title: Fastest Way To Insert the Data in MS SQL – Part 4 – Turning on the `useBulkCopyForBatchInsert` Parameter
+title: "Fastest MS SQL Inserts — Part 4: Bulk Copy Flag"
 date: 2024-05-08
 draft: false
 usePageBundles: true
+description: "One connection-string flag (useBulkCopyForBatchInsert=true) makes Hibernate, JdbcTemplate and plain JDBC batched inserts 2-2.5x faster on SQL Server. Measured."
 featureImage: 'java_sending_data_to_mssql_server.jpg' # Top image on post.
 featureImageAlt: 'java sending data to mssql server' # Alternative text for featured image.
 shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.

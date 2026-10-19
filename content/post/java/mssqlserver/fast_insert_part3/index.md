@@ -1,8 +1,9 @@
 ---
-title: Fastest Way To Insert the Data in MS SQL – Part 3 – Multi-value insert vs Bulk Api
+title: "Fastest MS SQL Inserts — Part 3: Multi-Value INSERT"
 date: 2024-02-11
 draft: false
 usePageBundles: true
+description: "Multi-value INSERT (one statement, 200+ rows) is 4-5x faster than single-row batches on SQL Server. Compared against the Bulk API; where it beats, where it doesn't."
 featureImage: 'java_sending_data_to_mssql_server.jpg' # Top image on post.
 featureImageAlt: 'java sending data to mssql server' # Alternative text for featured image.
 shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.

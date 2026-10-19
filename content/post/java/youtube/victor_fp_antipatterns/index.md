@@ -1,8 +1,9 @@
 ---
-title: Functional Programming Antipatterns Notes
+title: "Functional Programming Antipatterns Notes"
 date: 2024-05-11
 draft: true
 usePageBundles: true
+description: "Functional programming antipatterns in Java and when FP goes wrong: reactive overuse, memory churn from streams, side-effect-hiding, and simpler alternatives."
 featureImage: 'fp_antipatterns.webp' # Top image on post.
 featureImageAlt: 'functional programming antipatterns by Victor Rentea' # Alternative text for featured image.
 shareImage: 'fp_antipatterns.jpg' # For SEO and social media snippets.

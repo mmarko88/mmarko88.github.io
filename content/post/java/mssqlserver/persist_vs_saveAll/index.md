@@ -1,5 +1,5 @@
 ---
-title: "Fastest way to insert the data in MS SQL - Part 1 Hibernate Batching"
+title: "Fastest MS SQL Inserts in Java — Part 1: Hibernate Batching"
 date: 2023-10-05
 draft: false
 usePageBundles: true

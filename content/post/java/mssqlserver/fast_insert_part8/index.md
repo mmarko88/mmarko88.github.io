@@ -1,5 +1,5 @@
 ---
-title: "Fastest way to insert the data in MS SQL - Part 8 TVP, JDBC and the Full Ranking"
+title: "Fastest MS SQL Inserts — Part 8: TVP, JDBC, Final Ranking"
 date: 2026-10-19
 draft: false
 usePageBundles: true

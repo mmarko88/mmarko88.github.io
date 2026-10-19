@@ -1,8 +1,9 @@
 ---
-title: 10 Mistakes That Java Developers Make That Prevent Them From Being Successful Developers
+title: "10 Mistakes Java Developers Make Early On"
 date: 2021-06-11
 draft: false
 usePageBundles: true
+description: "Not writing tests, skipping refactoring, no code reviews, poor docs — 10 habits that keep junior Java developers stuck, with concrete ways to break out of each."
 featureImage: 'teen_mistakes.webp' # Top image on post.
 featureImageAlt: '10 mistakes that java developers make that prevent them from being successful developers' # Alternative text for featured image.
 shareImage: 'teen_mistakes.jpg' # For SEO and social media snippets.

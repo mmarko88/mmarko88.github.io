@@ -1,5 +1,5 @@
 ---
-title: "Fastest way to insert the data in MS SQL - Part 6 Parallel Inserts"
+title: "Fastest MS SQL Inserts — Part 6: Parallel Threads"
 date: 2026-10-19
 draft: false
 usePageBundles: true

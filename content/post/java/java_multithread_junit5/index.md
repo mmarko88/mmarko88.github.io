@@ -1,8 +1,9 @@
 ---
-title: Setting up Junit 5 Parallel Test Execution With Maven
+title: "Setting up Junit 5 Parallel Test Execution With Maven"
 date: 2022-10-15
 draft: false
 usePageBundles: true
+description: "Enable parallel test execution with JUnit 5 and Maven Surefire to speed up slow CI pipelines. Configuration, caveats, and when parallel tests actually help."
 featureImage: 'parallel_tests_maven_junit5.png' # Top image on post.
 featureImageAlt: 'Feature image - maven configuration example' # Alternative text for featured image.
 shareImage: 'parallel_tests_maven_junit5.png' # For SEO and social media snippets.

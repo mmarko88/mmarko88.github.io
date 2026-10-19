@@ -1,5 +1,5 @@
 ---
-title: "Fastest way to insert the data in MS SQL - Part 5 Hibernate Tuning"
+title: "Fastest MS SQL Inserts — Part 5: Hibernate Tuning"
 date: 2026-10-19
 draft: false
 usePageBundles: true

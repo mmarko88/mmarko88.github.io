@@ -1,5 +1,5 @@
 ---
-title: "Fastest way to insert the data in MS SQL - Part 7 Index Impact"
+title: "Fastest MS SQL Inserts — Part 7: Index Impact"
 date: 2026-10-19
 draft: false
 usePageBundles: true

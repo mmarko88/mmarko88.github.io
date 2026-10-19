@@ -1,8 +1,9 @@
 ---
-title: Fastest Way To Insert the Data in MS SQL – Part 2 – Hibernate vs Prepared Statement vs Jdbc Template vs Bulk Api
+title: "Fastest MS SQL Inserts — Part 2: JDBC Strategies"
 date: 2023-10-21
 draft: false
 usePageBundles: true
+description: "Hibernate vs PreparedStatement vs JdbcTemplate vs SQL Server Bulk API: measured 100,000 inserts across all four — Bulk API wins in 492 ms, Hibernate is slowest."
 featureImage: 'java_sending_data_to_mssql_server.jpg' # Top image on post.
 featureImageAlt: 'java sending data to mssql server' # Alternative text for featured image.
 shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.

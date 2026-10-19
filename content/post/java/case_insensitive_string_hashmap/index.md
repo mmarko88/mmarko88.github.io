@@ -3,6 +3,7 @@ title: "How to Use Case Insensitive String in Hash Map"
 date: 2023-04-24
 draft: false
 usePageBundles: true
+description: "Case-sensitive strings in Java cause bugs when matching data from SQL Server. A custom wrapper class makes HashMap lookups case-insensitive without new strings."
 featureImage: 'case_sensitive_vs_case_insensitive_hash_map.svg' # Top image on post.
 featureImageAlt: 'Case sensitive vs case insensitive hash map' # Alternative text for featured image.
 shareImage: 'case_sensitive_vs_case_insensitive_hash_map.png' # For SEO and social media snippets.
