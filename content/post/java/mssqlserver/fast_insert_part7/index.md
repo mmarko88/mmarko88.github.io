@@ -258,6 +258,75 @@ target partition's range. Both tables must live on the same filegroup.
 
 ![Fill Factor & Partitioning](fillfactor_partition.svg)
 
+### Clustered key: INT vs GUID
+
+The clustered key defines the physical order of rows on disk. Random keys (like UUIDs) cause page
+splits — new rows must be inserted into the middle of existing pages, so SQL Server has to split
+a full page in two and copy half the rows.
+
+| Clustered Key | 100k rows (avg ms) | Notes |
+|---------------|-------------------|-------|
+| **INT sequential** (baseline) | **3,015** | No page splits |
+| GUID sequential (`NEWSEQUENTIALID()`) | 3,340 (+11%) | Monotonic — no page splits |
+| GUID random (`UUID.randomUUID()`) | 3,588 (+19%) | Page splits all over the index |
+
+**The 19% penalty for random GUIDs is actually small** — because we inserted into an *empty* table.
+On an existing populated table, random GUIDs can be 2-5x slower as the index grows and new
+insertions hit densely-packed pages. If you must use GUIDs, prefer `NEWSEQUENTIALID()` on
+SQL Server or an "ordered GUID" (UUIDv7/ULID) on the application side.
+
+### Change Tracking
+
+SQL Server **Change Tracking** is a lightweight CDC alternative that records *which rows* were
+modified (not the changed values). It's enabled per-database and per-table:
+
+```sql
+ALTER DATABASE testdb SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON);
+ALTER TABLE person_ct ENABLE CHANGE_TRACKING WITH (TRACK_COLUMNS_UPDATED = OFF);
+```
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| No change tracking | 3,206 |
+| **Change Tracking enabled** | **5,205 (62% slower)** |
+
+Change Tracking has significant insert overhead — each row generates an internal side-table entry
+with the operation and version. Enable it only if downstream consumers actually need the change
+feed. For audit alone, temporal tables are cheaper.
+
+**Note:** Full **Change Data Capture (CDC)** — which records entire row values — is Enterprise-only
+and would have even higher overhead than CT.
+
+### Temporal (system-versioned) tables
+
+Temporal tables automatically track row history in a shadow table. Every INSERT, UPDATE and DELETE
+writes to both the current table and the history table:
+
+```sql
+CREATE TABLE person_temporal (
+    person_id INT PRIMARY KEY,
+    user_name NVARCHAR(30), first_name NVARCHAR(10),
+    last_name NVARCHAR(15), years INT,
+    ValidFrom DATETIME2 GENERATED ALWAYS AS ROW START NOT NULL,
+    ValidTo DATETIME2 GENERATED ALWAYS AS ROW END NOT NULL,
+    PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo)
+) WITH (SYSTEM_VERSIONING = ON);
+```
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| Plain table | 3,009 |
+| **Temporal table (SYSTEM_VERSIONED)** | **3,936 (+31%)** |
+
+**Surprisingly cheap** — only 31% overhead for full point-in-time history. Compare that to the
+`AFTER INSERT` trigger approach from [Part 8](/post/java/mssqlserver/fast_insert_part8/) which was
+2.2x slower. For audit requirements, temporal tables are the right answer.
+
+For pure inserts the history table doesn't receive rows (only updates/deletes populate it), so the
+overhead is almost entirely the extra period column maintenance.
+
+![Storage Patterns](storage_patterns.svg)
+
 ### Temp table staging
 
 A common ETL pattern: INSERT into a heap temp table, then INSERT-SELECT into the real table:

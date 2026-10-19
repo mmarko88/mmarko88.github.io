@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Hibernate batching benchmark</title>
+  <desc id="description">For 100,000 SQL Server inserts, Hibernate persist with batch size 1,000 took 1,675 milliseconds versus 11,085 milliseconds without batching, a 6.6-times improvement.</desc>
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">FAST INSERTS IN SQL SERVER · 01/08</text>
+  <text x="72" y="158" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="58" font-weight="700">Hibernate batching: 11.1s → 1.7s</text>
+  <text x="72" y="202" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="26">100,000 inserts · batch size 1,000 · 10-run median</text>
+  <text x="72" y="292" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="600">Persist without batching</text>
+  <rect x="72" y="316" width="900" height="56" rx="12" fill="#dbe3ef"/>
+  <rect x="72" y="316" width="870" height="56" rx="12" fill="#6b7280"/>
+  <text x="968" y="354" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">11,085 ms</text>
+  <text x="72" y="442" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="600">Persist with Hibernate batching</text>
+  <rect x="72" y="466" width="900" height="56" rx="12" fill="#d9f2e4"/>
+  <rect x="72" y="466" width="132" height="56" rx="12" fill="#17864b"/>
+  <text x="222" y="504" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">1,675 ms</text>
+  <rect x="848" y="424" width="252" height="98" rx="16" fill="#173f6d"/>
+  <text x="974" y="464" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">6.6×</text>
+  <text x="974" y="495" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="18">faster</text>
+  <text x="72" y="584" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="20">Java · Hibernate · Microsoft SQL Server</text>
+</svg>

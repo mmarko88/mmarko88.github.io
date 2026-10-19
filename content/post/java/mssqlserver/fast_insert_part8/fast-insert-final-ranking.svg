@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Fastest SQL Server insert benchmark ranking</title>
+  <desc id="description">Parallel Bulk API using four threads is fastest at 330 milliseconds for 100,000 SQL Server inserts. The next four strategies range from 368 to 492 milliseconds.</desc>
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">FAST INSERTS IN SQL SERVER · 08/08</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">Fastest 100k-row insert: 330 ms</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="26">Parallel Bulk API · 4 threads · average duration</text>
+  <text x="430" y="262" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Parallel Bulk API 4t</text>
+  <rect x="460" y="232" width="390" height="42" rx="10" fill="#17864b"/>
+  <text x="868" y="262" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">330 ms</text>
+  <text x="430" y="332" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Multi-value 400 + 8t</text>
+  <rect x="460" y="302" width="435" height="42" rx="10" fill="#1a5fb4"/>
+  <text x="913" y="332" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">368 ms</text>
+  <text x="430" y="402" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Multi-value 400 + 4t</text>
+  <rect x="460" y="372" width="503" height="42" rx="10" fill="#1a5fb4"/>
+  <text x="981" y="402" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">426 ms</text>
+  <text x="430" y="472" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Parallel Bulk API 8t</text>
+  <rect x="460" y="442" width="512" height="42" rx="10" fill="#1a5fb4"/>
+  <text x="990" y="472" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">434 ms</text>
+  <text x="430" y="542" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Bulk API</text>
+  <rect x="460" y="512" width="580" height="42" rx="10" fill="#617086"/>
+  <text x="1058" y="542" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">492 ms</text>
+  <text x="72" y="600" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="20">Top 5 of 21 strategies · full ranking and methodology in the article</text>
+</svg>

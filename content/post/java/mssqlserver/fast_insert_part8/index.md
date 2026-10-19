@@ -3,9 +3,10 @@ title: "Fastest way to insert the data in MS SQL - Part 8 TVP and Plain JDBC"
 date: 2026-10-18
 draft: true
 usePageBundles: true
-featureImage: 'java_sending_data_to_mssql_server.jpg'
-featureImageAlt: 'java sending data to mssql server'
-shareImage: 'java_sending_data_to_mssql_server.jpg'
+description: "Benchmark results for 100,000 SQL Server inserts: Parallel Bulk API with four threads finished in 330 milliseconds."
+featureImage: 'fast-insert-final-ranking.svg'
+featureImageAlt: 'Benchmark ranking for 100,000 SQL Server inserts: Parallel Bulk API using four threads is fastest at 330 milliseconds; the next four strategies range from 368 to 492 milliseconds.'
+shareImage: 'fast-insert-final-ranking.png'
 tags: [ "java", "ms sql server", "jdbc" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
@@ -350,6 +351,15 @@ only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssql
 
 21. **Async producer-consumer is 30% faster** than sync by overlapping CPU and I/O work. Even
     one producer + one consumer is enough.
+
+22. **Random GUID clustered keys cost 19% minimum** on empty tables, far more on populated ones
+    (page splits). Use `NEWSEQUENTIALID()` or an ordered GUID (UUIDv7/ULID) if you must use GUIDs.
+
+23. **Change Tracking is expensive (62% overhead)**. Enable only if a downstream consumer actually
+    reads the change feed. Full CDC (Enterprise only) is even more expensive.
+
+24. **Temporal tables are cheap for audit (+31%)** — far better than AFTER INSERT triggers
+    (+120%). The right answer for most point-in-time history requirements.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
