@@ -2,6 +2,8 @@
 title: "Fastest MS SQL Inserts — Quiz"
 date: 2026-10-19
 draft: false
+type: page
+layout: single
 description: "Ten questions on the Fastest MS SQL Inserts series. Measure what you remember — click the answer to reveal the finding and the post it came from."
 ---
 

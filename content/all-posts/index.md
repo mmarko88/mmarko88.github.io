@@ -2,6 +2,8 @@
 title: "All Posts"
 date: 2026-10-19
 draft: false
+type: page
+layout: single
 description: "Every post on professionaldev.dev, grouped by topic — the Fastest MS SQL Inserts series, Java performance, fundamentals, and career."
 ---
 
