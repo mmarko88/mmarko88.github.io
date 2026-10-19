@@ -6,7 +6,7 @@ usePageBundles: true
 description: "Zip Slip, zip bombs, size limits, entry counts, memory caps. Six thresholds every Java zip-extraction routine should enforce before touching disk or memory."
 featureImage: 'extract_zip.webp' # Top image on post.
 featureImageAlt: 'Best practices that you should follow when extracting zip archive in Java' # Alternative text for featured image.
-shareImage: 'extract_zip.jpg' # For SEO and social media snippets.
+shareImage: 'share.png' # Branded 1200x630 social-share card.
 featured: true
 tags: ["zip", "java"]
 categories: [ "java"]

@@ -6,7 +6,7 @@ usePageBundles: true
 description: "Case-insensitive comparison across multiple string fields of a class without wrapping each String. Memory-efficient alternatives to the custom-wrapper pattern."
 featureImage: 'persons_case_insensitive.webp' # Top image on post.
 featureImageAlt: 'persons_case_insensitive' # Alternative text for featured image.
-shareImage: 'persons_case_insensitive.jpg' # For SEO and social media snippets.
+shareImage: 'share.png' # Branded 1200x630 social-share card.
 tags: ["java", "hashMap", "strings"]
 categories: [ "java"]
 ---

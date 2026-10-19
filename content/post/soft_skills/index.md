@@ -6,7 +6,7 @@ usePageBundles: true
 description: "Why soft skills matter for software developers: teamwork, communicating through code, mentoring, and the private-life wins. Five concrete reasons to invest in them."
 featureImage: 'soft_skills.webp' # Top image on post.
 featureImageAlt: 'Soft skills' # Alternative text for featured image.
-shareImage: 'soft_skills.jpg' # For SEO and social media snippets.
+shareImage: 'share.png' # Branded 1200x630 social-share card.
 tags: [
 "carrier"
 ]

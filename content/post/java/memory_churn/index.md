@@ -7,7 +7,7 @@ description: "Memory churn in Java: short-lived objects break CPU cache locality
 tags: [ "java", "performance"]
 categories: [ "java", "performance"]
 featureImage: 'memory.svg' # Top image on post.
-shareImage: 'memory_og.png' # For SEO and social media snippets.
+shareImage: 'share.png' # Branded 1200x630 social-share card.
 featureImageAlt: 'Memory churn in Java: how short-lived allocations break CPU cache locality' # Alternative text for featured image.
 ---
 

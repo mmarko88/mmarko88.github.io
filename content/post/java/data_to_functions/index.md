@@ -6,7 +6,7 @@ description: "Separate data from behavior in Java: immutable records through pur
 tags: ["java", "functional programming", "design patterns", "data-oriented programming"]
 categories: ["java", "functional programming"]
 featureImage: 'fp_data_oriented.svg' # Top image on post.
-shareImage: 'fp_data_oriented.jpg' # For SEO and social media snippets.
+shareImage: 'share.png' # Branded 1200x630 social-share card.
 featureImageAlt: 'A car with a car-wash rig and a bloated method list welded onto it versus a car keeping only start(), lockDoors(), and unlockDoors() while driving through inspect(car), scrub(car), wax(car), dry(car) stations — intrinsic stays on the object, services stay outside' # Alternative text for featured image.
 sourceCode: 'https://github.com/mmarko88/blog-examples' # Renders source-code card above comments.
 toc: true
