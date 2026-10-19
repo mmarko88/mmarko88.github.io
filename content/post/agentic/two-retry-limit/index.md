@@ -6,7 +6,9 @@ usePageBundles: true
 description: "A hard cap on error retries plus a clean escalation path is the single biggest cost saver I've measured in agentic development. 42% median session cost drop."
 tags: ["agents", "ai", "cost", "errors"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for two-retry-limit — see post body for details.'
+shareImage: 'share.png'
 ---
 
 The most expensive agent session I ever ran burned $12 trying to install a Python package. The

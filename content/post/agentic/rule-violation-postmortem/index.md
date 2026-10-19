@@ -6,7 +6,9 @@ usePageBundles: true
 description: "An agent that acknowledges a rule violation hasn't satisfied the rule. The post-mortem that drove the strongest rule rewrite I've shipped, with the test."
 tags: ["agents", "ai", "post-mortem", "rules"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for rule-violation-postmortem — see post body for details.'
+shareImage: 'share.png'
 ---
 
 In September I had a session where the agent violated the same rule three times. Each time I

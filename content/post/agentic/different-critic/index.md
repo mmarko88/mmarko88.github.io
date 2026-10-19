@@ -6,7 +6,9 @@ usePageBundles: true
 description: "LLMs re-reading their own output don't catch defects. Research on self-enhancement bias plus my A/B on a real coding pipeline — 3x more defects caught."
 tags: ["agents", "ai", "verification"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for different-critic — see post body for details.'
+shareImage: 'share.png'
 # featureImageAlt: 'TODO'
 # shareImage: 'TODO.png'
 ---

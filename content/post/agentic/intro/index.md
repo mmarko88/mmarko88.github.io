@@ -6,7 +6,9 @@ usePageBundles: true
 description: "Six months of coding agents on a 4,000-file Java 17 codebase, measured by session cost and completion rate. What stuck, what I killed, in a 10-part series."
 tags: ["agents", "ai", "java", "productivity"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for intro — see post body for details.'
+shareImage: 'share.png'
 # featureImageAlt: 'TODO'
 # shareImage: 'TODO.png'
 ---

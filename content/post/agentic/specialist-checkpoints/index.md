@@ -6,7 +6,9 @@ usePageBundles: true
 description: "One generalist agent reviews DB migrations, security changes, perf regressions equally badly. Four specialists firing only when relevant beat the monolith."
 tags: ["agents", "ai", "patterns", "specialization"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for specialist-checkpoints — see post body for details.'
+shareImage: 'share.png'
 ---
 
 For a year I ran a single generalist code-review agent. It wrote the review for every PR —

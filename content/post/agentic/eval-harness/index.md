@@ -6,7 +6,9 @@ usePageBundles: true
 description: "You can't optimize an agent you don't measure. Scoring workflow changes with an eval harness is the only way to tell if a prompt tweak helps or hurts."
 tags: ["agents", "ai", "evaluation", "measurement"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for eval-harness — see post body for details.'
+shareImage: 'share.png'
 # featureImageAlt: 'TODO'
 # shareImage: 'TODO.png'
 ---

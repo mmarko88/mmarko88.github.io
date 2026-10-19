@@ -6,7 +6,9 @@ usePageBundles: true
 description: "The retrospective. Which rules I kept, which I killed, actual ROI numbers from six months of coding agents on a 4,000-file Spring Boot codebase."
 tags: ["agents", "ai", "retrospective", "productivity"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for six-month-retrospective — see post body for details.'
+shareImage: 'share.png'
 ---
 
 Six months ago I started seriously running coding agents on a 4,000-file Java 17 Spring Boot

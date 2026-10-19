@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · 06/10</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">Four specialists beat one monolith</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Each fires only when its trigger pattern matches · 37% more real issues caught</text>
+  
+  <rect x="72" y="246" width="258" height="130" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="92" y="278" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Database</text>
+  <text x="92" y="306" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">N+1, missing indexes</text>
+  <text x="92" y="328" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">migration safety</text>
+  <text x="92" y="352" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">48% → 91%</text>
+  <rect x="350" y="246" width="258" height="130" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="370" y="278" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Security</text>
+  <text x="370" y="306" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">OWASP, secrets, PII</text>
+  <text x="370" y="328" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">timing attacks</text>
+  <text x="370" y="352" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">55% → 88%</text>
+  <rect x="628" y="246" width="258" height="130" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="648" y="278" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Performance</text>
+  <text x="648" y="306" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">JVM, pool exhaustion</text>
+  <text x="648" y="328" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">@Transactional</text>
+  <text x="648" y="352" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">44% → 78%</text>
+  <rect x="906" y="246" width="226" height="130" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="926" y="278" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">DevOps</text>
+  <text x="926" y="306" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">Docker, pipelines</text>
+  <text x="926" y="328" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">rollback readiness</text>
+  <text x="926" y="352" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">+28% caught</text>
+  
+  <rect x="430" y="418" width="340" height="90" rx="16" fill="#173f6d"/>
+  <text x="600" y="462" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">+37%</text>
+  <text x="600" y="490" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="16">real issues caught at review</text>
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Agents · code review · specialization · trigger patterns</text>
+</svg>

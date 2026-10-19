@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · SERIES INTRO</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">What actually works in legacy Java</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Six months, 4,000+ files, measured by cost and completion rate — a 10-part series</text>
+  
+  <text x="72" y="266" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">The 10 parts</text>
+  
+  <circle cx="86" cy="303" r="14" fill="#1a5fb4"/>
+  <text x="86" y="308" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">1</text>
+  <text x="112" y="310" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Different critic</text>
+  <circle cx="86" cy="351" r="14" fill="#1a5fb4"/>
+  <text x="86" y="356" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">2</text>
+  <text x="112" y="358" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">500-line skill limit</text>
+  <circle cx="86" cy="399" r="14" fill="#1a5fb4"/>
+  <text x="86" y="404" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">3</text>
+  <text x="112" y="406" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Rule layering</text>
+  <circle cx="86" cy="447" r="14" fill="#1a5fb4"/>
+  <text x="86" y="452" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">4</text>
+  <text x="112" y="454" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Eval harness</text>
+  <circle cx="86" cy="495" r="14" fill="#1a5fb4"/>
+  <text x="86" y="500" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">5</text>
+  <text x="112" y="502" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">2-retry limit</text>
+  <circle cx="626" cy="303" r="14" fill="#1a5fb4"/>
+  <text x="626" y="308" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">6</text>
+  <text x="652" y="310" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Specialist checkpoints</text>
+  <circle cx="626" cy="351" r="14" fill="#1a5fb4"/>
+  <text x="626" y="356" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">7</text>
+  <text x="652" y="358" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Read-only subagents</text>
+  <circle cx="626" cy="399" r="14" fill="#1a5fb4"/>
+  <text x="626" y="404" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">8</text>
+  <text x="652" y="406" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">One topic per session</text>
+  <circle cx="626" cy="447" r="14" fill="#1a5fb4"/>
+  <text x="626" y="452" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">9</text>
+  <text x="652" y="454" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Rule-violation post-mortem</text>
+  <circle cx="626" cy="495" r="14" fill="#1a5fb4"/>
+  <text x="626" y="500" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">10</text>
+  <text x="652" y="502" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Six-month retrospective</text>
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Measurement, feedback loops, budgets, retries, specialists — engineering, not magic</text>
+</svg>

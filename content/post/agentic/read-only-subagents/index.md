@@ -6,7 +6,9 @@ usePageBundles: true
 description: "For codebase research, a cheap read-only subagent with grep/glob/read matches the full-tool agent on accuracy at a fraction of the cost. Measured."
 tags: ["agents", "ai", "cost", "subagents"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for read-only-subagents — see post body for details.'
+shareImage: 'share.png'
 ---
 
 A new engineer's first task in a 4,000-file codebase is almost always the same: *figure out

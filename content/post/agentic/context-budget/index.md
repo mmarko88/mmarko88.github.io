@@ -6,7 +6,9 @@ usePageBundles: true
 description: "Every rule, skill, system prompt is a token tax on every turn. A Python budget script, three CI caps, 36% token savings after trimming three dead skills."
 tags: ["agents", "ai", "cost", "productivity"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for context-budget — see post body for details.'
+shareImage: 'share.png'
 # featureImageAlt: 'TODO'
 # shareImage: 'TODO.png'
 ---

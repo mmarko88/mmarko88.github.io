@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · 08/10</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">One topic per session</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">The discipline rule that saves 40% of your tokens · topics completed triples</text>
+  
+  
+  <text x="410" y="275" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">No scope rule</text>
+  <rect x="430" y="246" width="300" height="42" rx="10" fill="#6b7280"/>
+  <text x="740" y="275" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">0.6 completed / session</text>
+  
+  <text x="410" y="345" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">One-topic rule</text>
+  <rect x="430" y="316" width="540" height="42" rx="10" fill="#17864b"/>
+  <text x="980" y="345" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">1.8 completed / session</text>
+  <text x="72" y="420" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">What context-switching costs</text>
+  <text x="72" y="454" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="18">context dilution  ·  cross-contamination  ·  no completion signal</text>
+  <text x="72" y="492" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="18">Finish the current thread, or explicitly close it, before opening the next</text>
+  
+  <rect x="950" y="240" width="180" height="100" rx="16" fill="#173f6d"/>
+  <text x="1040" y="284" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">-39%</text>
+  <text x="1040" y="312" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="16">session cost</text>
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Agents · discipline · context · completion rate</text>
+</svg>

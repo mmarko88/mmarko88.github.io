@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · 05/10</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">The 2-retry limit</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Two attempts max on the same error, then escalate · the biggest cost saver I've measured</text>
+  
+  
+  <text x="410" y="275" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Unlimited retries</text>
+  <rect x="430" y="246" width="720" height="42" rx="10" fill="#6b7280"/>
+  <text x="1160" y="275" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">14.3× worst case</text>
+  
+  <text x="410" y="345" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">2-retry + escalate</text>
+  <rect x="430" y="316" width="108" height="42" rx="10" fill="#17864b"/>
+  <text x="548" y="345" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">2.1× worst case</text>
+  <text x="72" y="420" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Why unlimited retries fail</text>
+  <text x="72" y="454" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="18">pip variations are the same approach to the planner · context fills with errors · loss aversion</text>
+  <text x="72" y="492" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="18">Attempt 1: obvious fix · Attempt 2: a different approach · then report and ask</text>
+  
+  <rect x="950" y="240" width="180" height="100" rx="16" fill="#173f6d"/>
+  <text x="1040" y="284" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">-42%</text>
+  <text x="1040" y="312" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="16">median session cost</text>
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Agents · error recovery · cost control · escalation</text>
+</svg>

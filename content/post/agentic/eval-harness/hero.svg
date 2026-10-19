@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · 04/10</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">1,000 agent sessions through a scoring harness</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Cases · drills · triggers — three regressions caught before rollout</text>
+  
+  <rect x="72" y="246" width="340" height="130" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="92" y="280" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">23 cases</text>
+  <text x="92" y="312" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Single scenario · known answer</text>
+  <text x="92" y="352" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Pass criteria + rubric judge</text>
+  <rect x="432" y="246" width="340" height="130" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="452" y="280" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">7 drills</text>
+  <text x="452" y="312" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Multi-step sequences</text>
+  <text x="452" y="352" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Sustained behaviour tests</text>
+  <rect x="792" y="246" width="340" height="130" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="812" y="280" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">14 triggers</text>
+  <text x="812" y="312" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Post-mortem regressions</text>
+  <text x="812" y="352" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Each incident = one case</text>
+  
+  <rect x="430" y="410" width="340" height="90" rx="16" fill="#173f6d"/>
+  <text x="600" y="454" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">~$60/mo</text>
+  <text x="600" y="482" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="16">saves hours per regression</text>
+  <text x="72" y="540" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18">Three real regressions caught: destructive-rule overfit · critic trim · reworded "prefer small"</text>
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Agents · evaluation · regression testing · ic-eval.py</text>
+</svg>

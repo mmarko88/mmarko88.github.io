@@ -6,7 +6,9 @@ usePageBundles: true
 description: "Three sources of rules will conflict. Without an explicit precedence, agents cherry-pick. The 3-layer system that stopped silent overrides on my pipeline."
 tags: ["agents", "ai", "rules", "architecture"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for rule-layering — see post body for details.'
+shareImage: 'share.png'
 ---
 
 You start with a framework. The framework ships default rules. Your project adds its own.

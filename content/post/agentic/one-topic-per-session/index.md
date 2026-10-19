@@ -6,7 +6,9 @@ usePageBundles: true
 description: "Letting agents context-switch between unrelated problems is the #1 waste pattern. One session with 11 unrelated asks completes zero. Here's the fix."
 tags: ["agents", "ai", "discipline", "productivity"]
 categories: ["agents"]
-# featureImage: 'TODO.svg'
+featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
+featureImageAlt: 'Agentic Development series card for one-topic-per-session — see post body for details.'
+shareImage: 'share.png'
 ---
 
 I pulled up a bad agent session once. Thirty-six turns. Started as "help me debug this
