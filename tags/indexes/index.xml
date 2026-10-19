@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Indexes on Professional developer</title><link>https://www.professionaldev.dev/tags/indexes/</link><description>Recent content in Indexes on Professional developer</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 19 Oct 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://www.professionaldev.dev/tags/indexes/index.xml" rel="self" type="application/rss+xml"/><item><title>Fastest MS SQL Inserts — Part 7: Index Impact</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part7/</link><pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part7/</guid><description>
+&lt;p&gt;Every production table has indexes. Every INSERT has to maintain them. Add 5 non-clustered indexes
+to a table and the Bulk API — the fastest single-thread strategy — slows down &lt;strong&gt;7x&lt;/strong&gt;. The other
+strategies converge: with enough indexes, the choice of insert strategy stops mattering because
+index maintenance dominates.&lt;/p&gt;
+&lt;p&gt;But that's only the start. The surrounding &lt;strong&gt;table design decisions&lt;/strong&gt; matter as much: row width,
+compression, columnstore, fill factor, GUID vs INT keys, change tracking, temporal history,
+JSON/XML indexes, statistics auto-update, encryption, and so on all impose their own INSERT
+tax — and some of them are &lt;strong&gt;counter-intuitive&lt;/strong&gt; (compression makes inserts slower; stats OFF makes
+them slower; sparse columns are worse than nothing when filled).&lt;/p&gt;</description></item></channel></rss>

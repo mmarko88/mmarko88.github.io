@@ -1,16 +1,122 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Professional developer</title><link>https://www.professionaldev.dev/post/java/mssqlserver/</link><description>Recent content on Professional developer</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 08 May 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://www.professionaldev.dev/post/java/mssqlserver/index.xml" rel="self" type="application/rss+xml"/><item><title>Fastest Way To Insert the Data in MS SQL – Part 4 – Turning on the `useBulkCopyForBatchInsert` Parameter</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part4/</link><pubDate>Wed, 08 May 2024 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part4/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Professional developer</title><link>https://www.professionaldev.dev/post/java/mssqlserver/</link><description>Recent content on Professional developer</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 19 Oct 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://www.professionaldev.dev/post/java/mssqlserver/index.xml" rel="self" type="application/rss+xml"/><item><title>Fastest MS SQL Inserts — Part 5: Hibernate Tuning</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part5/</link><pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part5/</guid><description>
+&lt;p&gt;In &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/persist_vs_saveall/"&gt;Part 1&lt;/a&gt; we watched Spring Data's &lt;code&gt;saveAll()&lt;/code&gt; take
+7x longer than batched &lt;code&gt;persist()&lt;/code&gt; because every entity triggers a SELECT before its INSERT. In
+&lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/"&gt;Part 2&lt;/a&gt; we switched to raw JDBC and cut the time
+further. But Hibernate still sits well behind — so how close can it actually get to the bare metal?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Three settings close 80% of the gap:&lt;/strong&gt; implement &lt;code&gt;Persistable&lt;/code&gt; to kill the pre-INSERT SELECTs
+(8x faster saveAll), use &lt;code&gt;StatelessSession&lt;/code&gt; to drop the first-level cache (35% faster persist), and
+layer &lt;code&gt;useBulkCopyForBatchInsert=true&lt;/code&gt; on top (another 2–2.5x). Combined with proper batch sizing,
+this is as fast as Hibernate gets.&lt;/p&gt;</description></item><item><title>Fastest MS SQL Inserts — Part 6: Parallel Threads</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part6/</link><pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part6/</guid><description>
+&lt;p&gt;Every strategy we've tested so far — Hibernate, JDBC, Bulk API — pushes data through a single
+connection. SQL Server handles concurrent writes just fine; the bottleneck is the serial nature of
+one TCP stream. Split 100k rows across 4 threads with 4 connections and the Bulk API drops from
+492 ms to &lt;strong&gt;330 ms&lt;/strong&gt;, the fastest Java-client result in the whole series.&lt;/p&gt;
+&lt;p&gt;But parallelism isn't a free lunch — threads past 4 give diminishing returns, concurrent readers
+slow the writers 2.5x, and the TABLOCK hint changes the trade-off. Here's where the inflection
+points actually are.&lt;/p&gt;</description></item><item><title>Fastest MS SQL Inserts — Part 7: Index Impact</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part7/</link><pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part7/</guid><description>
+&lt;p&gt;Every production table has indexes. Every INSERT has to maintain them. Add 5 non-clustered indexes
+to a table and the Bulk API — the fastest single-thread strategy — slows down &lt;strong&gt;7x&lt;/strong&gt;. The other
+strategies converge: with enough indexes, the choice of insert strategy stops mattering because
+index maintenance dominates.&lt;/p&gt;
+&lt;p&gt;But that's only the start. The surrounding &lt;strong&gt;table design decisions&lt;/strong&gt; matter as much: row width,
+compression, columnstore, fill factor, GUID vs INT keys, change tracking, temporal history,
+JSON/XML indexes, statistics auto-update, encryption, and so on all impose their own INSERT
+tax — and some of them are &lt;strong&gt;counter-intuitive&lt;/strong&gt; (compression makes inserts slower; stats OFF makes
+them slower; sparse columns are worse than nothing when filled).&lt;/p&gt;</description></item><item><title>Fastest MS SQL Inserts — Part 8: TVP, JDBC, Final Ranking</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part8/</link><pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part8/</guid><description>
+&lt;h2 id="executive-summary"&gt;Executive Summary&lt;/h2&gt;
+&lt;p&gt;This series benchmarks &lt;strong&gt;110+ insert strategies and tuning knobs&lt;/strong&gt; on SQL Server 2025 Express
+(Windows, Java 17, Spring Boot 3.3) over &lt;strong&gt;4,222 individual benchmark runs&lt;/strong&gt;. Here's the TL;DR:&lt;/p&gt;
+&lt;h3 id="the-10-highest-impact-decisions-in-order"&gt;The 10 highest-impact decisions (in order)&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;#&lt;/th&gt;
+&lt;th&gt;Choice&lt;/th&gt;
+&lt;th&gt;Impact&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Batch your inserts&lt;/strong&gt; (any strategy ≫ auto-commit per row)&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;15x&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Use the Bulk Copy API&lt;/strong&gt; (&lt;code&gt;SQLServerBulkCopy&lt;/code&gt; / &lt;code&gt;insertBulk...&lt;/code&gt;)&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;5-6x&lt;/strong&gt; vs plain JDBC&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Parallelize across 4 connections&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;2-3x&lt;/strong&gt; on top of #2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Enable &lt;code&gt;useBulkCopyForBatchInsert=true&lt;/code&gt;&lt;/strong&gt; in the JDBC URL&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;2-2.5x&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Use multi-value INSERT (200 values/statement)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;4-5x&lt;/strong&gt; for JDBC&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Drop/disable non-essential indexes&lt;/strong&gt; before bulk loads&lt;/td&gt;
+&lt;td&gt;up to &lt;strong&gt;7x&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Pick the right batch size (500-1000)&lt;/strong&gt; — not 10, not 10,000&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;4-5x&lt;/strong&gt; vs tiny batches&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Add &lt;code&gt;WITH (TABLOCK)&lt;/code&gt; hint&lt;/strong&gt; for dedicated bulk-load windows&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;1.3x&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Use &lt;code&gt;Persistable&lt;/code&gt; + &lt;code&gt;isNew=true&lt;/code&gt;&lt;/strong&gt; if you must use Spring Data &lt;code&gt;saveAll&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;8x&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Keep AUTO_UPDATE_STATISTICS = ON&lt;/strong&gt; (don't try to be clever)&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;1.5x&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="top-7-counter-intuitive-findings"&gt;Top 7 counter-intuitive findings&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;OPTION (RECOMPILE)&lt;/code&gt; makes batched inserts 52x slower&lt;/strong&gt; (2.4 minutes vs 3 seconds).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Delayed Durability &lt;code&gt;= FORCED&lt;/code&gt; makes bulk inserts 49% SLOWER&lt;/strong&gt;, not faster. It helps
+many-small-commits workloads, not single-large-transaction bulk loads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Natively compiled stored procs are 21x slower&lt;/strong&gt; when called from Java per-row via &lt;code&gt;addBatch&lt;/code&gt;.
+Their design assumes the C#/.NET memory-table API.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;In-Memory OLTP tables don't help batched Java inserts.&lt;/strong&gt; They shine for concurrency, not
+batch throughput.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ROW/PAGE compression make inserts slower&lt;/strong&gt; (+7%/+33%). Compression is a &lt;em&gt;read&lt;/em&gt; optimization.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;BCP utility is slower than Java Bulk API&lt;/strong&gt; when data is in-memory. The file I/O overhead
+dominates.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;AUTO_UPDATE_STATISTICS = OFF makes inserts 50% SLOWER&lt;/strong&gt;, not faster. The optimizer needs
+stats even for simple INSERTs.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="the-absolute-fastest-paths-if-your-scenario-allows"&gt;The absolute fastest paths (if your scenario allows)&lt;/h3&gt;
+&lt;p&gt;If your source data is already in SQL Server (ETL within the same database):&lt;/p&gt;</description></item><item><title>Fastest MS SQL Inserts — Part 4: Bulk Copy Flag</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part4/</link><pubDate>Wed, 08 May 2024 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part4/</guid><description>
 &lt;p&gt;In previous discussions, we established that bulk insert and multi-value batched inserts represent the
 fastest methods for inserting data into an MS SQL Server database.
 However, before concluding this series, let's explore another option.&lt;/p&gt;
 &lt;p&gt;MS SQL Server has introduced the parameter &lt;code&gt;useBulkCopyForBatchInsert&lt;/code&gt;,
 which automatically activates the bulk API for batched inserts.
 This functionality operates at the database driver level,
-enabling it to work seamlessly with both regular parameterized inserts and Hibernate inserts.&lt;/p&gt;</description></item><item><title>Fastest Way To Insert the Data in MS SQL – Part 3 – Multi-value insert vs Bulk Api</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part3/</link><pubDate>Sun, 11 Feb 2024 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part3/</guid><description>
+enabling it to work seamlessly with both regular parameterized inserts and Hibernate inserts.&lt;/p&gt;</description></item><item><title>Fastest MS SQL Inserts — Part 3: Multi-Value INSERT</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part3/</link><pubDate>Sun, 11 Feb 2024 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part3/</guid><description>
 &lt;p&gt;In a previous post, we concluded that the Bulk API insert is the fastest way
 to insert data into an MS SQL Server database if the batch size is reasonably
 large. For Jdbc Template inserts, we created a regular insert statement in the
 form of &lt;code&gt;insert into table (c1, c2, c3) values (v1, v2, v3)&lt;/code&gt;, where &lt;code&gt;c1, c2&lt;/code&gt;,
-and &lt;code&gt;c3&lt;/code&gt; are column names, and &lt;code&gt;v1, v2&lt;/code&gt;, and &lt;code&gt;v3&lt;/code&gt; are values.&lt;/p&gt;</description></item><item><title>Fastest Way To Insert the Data in MS SQL – Part 2 – Hibernate vs Prepared Statement vs Jdbc Template vs Bulk Api</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/</link><pubDate>Sat, 21 Oct 2023 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/</guid><description>
+and &lt;code&gt;c3&lt;/code&gt; are column names, and &lt;code&gt;v1, v2&lt;/code&gt;, and &lt;code&gt;v3&lt;/code&gt; are values.&lt;/p&gt;</description></item><item><title>Fastest MS SQL Inserts — Part 2: JDBC Strategies</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/</link><pubDate>Sat, 21 Oct 2023 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/</guid><description>
 &lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;In the previous post &lt;a href="../persist_vs_saveall/"&gt;Fastest way to insert the data in MS SQL - Part 1 Hibernate Batching&lt;/a&gt;
 we compared the performance of Hibernate inserts with batching turned off vs batching turned on.
@@ -23,7 +129,7 @@ In this post, we will explore other ways to insert data into MS SQL server and c
 &lt;li&gt;Using Microsoft Bulk API.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h3 id="hibernate-batching"&gt;Hibernate Batching&lt;/h3&gt;
-&lt;p&gt;Hibernate batching is implemented as following:&lt;/p&gt;</description></item><item><title>Fastest way to insert the data in MS SQL - Part 1 Hibernate Batching</title><link>https://www.professionaldev.dev/post/java/mssqlserver/persist_vs_saveall/</link><pubDate>Thu, 05 Oct 2023 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/persist_vs_saveall/</guid><description>
+&lt;p&gt;Hibernate batching is implemented as following:&lt;/p&gt;</description></item><item><title>Fastest MS SQL Inserts in Java — Part 1: Hibernate Batching</title><link>https://www.professionaldev.dev/post/java/mssqlserver/persist_vs_saveall/</link><pubDate>Thu, 05 Oct 2023 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/persist_vs_saveall/</guid><description>
 &lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;Currently, my team is focused on optimizing the performance of our
 web services. Our data manipulation tasks primarily rely on Hibernate for
