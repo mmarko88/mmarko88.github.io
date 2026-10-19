@@ -4,9 +4,9 @@ date: 2023-04-24
 draft: false
 usePageBundles: true
 description: "Case-sensitive strings in Java cause bugs when matching data from SQL Server. A custom wrapper class makes HashMap lookups case-insensitive without new strings."
-featureImage: 'case_sensitive_vs_case_insensitive_hash_map.svg' # Top image on post.
-featureImageAlt: 'Case sensitive vs case insensitive hash map' # Alternative text for featured image.
-shareImage: 'share.png' # Branded 1200x630 social-share card.
+featureImage: 'case-insensitive-hashmap.svg' # Technical SVG: put with lowercase email, get with uppercase email, both resolve to the same user.
+featureImageAlt: 'Diagram: map.put with key "john@example.com" followed by map.get with "JOHN@EXAMPLE.COM" via a custom case-insensitive wrapper key — both resolve to the same stored user, with zero new String allocations per get.'
+shareImage: 'share.png' # 1200x630 PNG rendered from the featureImage SVG.
 tags: ["java", "hashMap", "strings"]
 categories: [ "java"]
 ---
