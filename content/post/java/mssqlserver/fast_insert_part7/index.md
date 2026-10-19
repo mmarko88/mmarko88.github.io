@@ -327,6 +327,84 @@ overhead is almost entirely the extra period column maintenance.
 
 ![Storage Patterns](storage_patterns.svg)
 
+### Filtered & INCLUDE indexes
+
+Not all non-clustered indexes are created equal. Two variations can dramatically cut insert cost:
+
+- **Filtered index** — only indexes rows matching a WHERE clause (`WHERE years >= 50`)
+- **INCLUDE index** — stores extra columns only at the leaf level (not in the sort key)
+
+| Index Type | 100k rows (avg ms) | vs no index |
+|------------|-------------------|-------------|
+| No index (baseline) | 2,782 | — |
+| **Filtered** (only ~17% of rows match) | **3,461** | **+24%** |
+| INCLUDE | 3,824 | +37% |
+| Composite 3-column | 4,071 | +46% |
+| Full non-clustered | 4,956 | +78% |
+
+**Filtered indexes are the biggest win**: 60% cheaper than a full index on the same column because
+most rows never touch the index. If your queries only need "the senior customers", only index them.
+
+**INCLUDE beats composite** by 30% because INCLUDE columns aren't maintained in sort order — they're
+just stored at the leaf level for covering reads.
+
+### Computed columns
+
+Computed columns are either **PERSISTED** (materialized on write) or **non-persisted** (computed on read).
+
+```sql
+CREATE TABLE person_computed (
+    person_id INT PRIMARY KEY, user_name NVARCHAR(30), first_name NVARCHAR(10),
+    last_name NVARCHAR(15), years INT,
+    full_name AS (first_name + N' ' + last_name) PERSISTED,
+    years_bucket AS (CASE WHEN years < 30 THEN N'young' ELSE N'old' END)
+)
+```
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| Plain table | 2,782 |
+| Table with 1 persisted + 1 non-persisted computed column | 2,707 |
+
+**Essentially free.** The persisted column's string concatenation adds negligible CPU cost compared
+to I/O. The non-persisted column costs nothing on insert — it's evaluated on reads. Use them freely
+for derived values; they're much cleaner than application-side computations and support indexing.
+
+### Trace flag 610
+
+TF 610 is a legacy trace flag that enables minimally-logged bulk inserts into clustered tables.
+
+| Setting | 100k rows (avg ms) |
+|---------|-------------------|
+| TF 610 OFF + TABLOCK | 2,336 |
+| TF 610 ON + TABLOCK | 2,386 |
+
+**No measurable difference** for our workload. Why? TF 610 helps `BULK INSERT`, `INSERT INTO ...
+SELECT`, and `BCP` operations — not regular `INSERT` statements with `addBatch()`. The MS SQL JDBC
+driver's Bulk Copy API already uses minimal logging when applicable. Skip this flag unless you're
+using `BULK INSERT` or `BCP` directly.
+
+### Delayed durability
+
+`DELAYED_DURABILITY = FORCED` makes transaction commits asynchronous — the log flush happens on a
+background timer instead of synchronously at COMMIT. Risk: a crash loses recent transactions.
+
+| Setting | 100k rows (avg ms) |
+|---------|-------------------|
+| DISABLED (default) | 3,147 |
+| **FORCED** | **4,698 (49% SLOWER!)** |
+
+**Counter-intuitive finding.** Delayed durability makes our test *slower*, not faster. Why?
+
+Delayed durability batches multiple small transactions' log flushes together. It helps workloads
+with **many frequent small COMMITs** (think OLTP with per-row inserts). Our test uses **one large
+transaction**, so there's nothing to batch — DD just adds coordination overhead without any benefit.
+
+**Takeaway:** DD is a per-transaction optimization. For bulk inserts, use fewer, larger
+transactions instead of enabling DD on frequent small ones.
+
+![Index Varieties & Logging](index_varieties.svg)
+
 ### Temp table staging
 
 A common ETL pattern: INSERT into a heap temp table, then INSERT-SELECT into the real table:

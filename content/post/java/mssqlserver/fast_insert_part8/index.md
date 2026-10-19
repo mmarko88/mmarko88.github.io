@@ -361,5 +361,20 @@ only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssql
 24. **Temporal tables are cheap for audit (+31%)** — far better than AFTER INSERT triggers
     (+120%). The right answer for most point-in-time history requirements.
 
+25. **Filtered indexes are 60% cheaper than full indexes** on the same column. If your queries
+    only need a subset of rows, index only that subset.
+
+26. **INCLUDE is 30% cheaper than composite** — storing columns only at the leaf level is cheaper
+    than making them part of the sort key.
+
+27. **Computed columns are essentially free** on insert (persisted +0%, non-persisted +0%). Use
+    them for derived values; they're cleaner than app-side computations and support indexing.
+
+28. **Delayed Durability can make bulk inserts SLOWER (+49%)** — it's a per-transaction
+    optimization for many small commits, not for single large transactions.
+
+29. **Trace flag 610 doesn't help regular INSERTs** — only `BULK INSERT`, `BCP`, and
+    `INSERT ... SELECT` benefit. The JDBC Bulk Copy API already handles this transparently.
+
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
