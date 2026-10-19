@@ -37,3 +37,9 @@ These days, teams create great and successful products, not one person. Learn ho
    To understand how people around you feel like.
 5. Learn about assertive communication!
    You probably know about this. If not, ask your HR! They just love this subject. ;)
+
+## Related reading
+
+- [10 Mistakes Java Developers Make Early On](/post/java/teen_mistakes/) — the concrete
+  technical habits that pair with these soft skills. "Not asking for help" (#10 there) is
+  the mirror image of "learn to listen" here.

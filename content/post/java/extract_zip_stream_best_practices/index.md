@@ -16,7 +16,26 @@ Extracting archive files without controlling resource consumption is security-se
 
 Our code executes on servers, but you should know that servers have limits. Based on this, check how many hardware resources your code can consume. Resources are CPU, RAM, disk, network... Understand those limits and, based on those limits, put thresholds in your code.
 
-Here are some important thresholds you should put in a code when extracting a zip archive.
+Here are some important thresholds you should put in a code when extracting a zip archive — in
+the order they should fire during extraction:
+
+```mermaid
+flowchart LR
+    A[Open zip stream] --> B{Entry count<br/>under limit?}
+    B -- no --> X[Abort: entry bomb]
+    B -- yes --> C{Entry path<br/>safe?}
+    C -- "../ or absolute" --> X2[Abort: zip slip]
+    C -- safe --> D{Entry extension<br/>allow-listed?}
+    D -- no --> X3[Abort: unsafe type]
+    D -- yes --> E[Read bytes in chunks]
+    E --> F{Running total<br/>under max size?}
+    F -- no --> X4[Abort: size bomb]
+    F -- yes --> G{Chunk still<br/>safe to decompress?}
+    G -- compression ratio too high --> X5[Abort: zip bomb]
+    G -- ok --> H[Write to disk]
+    H --> E
+    E -. all entries done .-> Z[Done]
+```
 
 ### 1. Limit the size of an extracted archive
 This is the most basic and critical threshold you should introduce when extracting a zip archive.
@@ -100,6 +119,14 @@ The problem with this is that if you rely only on those properties, you need to 
 
 Be careful when using zip archive metadata. Always ask yourself how attackers can abuse it to hack your extraction algorithm.
 
+
+## Related reading
+
+- [What Is Memory Churn and How to Avoid It in Java](/post/java/memory_churn/) — the extraction
+  loop allocates one `ZipEntry` per iteration; same cache-locality thinking applies.
+- [Fastest MS SQL Inserts — Part 2: JDBC Strategies](/post/java/mssqlserver/fast_insert_part2/) —
+  bulk-inserting the extracted file metadata into a database uses the same batch-size reasoning
+  as these thresholds.
 
 #### Sources:
 1. [Wikipedia](https://en.wikipedia.org/wiki/ZIP_%28file_format%29)

@@ -63,3 +63,11 @@ To get familiar with FP, I studied and applied in practice FP concepts. The most
 Using FP in code doesn't prevent us, developers, from writing bad code. We still need to write unit tests, have a good understanding of our task and our codebase. We still need to apply all the best practices that we learned in the past. FP is promoting good practices and makes it easier for us developers to write good and maintainable code.
 
 I plan to further learn about FP and Java. I will continue to write posts on this subject.
+
+## Related reading
+
+- [Data-Oriented Programming in Java: Move Data to Functions](/post/java/data_to_functions/) —
+  the next step after Streams and pure functions: separating data from behaviour entirely with
+  records and functions.
+- [What Is Memory Churn and How to Avoid It in Java](/post/java/memory_churn/) — Streams and
+  lambdas allocate. Here's how to spot it in a benchmark and when it actually matters.

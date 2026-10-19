@@ -133,6 +133,34 @@ and reset the persistence context.
 In addition, we set flush mode to manual, all changes are deliberately flushed to the database before initiating the process.
 This approach allows for more precise control over when the data is actually transmitted to the database.
 
+Here's the entity lifecycle this code drives, drawn as a state machine — understanding this is
+the key to seeing why batching matters:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Transient: new Person()
+    Transient --> Managed: entityManager.persist(p)
+    Managed --> Flushed: flush()<br/>(SQL INSERT sent)
+    Flushed --> Detached: clear()<br/>(context emptied)
+    Detached --> [*]
+    Managed --> Managed: (change tracked, no SQL)
+    note right of Managed
+      Hibernate holds every Managed entity in the
+      first-level cache. Without clear() the context
+      grows unboundedly and GC pauses increase.
+    end note
+    note right of Flushed
+      With batching, N persist() calls become one
+      JDBC batch at flush(). Without batching, each
+      persist() may be its own round-trip.
+    end note
+```
+
+The code above walks every entity through Transient → Managed → Flushed → Detached in chunks
+of `batchSize`. The `flush()` + `clear()` pair at the end of each chunk is what prevents the
+first-level cache from growing unboundedly — the common cause of out-of-memory errors on bulk
+Hibernate inserts.
+
 And here is the second function:
 ```java
 public void saveAll(List<Person> people) {

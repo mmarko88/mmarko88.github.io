@@ -322,3 +322,11 @@ public class MemoryChurnBench {
     }
 }
 ```
+
+## Related reading
+
+- [How to Learn Functional Programming in Java](/post/java/start_fp_in_java/) — Streams and
+  lambdas quietly allocate short-lived objects. Everything in this post applies.
+- [Fastest MS SQL Inserts — Part 7: Index Impact](/post/java/mssqlserver/fast_insert_part7/) —
+  measured impact of row width (narrow vs wide vs LOB) on INSERT performance; same memory
+  layout concerns at the database level.

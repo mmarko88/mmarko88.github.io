@@ -61,3 +61,12 @@ Developers are not very communicative people. They like to solve problems by the
 Developing software is a team activity. When you encounter a problem during programming, try to solve it by yourself. But don’t waste too much time if you can’t figure out the solution. There is a high probability that some of your colleagues already encounter the same problem and know a solution.  
 If it is not the case, then you will get help and the team will understand that the problem is complex and that you need time to solve it. Involving more people will help you resolve complex problems faster. Developers that don’t ask for help, usually spend too much time on a ticket.  
 Help others when you see they have problems with their ticket. As a result, the team will be more productive and people will like you more.
+
+## Related reading
+
+- [Why Should You, as a Software Developer, Learn Soft Skills?](/post/soft_skills/) — asking
+  for help, pair programming, and all the "work with other humans" skills that most of these
+  mistakes trace back to.
+- [How to Learn Functional Programming in Java](/post/java/start_fp_in_java/) — if "coding by
+  accident" is on this list for you, learning a new paradigm from first principles is the fastest
+  way to break the habit.
