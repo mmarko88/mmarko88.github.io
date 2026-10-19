@@ -13,6 +13,48 @@ series: [ "Fastest Way to Insert Data in MS SQL" ]
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part8-tvp-jdbc'
 ---
 
+## Executive Summary
+
+This series benchmarks **~80 insert strategies and tuning knobs** on SQL Server 2025 Express
+(Windows, Java 17, Spring Boot 3.3) over **3,802 individual benchmark runs**. Here's the TL;DR:
+
+### The 10 highest-impact decisions (in order)
+
+| # | Choice | Impact |
+|---|--------|--------|
+| 1 | **Batch your inserts** (any strategy ≫ auto-commit per row) | **15x** |
+| 2 | **Use the Bulk Copy API** (`SQLServerBulkCopy` / `insertBulk...`) | **5-6x** vs plain JDBC |
+| 3 | **Parallelize across 4 connections** | **2-3x** on top of #2 |
+| 4 | **Enable `useBulkCopyForBatchInsert=true`** in the JDBC URL | **2-2.5x** |
+| 5 | **Use multi-value INSERT (200 values/statement)** | **4-5x** for JDBC |
+| 6 | **Drop/disable non-essential indexes** before bulk loads | up to **7x** |
+| 7 | **Pick the right batch size (500-1000)** — not 10, not 10,000 | **4-5x** vs tiny batches |
+| 8 | **Add `WITH (TABLOCK)` hint** for dedicated bulk-load windows | **1.3x** |
+| 9 | **Use `Persistable` + `isNew=true`** if you must use Spring Data `saveAll` | **8x** |
+| 10 | **Keep AUTO_UPDATE_STATISTICS = ON** (don't try to be clever) | **1.5x** |
+
+### Top 5 counter-intuitive findings
+
+1. **Delayed Durability `= FORCED` makes bulk inserts 49% SLOWER**, not faster. It helps
+   many-small-commits workloads, not single-large-transaction bulk loads.
+2. **Natively compiled stored procs are 21x slower** when called from Java per-row via `addBatch`.
+   Their design assumes the C#/.NET memory-table API.
+3. **In-Memory OLTP tables don't help batched Java inserts.** They shine for concurrency, not
+   batch throughput.
+4. **ROW/PAGE compression make inserts slower** (+7%/+33%). Compression is a *read* optimization.
+5. **BCP utility is slower than Java Bulk API** when data is in-memory. The file I/O overhead
+   dominates.
+
+### The ranking
+
+The fastest I could get **100,000 person rows** into SQL Server from a Java application is
+**330 ms** (Parallel Bulk API, 4 threads). The slowest is **27,794 ms** (Spring Data `saveAll`
+without `Persistable`) — **84x slower**. Everything in between is covered in this series.
+
+**TVP (818 ms) is the best choice when you need portability across different clients and don't
+have `SQLServerBulkCopy` available.** Plain JDBC (3,905 ms) is only 3% faster than Hibernate
+`persist()` — the ORM is not your bottleneck.
+
 ## Introduction
 
 This final part explores two approaches that bypass Hibernate entirely:
@@ -288,6 +330,98 @@ only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssql
 
 ![Advanced Patterns](advanced_patterns.svg)
 
+## Advanced: In-Memory OLTP, BULK INSERT & Stored Procedures
+
+### BULK INSERT (server-side file reader)
+
+The `BULK INSERT` T-SQL command reads a flat file directly from the server's filesystem, bypassing
+the normal INSERT codepath entirely:
+
+```sql
+BULK INSERT person FROM 'C:/ProgramData/bulk_data.txt'
+WITH (FORMAT = 'CSV', FIELDTERMINATOR = '0x09', ROWTERMINATOR = '0x0a',
+      BATCHSIZE = 1000, TABLOCK)
+```
+
+| Method | 100k rows (avg ms) |
+|--------|-------------------|
+| Ad-hoc INSERT batch | 2,734 |
+| Single-threaded Bulk API | 492 |
+| **BULK INSERT (T-SQL)** | **637** |
+
+BULK INSERT nearly matches the fastest single-threaded Java path. It's **the ultimate pattern for
+server-local file imports** — ETL/data warehousing scenarios where data lives on the SQL Server
+machine. The file must be readable by the SQL Server service account.
+
+### In-Memory OLTP Tables (`MEMORY_OPTIMIZED = ON`)
+
+In-Memory OLTP tables live entirely in RAM with lock-free, latch-free access. SQL Server 2016 SP1+
+makes them available in all editions, including Express.
+
+```sql
+CREATE TABLE person_memopt (
+    person_id INT NOT NULL PRIMARY KEY NONCLUSTERED,
+    user_name NVARCHAR(30), first_name NVARCHAR(10),
+    last_name NVARCHAR(15), years INT
+) WITH (MEMORY_OPTIMIZED = ON, DURABILITY = SCHEMA_AND_DATA);
+```
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| Disk-based ad-hoc INSERT | 2,734 |
+| **In-Memory OLTP (interpreted T-SQL batch)** | **2,726** |
+
+**Surprise:** essentially no benefit for batch inserts from Java. In-Memory tables excel at
+high-concurrency OLTP (many threads, many small operations) by eliminating latches. Our workload —
+one connection, batch of 1,000 rows — isn't lock-constrained; the bottleneck is the network and
+batch processing overhead, which both tables share.
+
+### Natively Compiled Stored Procedures
+
+Native compilation turns a stored proc into C code at creation time:
+
+```sql
+CREATE PROCEDURE usp_InsertPerson_Native (...)
+WITH NATIVE_COMPILATION, SCHEMABINDING
+AS BEGIN ATOMIC WITH (TRANSACTION ISOLATION LEVEL = SNAPSHOT, LANGUAGE = N'us_english')
+    INSERT INTO dbo.person_memopt (...) VALUES (...);
+END
+```
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| In-Memory interpreted batch | 2,726 |
+| **Native proc called per-row via `addBatch`** | **58,542 (21x SLOWER)** |
+
+**Native procs are a trap for Java clients.** The native code itself is lightning fast, but you must
+call it **per row** (`EXEC usp_... ?, ?, ?, ?, ?`). The JDBC driver doesn't send 100,000 `EXEC`
+calls efficiently; each becomes its own RPC. The lesson: **native procs win in C#/.NET memory-table
+batch APIs, not in Java JDBC**.
+
+### Stored Procedures (interpreted) vs Ad-hoc
+
+| Pattern | 100k rows (avg ms) |
+|---------|-------------------|
+| Ad-hoc INSERT (direct) | 2,734 |
+| **Stored procedure (`EXEC usp_...`)** | **4,807 (76% slower)** |
+
+A per-row stored procedure call is 76% slower than batched direct INSERT, for the same reason as
+native procs: each EXEC becomes a server-side command execution with its own parameter parsing and
+query plan lookup. Use procs for complex business logic, not for simple inserts.
+
+### Check Constraints
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| Check constraints enabled | 2,954 |
+| **Check constraints disabled** | **2,909** |
+
+**Simple check constraints are essentially free.** For LEN(x) > 0 and range checks, the overhead
+is negligible. Only disable constraints with `ALTER TABLE NOCHECK CONSTRAINT ALL` for complex
+multi-table FK checks on large bulk loads — simple column constraints are fine to leave on.
+
+![In-Memory OLTP, BULK INSERT & Procs](inmem_bulk.svg)
+
 ## Key Takeaways from the Series
 
 1. **Parallel Bulk API** is the overall winner (330ms for 100k rows). The Bulk Copy API already uses
@@ -387,6 +521,21 @@ only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssql
 
 33. **Server-side encryption (ENCRYPTBYPASSPHRASE) is 4x slower** for 3 encrypted columns. Prefer
     Always Encrypted (client-side) or TDE (page-level) for most PII protection use cases.
+
+34. **BULK INSERT from file (637ms) rivals Java Bulk API** when data already lives on the SQL
+    Server machine. The server-side bulk reader is as fast as the Java client-side protocol.
+
+35. **In-Memory OLTP tables offer no benefit for batched Java inserts.** They shine for
+    high-concurrency OLTP; our one-thread batch workload isn't lock-constrained.
+
+36. **Natively compiled procedures are a trap for Java clients** — 21x slower when called
+    per-row via `addBatch`. They're designed for the memory-table API in .NET/C#, not JDBC.
+
+37. **Stored procedures (interpreted) are 76% slower** than direct INSERT batches. Use procs for
+    complex logic, not simple row inserts.
+
+38. **Check constraints are free** for simple column validations. Only disable them for complex
+    FK validation on huge bulk loads.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
