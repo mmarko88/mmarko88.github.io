@@ -538,6 +538,62 @@ usually faster than maintaining indexes during the load.
 
 ![SNAPSHOT & SWITCH with Indexes](snapshot_switch.svg)
 
+## Semi-Structured Indexes: XML vs JSON
+
+Part 7 showed [XML columns cost 2.3x more than JSON for storage](#xml-vs-json-columns). What about
+*indexes* on those columns?
+
+### XML Primary Index
+
+```sql
+CREATE PRIMARY XML INDEX PXML_person_xml_idx_data ON person_xml_idx(data);
+```
+
+The XML primary index is a shredded node table — one row per XML node per document. For 100k
+documents with ~5 nodes each, that's **500,000 node-table rows** maintained on every insert.
+
+| XML column | 100k rows (avg ms) |
+|-----------|-------------------|
+| No XML index | 8,339 |
+| **+ PRIMARY XML INDEX** | **38,265 (4.6x SLOWER!)** |
+
+### JSON Computed-Column Index
+
+JSON doesn't have a native index type in SQL Server. The idiomatic pattern is:
+
+```sql
+ALTER TABLE person_json_idx
+    ADD years_from_json AS JSON_VALUE(data, '$.years');
+CREATE INDEX IX_person_json_idx_years ON person_json_idx(years_from_json);
+```
+
+| JSON column | 100k rows (avg ms) |
+|------------|-------------------|
+| No JSON index | 5,774 |
+| **+ computed-column INDEX** | **8,493 (+47%)** |
+
+**JSON indexes are 10x cheaper than XML indexes** (+47% vs +359%) because JSON uses a scalar computed
+column — just one indexed value per row — while the XML index shreds the entire document.
+
+**Takeaway:** if you need to query JSON/XML by a specific field, use the JSON computed-column
+pattern. XML primary indexes are only worth it for complex XQuery/XPath workloads.
+
+## tempdb Spill (Memory Grant Starvation)
+
+What happens when SQL Server's memory grant for a sort is insufficient and it has to spill to
+tempdb? We force a tiny grant with `OPTION (MIN_GRANT_PERCENT = 0, MAX_GRANT_PERCENT = 0.001)`:
+
+| INSERT…SELECT + ORDER BY | 100k rows (avg ms) |
+|-------------------------|-------------------|
+| Normal grant (in-memory sort) | 326 |
+| **Tiny grant (tempdb spill)** | **657 (2x slower)** |
+
+**Spilling to tempdb is cheaper than you'd expect.** Only 2x slower — SQL Server handles spills
+gracefully with multi-pass merge sorts. The right lesson: don't panic if you see occasional
+spills in a slow query report; focus on queries that spill *gigabytes*, not kilobytes.
+
+![XML/JSON Indexes & tempdb Spill](xmljson_spill.svg)
+
 ## Key Takeaways from the Series
 
 1. **Parallel Bulk API** is the overall winner (330ms for 100k rows). The Bulk Copy API already uses
@@ -682,6 +738,11 @@ usually faster than maintaining indexes during the load.
 
 48. **SWITCH PARTITION's load phase scales linearly with index count** — just like non-partitioned
     tables. Load into a heap, then add matching indexes right before the SWITCH.
+
+49. **XML primary indexes are 4.6x more expensive** than JSON computed-column indexes (+359% vs
+    +47%). Use JSON unless you specifically need XQuery/XPath.
+
+50. **tempdb spills are cheap** — only 2x slower than in-memory sort. Don't panic over small spills.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
