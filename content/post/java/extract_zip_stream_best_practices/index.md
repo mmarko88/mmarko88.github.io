@@ -83,15 +83,25 @@ Sure, here is the revised version in Markdown format with grammatical correction
    because a user can enter the file name in the form `..\..\file`,
    leading to the extraction of a zip file in an unwanted location.
 
-   To fix this, add the following check:
-   the canonical path of the file does not start with the path of the target directory.
+   To fix this, add the following check: the **canonical** path of the entry does not start
+   with the **canonical** path of the target directory — comparing as `Path`, not as `String`.
 
    ```java
-   File file = new File(extractDirPath, zipEntry.getName());
-   if( !file.getCanonicalPath().startsWith(extractDirPath) ) {
-       throw new SecurityException("ZipEntry not within target directory!");
+   File extractedFile = new File(extractDirPath, zipEntry.getName());
+   Path basePath   = new File(extractDirPath).getCanonicalFile().toPath();
+   Path targetPath = extractedFile.getCanonicalFile().toPath();
+   if (!targetPath.startsWith(basePath)) {
+       throw new SecurityException("ZipEntry outside target folder: " + zipEntry.getName());
    }
    ```
+
+   Two subtle details that defeat real attackers:
+   - **`getCanonicalFile()` on both sides** resolves symlinks and `..` segments. If the
+     target directory itself is a symlink to another location (or if your runtime user
+     later renames it), a non-canonical compare lets the attacker out.
+   - **`Path.startsWith(Path)` not `String.startsWith(String)`** — the string compare treats
+     `/tmp/safe` as a prefix of `/tmp/safe-evil/malicious.txt`. The `Path` compare matches
+     only on complete path segments.
 
 3. **Check file extensions inside the zip file.**
 
@@ -119,6 +129,71 @@ The problem with this is that if you rely only on those properties, you need to 
 
 Be careful when using zip archive metadata. Always ask yourself how attackers can abuse it to hack your extraction algorithm.
 
+### 7. Hardenings I learned the hard way (production fixes)
+
+The six items above cover the headline attacks. These five smaller details fixed real-world
+findings in production code I maintain:
+
+1. **Decode zip filenames with Cp437, not UTF-8.** The default `ZipInputStream` constructor
+   assumes UTF-8; a hostile zip with filenames in another encoding throws
+   `IllegalArgumentException` mid-stream and leaves half the archive extracted.
+
+   ```java
+   try (ZipInputStream zip = new ZipInputStream(input, Charset.forName("Cp437"))) { ... }
+   ```
+
+2. **Check the compression ratio inside the extraction loop, not after.** Checking only
+   after writing the whole entry means a zip bomb has already written its gigabytes to disk
+   by the time you notice.
+
+   ```java
+   while ((n = zip.read(buffer)) > 0) {
+       out.write(buffer, 0, n);
+       totalEntrySize += n;
+       long compressed = entry.getCompressedSize();
+       if (compressed > 0 && (double) totalEntrySize / compressed > thresholdRatio) {
+           throw new SecurityException("Compression ratio exceeded on " + entry.getName());
+       }
+   }
+   ```
+
+3. **Fall back to the global size cap when `entry.getCompressedSize()` returns -1.** The ZIP
+   format doesn't require compressed size to be present in the local header; some creators
+   leave it as `-1` (unknown). Without a fallback, your ratio check silently skips those
+   entries. Pattern:
+
+   ```java
+   if (compressed > 0) {
+       // ratio check as above
+   } else if (totalEntrySize > thresholdSize) {
+       throw new SecurityException("Oversized unknown-ratio entry: " + entry.getName());
+   }
+   ```
+
+4. **Skip directory entries explicitly.** `entry.isDirectory()` returns `true` for entries
+   whose name ends in `/`. If you don't skip them, you'll try to open a file at a directory
+   path and hit a confusing I/O error later.
+
+   ```java
+   if (entry.isDirectory()) { zip.closeEntry(); continue; }
+   ```
+
+5. **Clean up on exception.** If any threshold trips mid-archive, half the files are already
+   on disk. Wrap the whole extraction in a try/catch and delete the output directory on any
+   failure — otherwise you accumulate half-extracted archives from failed uploads.
+
+   ```java
+   try {
+       // extract loop
+   } catch (Exception e) {
+       FileUtils.deleteDirectoryQuietly(outputDir);
+       throw e;
+   }
+   ```
+
+All five of these are in the `blog-examples` reference implementation linked at the top of
+the post — the simpler variants in sections 1–6 are the clean teaching versions; the full
+code reflects what shipped.
 
 ## Related reading
 
