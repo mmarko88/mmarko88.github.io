@@ -126,9 +126,10 @@ walineServerURL = "https://mmarko88githubio-waline.vercel.app"
  showRelatedInArticle = true
  showRelatedInSidebar = true
 
-# website author
+# website author (used by sidebar + opengraph meta + JSON-LD structured data)
 [author]
-name = "Marko Milenkovic"
+name = "Marko Milenković"
+url = "https://www.professionaldev.dev/"
 photo = "images/marko_milenkovic.jpg" #include this if you would like to show the author photo on the sidebar
 
 
@@ -144,8 +145,3 @@ photo = "images/marko_milenkovic.jpg" #include this if you would like to show th
 #matomoDomain = "matomo.example.com" # Set to Matomo domain
 #matomoSiteID = "1" # Default is set to 1, change this to the siteid being tracked
 
-
-# Author table (used by opengraph meta + JSON-LD structured data)
-[author]
-  name = "Marko Milenković"
-  url = "https://www.professionaldev.dev/"
