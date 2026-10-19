@@ -537,5 +537,17 @@ multi-table FK checks on large bulk loads — simple column constraints are fine
 38. **Check constraints are free** for simple column validations. Only disable them for complex
     FK validation on huge bulk loads.
 
+39. **`RETURN_GENERATED_KEYS` costs +34%**. Suppress it in your ORM/JDBC code if you don't need
+    the generated IDs back on insert.
+
+40. **App-generated IDs beat IDENTITY and SEQUENCE** by 12-31%. Prefer ULID/Snowflake/pre-fetched
+    sequence batches to server-side ID generation for the fastest batched inserts.
+
+41. **Trusted FKs cost +21%** — disable before bulk loads, then `WITH CHECK CHECK CONSTRAINT` to
+    re-validate (faster than per-row checking).
+
+42. **Abort-on-error batches are 7.5x faster** than per-row insert retry, but you lose up to 999
+    good rows per bad row. Pick based on data cleanliness and tolerance for row loss.
+
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.

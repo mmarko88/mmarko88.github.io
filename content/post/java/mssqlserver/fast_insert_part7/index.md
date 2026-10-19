@@ -478,6 +478,65 @@ Server CPU. Minimize the number of encrypted columns and consider:
 
 ![Column Types, Stats & Encryption](column_types.svg)
 
+### ID Generation Strategies
+
+How you generate primary keys matters more than you might think:
+
+| Strategy | 100k rows (avg ms) | vs app-generated |
+|----------|-------------------|------------------|
+| **App-generated INT** (baseline) | **3,085** | — |
+| IDENTITY column | 3,459 | +12% |
+| SET IDENTITY_INSERT ON (explicit values) | 3,857 | +25% |
+| SEQUENCE object (DEFAULT) | 4,052 | +31% |
+| **IDENTITY + `RETURN_GENERATED_KEYS`** | **4,142** | **+34%** |
+
+**App-side ID generation wins**. The surprises:
+- `RETURN_GENERATED_KEYS` is a significant tax (+34%) — many ORMs set it by default so they can
+  populate the entity's `id` field. If you don't need the generated IDs back, suppress it.
+- `SET IDENTITY_INSERT ON` costs more than you'd expect — the mode toggle isn't free, and the engine
+  has to validate uniqueness against the identity seed.
+- SEQUENCE objects are convenient but add a DEFAULT lookup per row.
+
+**Recommendation:** generate IDs on the application side (ULID, Snowflake, pre-fetched sequence
+batch, or a `SELECT NEXT VALUE FOR seq FROM GENERATE_SERIES(1,1000)` pre-fetch pattern) for the
+fastest batched inserts.
+
+### Foreign Keys
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| No FK constraint at all | 2,957 |
+| **FK disabled** (`NOCHECK CONSTRAINT`) | **3,108** (+5%) |
+| **FK trusted** (`WITH CHECK CHECK CONSTRAINT`) | **3,592** (+21%) |
+
+Trusted (enforced) foreign keys cost about 21% — the engine validates every row's `dept_id` against
+the `department` table. Disabled FKs still cost a small 5% because the optimizer treats them as
+*untrusted* and may generate different plans.
+
+**For large bulk loads with known-good data:** disable FK constraints, load, then re-enable with
+`WITH CHECK` to re-validate. The re-validation is faster than per-row checking.
+
+### Batch Retry Patterns
+
+Real-world data often has bad rows. How you handle one bad row in a batch has dramatic cost:
+
+| Pattern | 10k rows, 1 duplicate (avg ms) |
+|---------|-------------------------------|
+| **Abort batch on error** (clearBatch, continue) | **302** |
+| **Insert per-row** (catch, skip, continue) | **2,250 (7.5x slower)** |
+
+The abort-on-error pattern completes in 302ms because each 1,000-row sub-batch that contains a bad
+row is simply discarded (we lose up to 999 good rows per bad row). The per-row pattern inserts
+9,999 of 10,000 rows but takes 7.5x longer.
+
+**The right answer depends on your data integrity requirements:**
+- **Known-good data**: use the batch pattern — if any row fails, there's a bug upstream.
+- **Dirty data with some bad rows**: use smaller batches (100 instead of 1000) so you lose less on
+  each failure; the per-row path should be reserved for the final retry pass.
+- **Zero tolerance for data loss**: stage into a temp table, VALIDATE then move to the real table.
+
+![ID Generation & Foreign Keys](identity_fk.svg)
+
 ### Temp table staging
 
 A common ETL pattern: INSERT into a heap temp table, then INSERT-SELECT into the real table:

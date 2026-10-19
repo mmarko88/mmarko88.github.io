@@ -14,9 +14,9 @@ src = "../images/marko_milenkovic.jpg"
 
 ## What I Do
 
-I'm **Marko Milenkovic**, a Senior Java Developer & Tech Lead at [Badin Soft](https://badinsoft.com/), based in Serbia. I've been writing software professionally for 8+ years (and tinkering with it since 2007), mostly backend work on fintech products — Java, Spring, Hibernate/JPA, SQL Server.
+I'm **Marko Milenkovic**, a Senior Java Developer, Team & Tech Lead with 10+ years of professional experience in backend development and 15+ years in software development. Based in Nis, Serbia.
 
-My day-to-day focus: helping Java developers write clean, performant code — the kind you can actually profile, benchmark, and reason about.
+Specialist in REST API design, platform migrations, CI/CD engineering, and application security across enterprise fintech products involving large-scale data processing. Focused on sharing knowledge and helping Java developers optimize their work — writing clean, secure, and performant code.
 
 ## What I Write About
 
@@ -37,8 +37,74 @@ Runnable code for posts lives in [blog-examples](https://github.com/mmarko88/blo
 - **dev.to**: [mmarko88](https://dev.to/mmarko88)
 - **RSS**: [index.xml](/index.xml)
 
-<!-- Drop your CV as static/files/cv.pdf, then uncomment:
+---
+
 ## CV
 
-Download my CV: [cv.pdf](/files/cv.pdf)
--->
+> Download the full PDF: **[Marko_Milenkovic_CV.pdf](/files/Marko_Milenkovic_CV.pdf)**
+
+### Employment History
+
+#### Senior Java Developer & Tech Lead — Investment Cafe
+**Badin Soft (2018–2022) → Wiser Technologies (2022–Present)**
+*2018 — Present*
+
+Team lead and core maintainer of the **Investment Cafe** platform at **BlackRock** (formerly eFront) — a multi-tenant document management and investor communication system serving BlackRock's alternative investments clients globally.
+
+- Led a development team, coordinating work and guiding team members
+- Built the **REST API layer from scratch**: FundInvestor, FundFamily, and DocumentTypes services
+- Designed and implemented the **MFA/TOTP authentication system** — full lifecycle
+- Created the **Cloud Store POC** for cloud-native S3 storage
+- Led the **Spring Boot 3 migration** (148 commits, 2,483 files): javax→Jakarta, Hibernate 5→6, OpenAPI 3
+- Built the **IC Full Deployment Pipeline** (Azure Pipelines + Terraform + AWS EBS) with Blue-Green deployments
+- Spearheaded **TVAS security hardening** (58 commits): SQL injection, SSRF, path traversal, AES/GCM encryption
+- Delivered major **performance improvements**: Contact Import bottleneck, materialized view redesign, Document Search
+- Drove the **Flash → Spring Boot/React migration** under tight deadlines
+- Designed and implemented the **Excel import/export module** end-to-end
+- Improved the **mailing system**: automated D5 emails, email archive with BCC, PII masking
+- Contributed across **6 product areas** beyond IC: CPS Integration Services, Asset Servicer Portal, CRM Platform, Insight Core, Invest
+
+*Tech: Java 17, Spring Boot 3, Hibernate 6, Jakarta EE, MSSQL, Liquibase, OAuth2, Docker, Terraform, AWS EBS, TomEE 10, OpenAPI 3, CyberArk, SonarQube, Veracode, Azure Pipelines, React, .NET/C#*
+
+#### Senior Java Developer & Tech Lead — CREALOGIX E-Banking
+**Badin Soft** | *2017–2018*
+
+E-banking application for major Swiss banks (TKB, BKB, AKB). Maintained version 2.0 across 3 major releases.
+
+*Tech: Java, Spring, Oracle DB, Git, Bitbucket*
+
+#### Senior Java Developer — Transactor HQ
+**Badin Soft** | *2014–2017*
+
+Three-layer fintech application (Oracle, Java Spring/MyBatis/Jersey API, Angular). Designed and developed secure, high-performance RESTful API services.
+
+*Tech: Java, Spring Boot, MyBatis, Jersey, Oracle DB, Angular*
+
+#### Freelance Developer
+*December 2011 — April 2014*
+
+Various projects in Java: Swing, GWT, JSP, JSF, Android, Apache CXF, Spring, REST.
+
+### Education
+
+- **Master's Degree** — Computer Science, University of Nis (2011–2016)
+- **Bachelor's Degree** — Computer Science, University of Nis (2007–2011)
+
+### Technical Skills
+
+**Languages:** Java, SQL, PL/SQL, JavaScript, C#/.NET, Python, C/C++
+
+**Frameworks:** Spring (Core, MVC, Boot, Security, Batch, Cloud, WebFlux), Hibernate, MyBatis, Jakarta EE, EJB, OAuth2
+
+**Web:** REST, SOAP, OpenAPI 3, gRPC, Microservices, Kafka, React, Angular
+
+**Databases:** MS SQL Server, Oracle DB, PostgreSQL, H2, Azure Cosmos DB, Liquibase
+
+**DevOps:** Docker, Terraform, Azure Pipelines, GitHub Actions, Jenkins, AWS (EBS, S3, CloudWatch), SonarQube, Veracode
+
+**Tools:** Git, Maven, IntelliJ IDEA, JMeter, Postman, Splunk, CyberArk
+
+### Languages
+
+- **Serbian** — Native
+- **English** — Full Professional Proficiency
