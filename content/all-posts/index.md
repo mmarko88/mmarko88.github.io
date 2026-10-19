@@ -1,16 +1,26 @@
 ---
-title: "All Posts"
+title: "Reference"
 date: 2026-10-19
 draft: false
 type: page
 layout: single
 sidebar: false      # no sidebar — full-width page
 singleColumn: true  # drop the grid-inverse wrapper so content centres
-description: "Every post on professionaldev.dev, grouped by topic — the Fastest MS SQL Inserts series, Java performance, fundamentals, and career."
+description: "Every post on professionaldev.dev — search the archive or browse by topic. Fastest MS SQL Inserts series, Java performance, fundamentals, career."
 ---
 
-Every post on this site, grouped by topic. For the chronological feed, see
+Search the archive or browse every post grouped by topic. For the chronological feed, see
 [the home page](/) or the [RSS feed](/index.xml).
+
+<div class="search search_page_field" style="margin: 1.5rem 0;">
+  <input type="search" class="search_page_input form_field" id="find" autocomplete="off" placeholder="Search posts, pages, TIL…">
+  <label for="find" class="search_label">
+    <svg class="icon" aria-hidden="true"><use xlink:href="#search"/></svg>
+  </label>
+</div>
+<p class="pale" style="margin-top: -0.75rem; font-size: 0.9rem;">Press Enter to search all posts, pages and TIL notes.</p>
+<div id="results"><div class="results" id="searchpage"></div></div>
+<script src="/js/search-page.js" defer></script>
 
 ## Fastest MS SQL Inserts (series)
 

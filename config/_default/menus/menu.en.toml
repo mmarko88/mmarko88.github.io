@@ -4,7 +4,7 @@
   weight = -110
 
 [[main]]
-  name = "All Posts"
+  name = "Reference"
   url = "all-posts/"
   weight = -109
 
@@ -32,20 +32,13 @@
 #  name = "Twitter"
 #  url = "https://x.com/mare_milenkovic"
 
-[[main]]
-  name = "Now"
-  url = "now/"
-  weight = -106
+# "Now" page removed — content folded into /about/.
+# "Search" removed from nav — search is embedded on the /all-posts/ (Reference) page.
 
 [[main]]
   name = "About"
   url = "about/"
   weight = -105
-
-[[main]]
-  name = "Search"
-  url = "search/"
-  weight = -104
 
 [[main]]
   name = "Subscribe"
