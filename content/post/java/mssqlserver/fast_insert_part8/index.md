@@ -33,17 +33,28 @@ This series benchmarks **~80 insert strategies and tuning knobs** on SQL Server 
 | 9 | **Use `Persistable` + `isNew=true`** if you must use Spring Data `saveAll` | **8x** |
 | 10 | **Keep AUTO_UPDATE_STATISTICS = ON** (don't try to be clever) | **1.5x** |
 
-### Top 5 counter-intuitive findings
+### Top 7 counter-intuitive findings
 
-1. **Delayed Durability `= FORCED` makes bulk inserts 49% SLOWER**, not faster. It helps
+1. **`OPTION (RECOMPILE)` makes batched inserts 52x slower** (2.4 minutes vs 3 seconds).
+2. **Delayed Durability `= FORCED` makes bulk inserts 49% SLOWER**, not faster. It helps
    many-small-commits workloads, not single-large-transaction bulk loads.
-2. **Natively compiled stored procs are 21x slower** when called from Java per-row via `addBatch`.
+3. **Natively compiled stored procs are 21x slower** when called from Java per-row via `addBatch`.
    Their design assumes the C#/.NET memory-table API.
-3. **In-Memory OLTP tables don't help batched Java inserts.** They shine for concurrency, not
+4. **In-Memory OLTP tables don't help batched Java inserts.** They shine for concurrency, not
    batch throughput.
-4. **ROW/PAGE compression make inserts slower** (+7%/+33%). Compression is a *read* optimization.
-5. **BCP utility is slower than Java Bulk API** when data is in-memory. The file I/O overhead
+5. **ROW/PAGE compression make inserts slower** (+7%/+33%). Compression is a *read* optimization.
+6. **BCP utility is slower than Java Bulk API** when data is in-memory. The file I/O overhead
    dominates.
+7. **AUTO_UPDATE_STATISTICS = OFF makes inserts 50% SLOWER**, not faster. The optimizer needs
+   stats even for simple INSERTs.
+
+### The absolute fastest paths (if your scenario allows)
+
+If your source data is already in SQL Server (ETL within the same database):
+- **`INSERT INTO target SELECT ... FROM source` = 319 ms** (the ultimate server-side copy)
+
+If data must come from Java:
+- **Parallel Bulk API 4 threads = 330 ms** (the standalone Java winner)
 
 ### The ranking
 
@@ -422,6 +433,72 @@ multi-table FK checks on large bulk loads — simple column constraints are fine
 
 ![In-Memory OLTP, BULK INSERT & Procs](inmem_bulk.svg)
 
+## Advanced: Query Plans, Latency & INSERT…SELECT
+
+### OPTION(RECOMPILE) — catastrophic for batches
+
+Adding `OPTION (RECOMPILE)` to an INSERT forces SQL Server to recompile the query plan for every
+execution:
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| Normal (plan cached across batches) | 2,772 |
+| **`OPTION (RECOMPILE)`** | **145,097 (52x SLOWER!)** |
+
+**Never use `OPTION (RECOMPILE)` with batched INSERTs.** Each row-group recompiles the plan,
+turning a 3-second operation into a 2.4-minute one. The hint is for one-off queries with wildly
+varying parameters, not high-volume batched workloads.
+
+### Network latency simulation
+
+Simulated by inserting `Thread.sleep(ms)` after each `executeBatch()`:
+
+| Added latency | 100k rows (avg ms) |
+|---------------|-------------------|
+| 0 ms (local) | 2,759 |
+| **1 ms per batch** (×100 batches) | **2,948** (+7%) |
+| **5 ms per batch** (×100 batches) | **4,370** (+58%) |
+
+Each 1 ms of round-trip latency per batch adds ~1 ms × (number of batches) overhead. On a
+production WAN link with 20-50 ms RTT, 100k inserts in 1000-row batches would spend 2-5 seconds in
+network overhead alone. **Larger batches amortize the latency** — the single-threaded Bulk Copy
+protocol (~1 batch total) is nearly immune.
+
+### INSERT … SELECT (data already in the server)
+
+If your source data is already on the SQL Server (another table, a staging table, etc.), the fastest
+possible path is `INSERT INTO target SELECT ... FROM source` — no client round-trips at all:
+
+| Pattern | 100k rows (avg ms) |
+|---------|-------------------|
+| **`INSERT … SELECT` (plain)** | **319** |
+| `INSERT … SELECT … ORDER BY` | 447 (+40% for sort) |
+| Parallel Bulk API 4t | 330 |
+
+**INSERT…SELECT is the fastest method we've benchmarked**, matching Parallel Bulk API. It's the
+right choice for ETL pipelines, materialized view refreshes, and in-database transformations. The
+40% ORDER BY penalty is the cost of the sort — if your clustered key already matches the ORDER BY,
+the sort disappears.
+
+### SQLServerBulkCopy option tuning
+
+Fine-tuning `SQLServerBulkCopyOptions`:
+
+| Option | 100k rows (avg ms) |
+|--------|-------------------|
+| Default (batch 1000) | 765 |
+| **`batchSize = 5000`** | **535 (30% faster)** |
+| `+ checkConstraints = true` | 619 |
+| `+ tableLock = true` | 662 |
+
+- **Bigger batch = fewer round-trips** — 5000 beats 1000 by 30%.
+- `checkConstraints = true` adds ~15% but validates FKs/CHECKs that are normally skipped during
+  bulk load (the default is `false`, meaning the loaded data is marked as untrusted).
+- `tableLock = true` acquires a bulk-update lock on the table — helpful when there are concurrent
+  writers, but prevents reader access during the load.
+
+![Query Plans, Latency & INSERT…SELECT](plans_latency.svg)
+
 ## Key Takeaways from the Series
 
 1. **Parallel Bulk API** is the overall winner (330ms for 100k rows). The Bulk Copy API already uses
@@ -548,6 +625,18 @@ multi-table FK checks on large bulk loads — simple column constraints are fine
 
 42. **Abort-on-error batches are 7.5x faster** than per-row insert retry, but you lose up to 999
     good rows per bad row. Pick based on data cleanliness and tolerance for row loss.
+
+43. **`OPTION (RECOMPILE)` is a batch-insert killer — 52x slower.** Never use it with batched
+    workloads.
+
+44. **Network latency amortizes with larger batches.** 5 ms RTT per batch costs 500 ms over 100
+    batches but 0 ms if you make it a single Bulk Copy call.
+
+45. **`INSERT … SELECT` (server-side) is the fastest path at 319 ms** — matches Parallel Bulk API.
+    If your data is already on the server, don't round-trip through the client.
+
+46. **Bigger `SQLServerBulkCopyOptions.batchSize` wins** — 5000 beats 1000 by 30%. Default is a
+    conservative starting point, not the optimum.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
