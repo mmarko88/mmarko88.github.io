@@ -6,7 +6,7 @@ usePageBundles: true
 description: "Hibernate batching reduced 100,000 SQL Server inserts from 11.1 seconds to 1.7 seconds in a 10-run median benchmark."
 featureImage: 'hibernate-batching-result.svg' # Top image on post.
 featureImageAlt: 'For 100,000 SQL Server inserts, Hibernate persist with batch size 1,000 took 1,675 milliseconds versus 11,085 milliseconds without batching, a 6.6-times improvement.' # Alternative text for featured image.
-shareImage: 'hibernate-batching-result.png' # For SEO and social media snippets.
+shareImage: 'share-part1.png' # Branded 1200x630 social-share card showing the Part 1 hibernate-batching chart.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]

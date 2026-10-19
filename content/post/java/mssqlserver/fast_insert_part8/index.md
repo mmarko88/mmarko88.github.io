@@ -6,7 +6,7 @@ usePageBundles: true
 description: "100,000 SQL Server inserts in 319 ms with INSERT…SELECT, 330 ms with Parallel Bulk API. Ranking of 110+ configurations and 50 takeaways from the series."
 featureImage: 'fast-insert-final-ranking.svg'
 featureImageAlt: 'Benchmark ranking for 100,000 SQL Server inserts: Parallel Bulk API using four threads is fastest at 330 milliseconds; the next four strategies range from 368 to 492 milliseconds.'
-shareImage: 'fast-insert-final-ranking.png'
+shareImage: 'share-part8.png' # Branded 1200x630 social-share card showing the Part 8 final-ranking chart.
 tags: [ "java", "ms sql server", "jdbc" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
