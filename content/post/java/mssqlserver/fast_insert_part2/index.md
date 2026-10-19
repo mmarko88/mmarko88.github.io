@@ -4,9 +4,9 @@ date: 2023-10-21
 draft: false
 usePageBundles: true
 description: "Hibernate vs PreparedStatement vs JdbcTemplate vs SQL Server Bulk API: measured 100,000 inserts across all four — Bulk API wins in 492 ms, Hibernate is slowest."
-featureImage: 'fastInsert2ChartResults.webp' # Chart: insert duration across Hibernate, PreparedStatement, JdbcTemplate, Bulk API.
-featureImageAlt: 'Bar chart comparing 100,000 SQL Server inserts across Hibernate, PreparedStatement, JdbcTemplate and the Bulk API — Bulk API finishes in 492 ms, Hibernate is slowest.'
-shareImage: 'share-part2.png' # Branded 1200x630 social-share card showing the Part 2 chart.
+featureImage: 'fast-insert-part2.svg' # Series-style 1200x630 hero: Bulk API wins at 492ms, 6.1x faster than Hibernate.
+featureImageAlt: 'Bar chart comparing 100,000 SQL Server inserts across four JDBC strategies — Bulk API finishes in 492 ms, 6.1 times faster than Hibernate persist at 3,089 ms.'
+shareImage: 'share-part2.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]

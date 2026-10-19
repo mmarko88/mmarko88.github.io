@@ -4,9 +4,9 @@ date: 2026-10-19
 draft: false
 usePageBundles: true
 description: "5 non-clustered indexes slow a bulk INSERT 11x. Measurements for compression, columnstore, GUID keys, triggers, encryption and more on SQL Server."
-featureImage: 'index_impact.svg' # Chart: insert duration grows 11x as non-clustered index count goes 0 -> 5.
-featureImageAlt: 'Line chart showing SQL Server insert duration against non-clustered index count for Bulk API, JdbcTemplate and Hibernate — 5 indexes make inserts 6-11x slower.'
-shareImage: 'share-part7.png' # Branded 1200x630 social-share card showing the Part 7 index-impact chart.
+featureImage: 'fast-insert-part7.svg' # Series-style 1200x630 hero: 5 non-clustered indexes slow Bulk API 6.7x.
+featureImageAlt: 'Bar chart of Bulk API insert duration against non-clustered index count — 0 indexes finishes in 784 ms, 1 index 1,829 ms, 3 indexes 3,632 ms, 5 indexes 5,290 ms (6.7 times slower).'
+shareImage: 'share-part7.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server", "indexes" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]

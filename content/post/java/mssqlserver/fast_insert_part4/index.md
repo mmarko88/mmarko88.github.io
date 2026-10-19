@@ -4,9 +4,9 @@ date: 2024-05-08
 draft: false
 usePageBundles: true
 description: "One connection-string flag (useBulkCopyForBatchInsert=true) makes Hibernate, JdbcTemplate and plain JDBC batched inserts 2-2.5x faster on SQL Server. Measured."
-featureImage: 'jdbcBulkVsBatch.png' # Chart: JDBC batched vs useBulkCopyForBatchInsert=true.
-featureImageAlt: 'Bar chart showing JDBC batched INSERT performance before and after setting useBulkCopyForBatchInsert=true — the connection-string flag gives a 2-2.5x speedup.'
-shareImage: 'share-part4.png' # Branded 1200x630 social-share card showing the Part 4 chart.
+featureImage: 'fast-insert-part4.svg' # Series-style 1200x630 hero: useBulkCopyForBatchInsert flag gives 2.5x speedup.
+featureImageAlt: 'Bar chart showing StatelessSession INSERT duration before and after setting useBulkCopyForBatchInsert=true — the connection-string flag drops 2,650 ms to 1,075 ms, 2.5 times faster.'
+shareImage: 'share-part4.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]

@@ -762,20 +762,27 @@ button.feed_action
 #waline .wl-reaction
   display: none
 
-// visited posts — dimmed until hover (RSS-reader convention)
-.feed_card.is_read .feed_title,
-.feed_card.is_read .feed_til_title
-  color: var(--pale, #888)
+// visited posts — small green "Read" badge in the corner (no opacity dimming;
+// opacity hurts readability for returning users without a clear positive signal).
+// The .is_read class is applied by assets/js/visited.js from localStorage.
+.feed_card.is_read
+  position: relative
 
-.feed_card.is_read .feed_media
-  opacity: 0.55
-
-.feed_card.is_read .feed_excerpt
-  opacity: 0.7
-
-.feed_card.is_read:hover .feed_media,
-.feed_card.is_read:hover .feed_excerpt
-  opacity: 1
+.feed_card.is_read::after
+  content: "✓ Read"
+  position: absolute
+  top: 0.75rem
+  right: 0.75rem
+  background: #17864b
+  color: #ffffff
+  font-size: 0.72rem
+  font-weight: 600
+  letter-spacing: 0.03em
+  padding: 0.22rem 0.55rem
+  border-radius: 1rem
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15)
+  z-index: 2
+  pointer-events: none
 
 // in-feed subscribe card
 .feed_subscribe
