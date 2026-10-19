@@ -1,9 +1,9 @@
 ---
-title: "Fastest way to insert the data in MS SQL - Part 8 TVP and Plain JDBC"
+title: "Fastest way to insert the data in MS SQL - Part 8 TVP, JDBC and the Full Ranking"
 date: 2026-10-18
 draft: true
 usePageBundles: true
-description: "Benchmark results for 100,000 SQL Server inserts: Parallel Bulk API with four threads finished in 330 milliseconds."
+description: "100,000 SQL Server inserts in 319 ms with INSERT…SELECT, 330 ms with Parallel Bulk API. Ranking of 110+ configurations and 50 takeaways from the series."
 featureImage: 'fast-insert-final-ranking.svg'
 featureImageAlt: 'Benchmark ranking for 100,000 SQL Server inserts: Parallel Bulk API using four threads is fastest at 330 milliseconds; the next four strategies range from 368 to 492 milliseconds.'
 shareImage: 'fast-insert-final-ranking.png'
@@ -15,8 +15,8 @@ sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/
 
 ## Executive Summary
 
-This series benchmarks **~80 insert strategies and tuning knobs** on SQL Server 2025 Express
-(Windows, Java 17, Spring Boot 3.3) over **3,802 individual benchmark runs**. Here's the TL;DR:
+This series benchmarks **110+ insert strategies and tuning knobs** on SQL Server 2025 Express
+(Windows, Java 17, Spring Boot 3.3) over **4,222 individual benchmark runs**. Here's the TL;DR:
 
 ### The 10 highest-impact decisions (in order)
 
@@ -66,13 +66,10 @@ without `Persistable`) — **84x slower**. Everything in between is covered in t
 have `SQLServerBulkCopy` available.** Plain JDBC (3,905 ms) is only 3% faster than Hibernate
 `persist()` — the ORM is not your bottleneck.
 
-## Introduction
-
-This final part explores two approaches that bypass Hibernate entirely:
-
-1. **Table-Valued Parameters (TVPs)** — SQL Server's native way to pass an entire result set as a
-   single parameter
-2. **Plain JDBC** — bare-metal PreparedStatement batching without any ORM
+The rest of this post walks through every topic in the summary above, starting with two approaches
+that bypass Hibernate entirely: Table-Valued Parameters and plain JDBC. After that come the
+advanced topics — isolation, procs, plans, latency, snapshot concurrency, index trade-offs, and
+the full ranking across 110+ configurations.
 
 ## Table-Valued Parameters (TVPs)
 
@@ -220,7 +217,7 @@ uses optimized batch parameter binding that the JDBC driver can optimize further
 With `bulkCopy=true`, all JDBC-based strategies converge to similar performance. The driver's bulk
 copy conversion is the dominant factor, not the Java-side abstraction.
 
-## Important: Multi-Value INSERT + useBulkCopyForBatchInsert Incompatibility
+## Multi-Value INSERT and bulkCopy Don't Mix
 
 During testing, we discovered that **multi-value INSERT** (`objectsPerInsert > 1`) is
 **incompatible** with `useBulkCopyForBatchInsert=true`. When this driver flag is enabled, it
@@ -774,5 +771,21 @@ slower than the best.**
 
 50. **tempdb spills are cheap** — only 2x slower than in-memory sort. Don't panic over small spills.
 
-The full benchmark code is available in the
+## What to actually do
+
+If you take only one thing from the whole series: **batch your inserts** and **don't fight the
+protocol**. A proper batch strategy puts you within 10x of the fastest possible path on day one.
+From there:
+
+- **Data already on the server** → `INSERT…SELECT` (319 ms).
+- **Pushing from Java** → Parallel Bulk API with 4 threads (330 ms), or multi-value INSERT with
+  200 rows per statement if you need portability.
+- **Stuck on Hibernate** → implement `Persistable<T>` and set `useBulkCopyForBatchInsert=true` —
+  1,075 ms is as fast as you'll get without leaving the ORM.
+- **Avoid these** → `OPTION (RECOMPILE)` with batches (145 s), AFTER INSERT triggers (2.2x),
+  server-side encryption on every column (4x), per-row stored proc EXEC (76% penalty).
+
+The full benchmark code — 18 test classes, 4,222 runs, 17 charts — is in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
+Clone it, point it at your own SQL Server, and the numbers will shift — but the rankings will
+almost certainly hold.
