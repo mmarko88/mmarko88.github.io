@@ -208,6 +208,85 @@ Both are excellent optimizations, but they cannot be combined.
 | 20 | Hibernate persist | 4,048 | 1 | |
 | 21 | saveAll (original) | 27,794 | 1 | SELECT per entity |
 
+## Advanced Patterns: RCSI, MERGE, Triggers, Async
+
+### Snapshot isolation (READ_COMMITTED_SNAPSHOT)
+
+RCSI changes `READ_COMMITTED` to use row versioning instead of shared locks for reads. It prevents
+reader-writer blocking at the cost of version store overhead:
+
+| Strategy | RCSI OFF | RCSI ON | Delta |
+|----------|----------|---------|-------|
+| Bulk API | 1,211 | **720** | **40% faster** |
+| JdbcTemplate | 2,817 | 3,565 | 27% slower |
+
+**Surprise:** RCSI dramatically helps Bulk API (fewer latches/lock contention on data pages) but
+hurts JdbcTemplate (row versioning writes to tempdb). Enable RCSI if you're bulk-loading with the
+Bulk Copy protocol and have concurrent readers.
+
+### MERGE vs plain INSERT
+
+`MERGE INTO ... USING (VALUES) WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT` is the
+canonical SQL upsert. How much does the upsert semantics cost?
+
+| Method | 100k rows (avg ms) |
+|--------|-------------------|
+| Plain INSERT | 3,177 |
+| MERGE upsert | 3,514 (+11%) |
+
+The 11% overhead is the cost of the ON clause evaluation and the branching logic. For pure inserts,
+use INSERT. For true upserts (where some rows may already exist), MERGE is cleaner than a
+SELECT-then-INSERT/UPDATE pattern.
+
+**Warning:** MERGE has known bugs with concurrent executions on SQL Server. Many SQL Server MVPs
+recommend `INSERT ... ON EXISTING UPDATE` or explicit `IF EXISTS` patterns in production code.
+
+### Trigger overhead
+
+A single `AFTER INSERT` trigger that writes one audit row per insertion:
+
+```sql
+CREATE TRIGGER tr_person_trigger_insert ON person_trigger
+AFTER INSERT AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO person_audit (person_id, action)
+    SELECT person_id, 'INSERT' FROM inserted;
+END
+```
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| No trigger | 3,261 |
+| With AFTER INSERT trigger | **7,023 (2.2x slower)** |
+
+**Triggers are expensive.** Each INSERT batch now does double the work — one for the base table,
+one for the audit table. Consider:
+- Logging via application code instead of triggers (gives you batching and backpressure control)
+- Change Data Capture (CDC) — SQL Server reads the transaction log async
+- Temporal tables (built-in system-versioned history)
+
+### Async producer-consumer pipeline
+
+The sync baseline does CPU work (generating data) and I/O work (inserting) sequentially. A
+producer-consumer pipeline overlaps them:
+
+```java
+BlockingQueue<List<Person>> queue = new ArrayBlockingQueue<>(4);
+// Producer: generates batches of 1000, puts to queue
+// Consumer: polls queue, inserts batch
+```
+
+| Pattern | 100k rows (avg ms) |
+|---------|-------------------|
+| Sync baseline (CPU then I/O) | 3,816 |
+| **Async producer-consumer** | **2,676 (30% faster)** |
+
+A single-producer, single-consumer pipeline is enough to overlap work. More consumers would help
+only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssqlserver/fast_insert_part6/)).
+
+![Advanced Patterns](advanced_patterns.svg)
+
 ## Key Takeaways from the Series
 
 1. **Parallel Bulk API** is the overall winner (330ms for 100k rows). The Bulk Copy API already uses
@@ -259,6 +338,18 @@ Both are excellent optimizations, but they cannot be combined.
 
 17. **SWITCH PARTITION is the gold standard** for zero-downtime bulk loads — load a staging
     heap, then atomically metadata-swap it into a partition (milliseconds, regardless of size).
+
+18. **RCSI (snapshot isolation) is a Bulk API accelerator**. Enable it if you use Bulk API and
+    have concurrent readers — 40% faster. But it slows JDBC batches 27% due to version store
+    overhead; don't enable it blindly.
+
+19. **MERGE costs 11% over plain INSERT** for upsert semantics. Use INSERT for pure appends.
+
+20. **AFTER INSERT triggers are 2.2x slower**. Prefer application logging, CDC, or temporal
+    tables for audit trails.
+
+21. **Async producer-consumer is 30% faster** than sync by overlapping CPU and I/O work. Even
+    one producer + one consumer is enough.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
