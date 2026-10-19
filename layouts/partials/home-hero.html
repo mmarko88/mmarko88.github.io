@@ -9,7 +9,9 @@
 {{- end -}}
 <section class="home_hero">
   {{- with $photo }}
-  <img class="home_hero_photo" src="{{ absURL . }}" alt="{{ $name }} photo">
+  <a class="home_hero_photo_link" href="{{ absURL "" }}" aria-label="Go to homepage">
+    <img class="home_hero_photo" src="{{ absURL . }}" alt="{{ $name }} — click to return home">
+  </a>
   {{- end }}
   <h1 class="home_hero_name">{{ $name }}</h1>
   {{- with $s.introDescription }}
@@ -21,4 +23,9 @@
     <span><strong>{{ $nPosts }}</strong> posts</span>
     <span><strong>{{ $nTil }}</strong> TIL</span>
   </div>
+  <a class="home_hero_now" href="{{ absURL "now/" }}">
+    <span class="home_hero_now_label">Currently working on</span>
+    <span class="home_hero_now_blurb">Building an agentic development framework — see what I'm up to</span>
+    <span class="home_hero_now_arrow" aria-hidden="true">→</span>
+  </a>
 </section>
