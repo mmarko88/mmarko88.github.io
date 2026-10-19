@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">JDBC strategies benchmark</title>
+  <desc id="description">For 100,000 SQL Server inserts across four JDBC strategies, Bulk API finished in 492 milliseconds — 6.1 times faster than Hibernate persist at 3,089 milliseconds.</desc>
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">FAST INSERTS IN SQL SERVER · 02/08</text>
+  <text x="72" y="158" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">Bulk API wins: 492 ms</text>
+  <text x="72" y="202" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="26">100,000 inserts · batch 1,000 · four JDBC strategies compared</text>
+
+  <text x="330" y="276" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Bulk API</text>
+  <rect x="360" y="246" width="88" height="42" rx="10" fill="#17864b"/>
+  <text x="466" y="276" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">492 ms</text>
+
+  <text x="330" y="346" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">JDBC PreparedStatement</text>
+  <rect x="360" y="316" width="432" height="42" rx="10" fill="#1a5fb4"/>
+  <text x="810" y="346" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">2,423 ms</text>
+
+  <text x="330" y="416" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">JdbcTemplate</text>
+  <rect x="360" y="386" width="533" height="42" rx="10" fill="#1a5fb4"/>
+  <text x="911" y="416" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">2,985 ms</text>
+
+  <text x="330" y="486" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Hibernate persist</text>
+  <rect x="360" y="456" width="552" height="42" rx="10" fill="#6b7280"/>
+  <text x="930" y="486" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">3,089 ms</text>
+
+  <rect x="996" y="238" width="156" height="76" rx="16" fill="#173f6d"/>
+  <text x="1074" y="276" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">6.1×</text>
+  <text x="1074" y="302" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="16">faster</text>
+
+  <text x="72" y="588" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="20">Java · PreparedStatement · JdbcTemplate · Microsoft SQL Server</text>
+</svg>
