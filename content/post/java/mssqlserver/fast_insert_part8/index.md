@@ -236,33 +236,7 @@ Both are excellent optimizations, but they cannot be combined.
 
 ![Strategy Ranking](strategy_ranking.svg)
 
-## Final Rankings: All Strategies Combined
-
-| Rank | Strategy | 100k avg ms | Part | Notes |
-|------|----------|-------------|------|-------|
-| 1 | Parallel Bulk API 4t | **330** | 6 | Fastest overall |
-| 2 | Multi-value 400 + 8 threads | 368 | 3+6 | No bulkCopy needed |
-| 3 | Multi-value 400 + 4 threads | 426 | 3+6 | No bulkCopy needed |
-| 4 | Parallel Bulk API 8t | 434 | 6 | Diminishing returns |
-| 5 | Bulk API | 492 | 2 | Fastest single-thread |
-| 6 | Parallel Bulk API 4t + bulkCopy | 603 | 6+4 | bulkCopy on bulk API is redundant |
-| 7 | Parallel JdbcTemplate 16t | 608 | 6 | JdbcTemplate benefits most from threads |
-| 8 | Parallel JdbcTemplate 4t + bulkCopy | 731 | 6+4 | |
-| 9 | TVP (batch=5000) | 818 | 8 | Best portable single-thread |
-| 10 | Multi-value 400 single thread | 1,058 | 3 | No bulkCopy, no threads |
-| 11 | StatelessSession + bulkCopy | 1,075 | 5+4 | Best Hibernate option |
-| 12 | JdbcTemplate + bulkCopy | 1,373 | 4 | |
-| 13 | Plain JDBC + bulkCopy | 1,516 | 8+4 | |
-| 14 | Hibernate + bulkCopy | 2,144 | 4 | |
-| 15 | JDBC PreparedStatement | 2,423 | 2 | |
-| 16 | StatelessSession | 2,650 | 5 | |
-| 17 | JdbcTemplate | 2,985 | 2 | |
-| 18 | Persistable saveAll | 3,426 | 5 | |
-| 19 | Plain JDBC | 3,905 | 8 | |
-| 20 | Hibernate persist | 4,048 | 1 | |
-| 21 | saveAll (original) | 27,794 | 1 | SELECT per entity |
-
-## Advanced Patterns: RCSI, MERGE, Triggers, Async
+## Isolation, MERGE, Triggers & Async
 
 ### Snapshot isolation (READ_COMMITTED_SNAPSHOT)
 
@@ -341,7 +315,7 @@ only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssql
 
 ![Advanced Patterns](advanced_patterns.svg)
 
-## Advanced: In-Memory OLTP, BULK INSERT & Stored Procedures
+## In-Memory OLTP, BULK INSERT & Stored Procedures
 
 ### BULK INSERT (server-side file reader)
 
@@ -433,7 +407,7 @@ multi-table FK checks on large bulk loads — simple column constraints are fine
 
 ![In-Memory OLTP, BULK INSERT & Procs](inmem_bulk.svg)
 
-## Advanced: Query Plans, Latency & INSERT…SELECT
+## Query Plans, Latency & INSERT…SELECT
 
 ### OPTION(RECOMPILE) — catastrophic for batches
 
@@ -593,6 +567,62 @@ gracefully with multi-pass merge sorts. The right lesson: don't panic if you see
 spills in a slow query report; focus on queries that spill *gigabytes*, not kilobytes.
 
 ![XML/JSON Indexes & tempdb Spill](xmljson_spill.svg)
+
+## Final Rankings: All Strategies Combined
+
+Across the ~110 configurations we tested, here are the headline numbers. All ran on SQL Server 2025
+Express (local), Java 17 + Spring Boot 3.3, 100k rows unless noted.
+
+### Fastest paths
+
+| Rank | Strategy | 100k avg ms | Covered in | Notes |
+|------|----------|-------------|------------|-------|
+| 1 | **INSERT … SELECT** (same DB) | **319** | Part 8 | Server-side copy — no round-trips |
+| 2 | Parallel Bulk API 4t | 330 | Part 6 | Fastest Java client-driven path |
+| 3 | Multi-value 400 + 8 threads | 368 | Parts 3+6 | No bulkCopy flag needed |
+| 4 | Multi-value 400 + 4 threads | 426 | Parts 3+6 | |
+| 5 | Parallel Bulk API 8t | 434 | Part 6 | Diminishing returns past 4 threads |
+| 6 | INSERT…SELECT ORDER BY | 447 | Part 8 | +40% for the sort |
+| 7 | Bulk API (single thread) | 492 | Part 2 | Fastest single-thread |
+| 8 | SQLServerBulkCopy batch=5000 | 535 | Part 8 | Bigger batch wins |
+| 9 | Parallel Bulk API 4t + bulkCopy | 603 | Parts 6+4 | bulkCopy on bulk is redundant |
+| 10 | Parallel JdbcTemplate 16t | 608 | Part 6 | |
+| 11 | **BULK INSERT (T-SQL from file)** | **637** | Part 8 | Server-side file reader |
+| 12 | SQLServerBulkCopy +TABLOCK | 662 | Part 8 | |
+| 13 | Parallel JdbcTemplate 4t + bulkCopy | 731 | Parts 6+4 | |
+| 14 | TVP (batch=5000) | 818 | Part 8 | Best portable single-thread |
+
+### Mid-tier
+
+| Rank | Strategy | 100k avg ms |
+|------|----------|-------------|
+| 15 | Multi-value 400 single thread | 1,058 |
+| 16 | StatelessSession + bulkCopy | 1,075 |
+| 17 | JdbcTemplate + bulkCopy | 1,373 |
+| 18 | Plain JDBC + bulkCopy | 1,516 |
+| 19 | Clustered + TABLOCK | 2,185 |
+| 20 | Hibernate + bulkCopy | 2,144 |
+| 21 | JDBC PreparedStatement | 2,423 |
+| 22 | StatelessSession | 2,650 |
+| 23 | In-Memory OLTP (interpreted batch) | 2,726 |
+| 24 | JdbcTemplate | 2,985 |
+
+### Slow & anti-patterns
+
+| Rank | Strategy | 100k avg ms | Why |
+|------|----------|-------------|-----|
+| 25 | SWITCH + 3 indexes | 6,369 | Index maintenance in staging |
+| 26 | Columnstore + batch 1000 | 8,402 | Delta store overhead |
+| 27 | AFTER INSERT trigger | 7,023 | Secondary insert per row |
+| 28 | XML column (no index) | 8,339 | Native XML tree parsing |
+| 29 | XML + PRIMARY XML INDEX | 38,265 | Shredded node table maintenance |
+| 30 | Server-side encryption (3 cols) | 15,952 | AES per row |
+| 31 | Native proc per-row EXEC | 58,542 | No batching with addBatch |
+| 32 | **`OPTION (RECOMPILE)` + batches** | **145,097** | Plan rebuilt per execution |
+| 33 | **saveAll (original, Spring Data JPA)** | **27,794** | SELECT per entity (merge) |
+
+**Headline: INSERT…SELECT (319 ms) is the fastest; `OPTION (RECOMPILE)` with batches is 455x
+slower than the best.**
 
 ## Key Takeaways from the Series
 
