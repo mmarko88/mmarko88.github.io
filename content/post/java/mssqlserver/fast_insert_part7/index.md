@@ -1,8 +1,9 @@
 ---
 title: "Fastest way to insert the data in MS SQL - Part 7 Index Impact"
-date: 2026-10-18
-draft: true
+date: 2026-10-19
+draft: false
 usePageBundles: true
+description: "5 non-clustered indexes slow a bulk INSERT 11x. Measurements for compression, columnstore, GUID keys, triggers, encryption and more on SQL Server."
 featureImage: 'java_sending_data_to_mssql_server.jpg'
 featureImageAlt: 'java sending data to mssql server'
 shareImage: 'java_sending_data_to_mssql_server.jpg'

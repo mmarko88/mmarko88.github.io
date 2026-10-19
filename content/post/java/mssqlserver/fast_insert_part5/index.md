@@ -1,8 +1,9 @@
 ---
 title: "Fastest way to insert the data in MS SQL - Part 5 Hibernate Tuning"
-date: 2026-10-18
-draft: true
+date: 2026-10-19
+draft: false
 usePageBundles: true
+description: "Persistable, StatelessSession and useBulkCopyForBatchInsert close 80% of the gap between Hibernate and raw JDBC. Measured on 100,000 SQL Server inserts."
 featureImage: 'java_sending_data_to_mssql_server.jpg'
 featureImageAlt: 'java sending data to mssql server'
 shareImage: 'java_sending_data_to_mssql_server.jpg'

@@ -1,8 +1,9 @@
 ---
 title: "Fastest way to insert the data in MS SQL - Part 6 Parallel Inserts"
-date: 2026-10-18
-draft: true
+date: 2026-10-19
+draft: false
 usePageBundles: true
+description: "100,000 SQL Server inserts in 330 ms by splitting the data across 4 threads with the Bulk API. Thread count sweep, concurrent-reader impact, TABLOCK trade-off."
 featureImage: 'java_sending_data_to_mssql_server.jpg'
 featureImageAlt: 'java sending data to mssql server'
 shareImage: 'java_sending_data_to_mssql_server.jpg'
