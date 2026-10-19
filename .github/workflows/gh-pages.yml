@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 1    # Full history not needed; front-matter dates drive .Lastmod
+          fetch-depth: 0    # Full history needed — enableGitInfo = true uses git log for .Lastmod
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3.2.1
