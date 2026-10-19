@@ -4,9 +4,9 @@ date: 2026-10-19
 draft: false
 usePageBundles: true
 description: "Persistable, StatelessSession and useBulkCopyForBatchInsert close 80% of the gap between Hibernate and raw JDBC. Measured on 100,000 SQL Server inserts."
-featureImage: 'java_sending_data_to_mssql_server.jpg'
-featureImageAlt: 'java sending data to mssql server'
-shareImage: 'java_sending_data_to_mssql_server.jpg'
+featureImage: 'multivalue_sweep.svg' # Chart: multi-value objectsPerInsert sweep showing the 200-value sweet spot.
+featureImageAlt: 'Line chart of multi-value INSERT performance as objectsPerInsert ranges from 1 to 400 — the sweet spot is 200 values per statement at 828 ms.'
+shareImage: 'share-part5.png' # Branded 1200x630 social-share card showing the Part 5 sweep chart.
 tags: [ "java", "ms sql server", "hibernate" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]

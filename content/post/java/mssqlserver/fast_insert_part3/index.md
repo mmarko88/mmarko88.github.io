@@ -4,9 +4,9 @@ date: 2024-02-11
 draft: false
 usePageBundles: true
 description: "Multi-value INSERT (one statement, 200+ rows) is 4-5x faster than single-row batches on SQL Server. Compared against the Bulk API; where it beats, where it doesn't."
-featureImage: 'java_sending_data_to_mssql_server.jpg' # Top image on post.
-featureImageAlt: 'java sending data to mssql server' # Alternative text for featured image.
-shareImage: 'java_sending_data_to_mssql_server.jpg' # For SEO and social media snippets.
+featureImage: 'fastInsert3Results.webp' # Chart: multi-value INSERT at 200+ values per statement.
+featureImageAlt: 'Bar chart showing multi-value INSERT performance on SQL Server — 200 values per statement is 4-5x faster than single-row batching.'
+shareImage: 'share-part3.png' # Branded 1200x630 social-share card showing the Part 3 chart.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]

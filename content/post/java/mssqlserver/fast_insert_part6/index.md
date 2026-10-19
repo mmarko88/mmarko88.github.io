@@ -4,9 +4,9 @@ date: 2026-10-19
 draft: false
 usePageBundles: true
 description: "100,000 SQL Server inserts in 330 ms by splitting the data across 4 threads with the Bulk API. Thread count sweep, concurrent-reader impact, TABLOCK trade-off."
-featureImage: 'java_sending_data_to_mssql_server.jpg'
-featureImageAlt: 'java sending data to mssql server'
-shareImage: 'java_sending_data_to_mssql_server.jpg'
+featureImage: 'thread_scaling.svg' # Chart: Parallel Bulk API + Parallel JdbcTemplate across 1-16 threads.
+featureImageAlt: 'Line chart showing insert duration vs thread count for Parallel Bulk API and Parallel JdbcTemplate — 4 threads is the sweet spot at 330 ms.'
+shareImage: 'share-part6.png' # Branded 1200x630 social-share card showing the Part 6 thread-scaling chart.
 tags: [ "java", "ms sql server", "concurrency" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
