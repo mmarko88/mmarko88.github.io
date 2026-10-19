@@ -227,6 +227,58 @@ parameters as VARCHAR instead of NVARCHAR. This can help when your table has VAR
 
 If your columns are NVARCHAR, skip this setting.
 
+## Transaction Patterns
+
+How you structure transactions matters more than how big they are:
+
+| Pattern | 100k rows (avg ms) | Notes |
+|---------|-------------------|-------|
+| One large transaction (commit at end) | 3,773 | Baseline |
+| Commit per batch (every 1000 rows) | 3,543 | Marginally faster |
+| Savepoints per batch | 3,949 | Slightly slower (overhead) |
+| Auto-commit per row (10k rows only) | 5,198 ms for **10k** rows (~52,000ms extrapolated) | **15x slower** |
+
+**Verdict:** auto-commit per row is catastrophic — each INSERT becomes its own transaction with
+its own log flush. Any explicit transaction (batched or whole-run) is dramatically faster. The
+difference between commit-per-batch and commit-at-end is noise.
+
+### Isolation Levels
+
+| Isolation | 100k rows (avg ms) |
+|-----------|-------------------|
+| READ_UNCOMMITTED | 3,189 |
+| READ_COMMITTED (default) | 3,037 |
+| SERIALIZABLE | 2,963 |
+
+**Isolation level has no measurable impact** on INSERT-only workloads. The isolation level
+primarily affects reads and locking behavior — there's nothing for an INSERT to "read dirtily"
+or "serialize against". Don't bother tuning isolation level for bulk-load performance.
+
+## GC and JVM Memory Tuning
+
+Does the Java garbage collector affect database insert throughput? We ran the same test with four
+GC/heap configurations:
+
+| GC | Heap | Bulk API (ms) | JdbcTemplate (ms) | Total GC pause |
+|----|------|---------------|-------------------|---------------|
+| G1 (default) | 512 MB | 687 | 3,194 | ~59-138 ms |
+| G1 | 4 GB | 762 | 3,095 | ~93-139 ms |
+| Parallel | 2 GB | 863 | 3,401 | ~21-59 ms |
+| ZGC | 4 GB | 867 | 3,291 | ~109-315 ms |
+
+**GC choice has essentially no impact** on insert performance for this workload. The reasons:
+
+1. **Short-lived objects fit in young generation** — `Person` instances die quickly after being
+   batched and sent to the driver. All GCs handle this well.
+2. **GC pauses are tiny** compared to database I/O (300ms of GC vs 30+ seconds of total time).
+3. **ZGC has slight overhead** — its concurrent collection isn't needed when heap pressure is low.
+
+**Takeaway:** stick with the default G1 and modest heap size (512 MB-1 GB is enough for 100k-row
+batches). Over-tuning the JVM for database workloads is a waste of time — the bottleneck is the
+network/disk, not Java.
+
+![Transaction & GC Tuning](transaction_gc.svg)
+
 ## Summary
 
 | Technique | What it does | Impact |

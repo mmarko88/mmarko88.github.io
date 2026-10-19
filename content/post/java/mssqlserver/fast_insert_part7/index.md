@@ -211,6 +211,53 @@ bcp testdb.dbo.person in data.txt -c -t"\t" -S localhost,1433 -U weblogic -P web
 (disk I/O) while our Java tests generate data in memory. BCP also does not parallelize across
 connections. The Java Bulk API over in-memory data is the actual performance ceiling.
 
+### Fill factor tuning
+
+The clustered index fill factor controls how full each page is filled during index creation/rebuild.
+Lower fill factor = more empty space per page = fewer page splits during random-key inserts, at the
+cost of more pages (larger table size, more I/O on reads).
+
+| Fill Factor | Bulk API (avg ms) | JdbcTemplate (avg ms) |
+|-------------|-------------------|----------------------|
+| 50 | 1,762 | 5,377 |
+| 70 | 1,199 | 4,252 |
+| 90 | 869 | 3,395 |
+| **100 (default)** | **916** | **3,337** |
+
+**Fill factor 100 is fastest for sequential inserts** — which makes sense: our test inserts
+monotonically increasing IDs, so there are no page splits regardless of fill factor. Lower fill
+factors just waste space. Lower fill factors (70-80) help when you have **random-key inserts** or
+heavy update patterns that cause page splits.
+
+### Partitioning & SWITCH
+
+SQL Server partitioning splits a table into independent chunks on-disk. The **SWITCH PARTITION**
+command atomically swaps a staging table into a partition — a **metadata-only operation** that
+takes milliseconds regardless of row count:
+
+```sql
+-- Partition function and scheme
+CREATE PARTITION FUNCTION pf_person(INT) AS RANGE LEFT FOR VALUES (25000, 50000, 75000);
+CREATE PARTITION SCHEME ps_person AS PARTITION pf_person ALL TO ([PRIMARY]);
+
+-- SWITCH operation (metadata-only, no data movement)
+ALTER TABLE person_staging SWITCH TO person_partitioned PARTITION 4;
+```
+
+| Method | 100k rows (avg ms) |
+|--------|-------------------|
+| Direct insert into partitioned table | 4,652 |
+| SWITCH pattern (bulk-load heap, then SWITCH) | **3,470** (25% faster) |
+
+The SWITCH pattern is faster because the heavy work (bulk loading) happens on an unpartitioned heap
+table, and only the final metadata update touches the partitioned table. This is the industry
+standard for **zero-downtime bulk loads** — the main table stays queryable throughout the load.
+
+**Caveat:** The staging table must have an identical schema plus a CHECK constraint matching the
+target partition's range. Both tables must live on the same filegroup.
+
+![Fill Factor & Partitioning](fillfactor_partition.svg)
+
 ### Temp table staging
 
 A common ETL pattern: INSERT into a heap temp table, then INSERT-SELECT into the real table:

@@ -249,5 +249,16 @@ Both are excellent optimizations, but they cannot be combined.
 13. **Columnstore tables are 3.5x slower** for OLTP-style inserts — the delta store overhead only
     pays off at analytical query time.
 
+14. **Auto-commit per row is 15x slower** than batched transactions — never do it.
+
+15. **Isolation level and GC choice don't matter** for INSERT-only workloads. Default
+    READ_COMMITTED + default G1 are fine; tuning them is wasted effort.
+
+16. **Fill factor 100 is best for sequential IDs**. Lower fill factors (70-80) only help with
+    random-key inserts that cause page splits.
+
+17. **SWITCH PARTITION is the gold standard** for zero-downtime bulk loads — load a staging
+    heap, then atomically metadata-swap it into a partition (milliseconds, regardless of size).
+
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
