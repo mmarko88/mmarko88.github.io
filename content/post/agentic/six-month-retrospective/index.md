@@ -121,6 +121,27 @@ in advance is cheaper than deleting them later.
 everything for the first two months. Switching to cheaper models for research cut costs in
 half overnight. Model choice is a decision; make it deliberately.
 
+## What might not transfer
+
+Specific caveats before you copy the numbers into your own planning:
+
+**1. The 44% throughput number is on a team of three on legacy Java.** It won't survive a
+cut-and-paste to a greenfield TypeScript shop. Patterns like context budget and the 2-retry
+limit transfer broadly; the specific throughput delta depends on how slow the previous
+baseline was.
+
+**2. The $240/dev/mo cost is at today's model prices and today's token efficiency.** Both move.
+Any absolute cost number in this post is a snapshot — the ratio of improvement is more durable
+than the dollar amount.
+
+**3. Defects-down-52% rests on a specific review process.** Teams that already run a strong
+code-review culture won't see the same lift from the specialist pattern — the baseline is
+closer. Teams coming from informal review see a bigger jump.
+
+**4. "Six months" is enough for me to form opinions, not enough to make them laws.** Nothing in
+this series is settled. Each pattern has survived its measurements so far; the next six months
+may change the picture.
+
 ## Where this is going next
 
 The patterns in this series are stable; the ecosystem isn't. Three directions I'm watching:
@@ -143,6 +164,11 @@ same engineering practices that make everything else work. Measure, cull, keep.
 If a specific pattern in this series was useful to you, [tell me](https://x.com/mare_milenkovic)
 — especially if you've measured it in your own setup. The numbers above are mine; yours will
 differ. The ones that match are the ones to trust.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 

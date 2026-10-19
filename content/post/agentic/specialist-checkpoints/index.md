@@ -46,6 +46,7 @@ accept/reject call — but it delegates deep expertise.
 Not every PR fires every specialist. The trigger logic is in `.devin/workflows/_shared/ic-flow.csv`:
 
 ```csv
+# Pseudocode: trigger-pattern format
 specialist, trigger_pattern, required
 ic-database, "src/main/**/dao/**|liquibase/**|*.sql", true
 ic-security, "SecurityConfig|JwtAuthFilter|@PreAuthorize|password|encrypt", true
@@ -123,6 +124,11 @@ The downside: each specialist is a prompt I now have to keep sharp. When Spring 
 and `@Transactional` semantics change, the performance specialist's prompt needs an update.
 Four specialists = four maintenance surfaces. I accept the tax because the review quality is
 worth it, but it's real.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 

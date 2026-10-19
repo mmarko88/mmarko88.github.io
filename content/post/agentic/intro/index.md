@@ -13,13 +13,21 @@ shareImage: 'share.png'
 # shareImage: 'TODO.png'
 ---
 
-I spent six months giving coding agents increasingly serious work on a real legacy codebase —
-Java 17, Spring Boot, 4,000+ files, 367 JPA entities, multi-tenant SQL Server. Not toy problems:
-production bug fixes, SDLC-style feature work, security remediation, performance regressions. The
-agents got better. I got better at knowing what to let them do, and what to make them stop doing.
+For six months I've been running coding agents on a real legacy codebase — Java 17, Spring Boot,
+4,000+ files, multi-tenant SQL Server. Not toy problems: production bug fixes, SDLC-style
+feature work, security remediation, performance regressions. The agents got better. I got better
+at knowing what to let them do, and what to make them stop doing.
 
-This post opens a series on the handful of patterns that actually paid off, measured in session
-success rates and token cost — not in hype.
+This post opens a series on the handful of patterns that actually paid off.
+
+> **Up front, on attribution.** The patterns in this series come from day-to-day work on
+> [Devin](https://devin.ai) with the
+> [`ic-documentation`](https://github.com/) agent framework my team maintains — not from a
+> clean-room reinvention. Specific numbers I quote (session cost reductions, defect-catch rates,
+> eval pass rates) are the framework's own measurements, which I've seen in production use;
+> they're not independent reproductions. Where that distinction matters, I call it out inline.
+> The *patterns themselves* are generalizable to any coding-agent setup — that's what the
+> series is about.
 
 ## What this series is (and isn't)
 

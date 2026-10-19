@@ -41,11 +41,12 @@ because the signal is drowned.
 like admitting defeat. There's no concept of sunk cost in the planning turn. Keep going is
 cheap-looking, until it isn't.
 
-## The rule I shipped
+## The rule the framework shipped
 
 Explicit, token-cheap, in the global rules:
 
 ```markdown
+<!-- Pseudocode: rule file snippet -->
 ## Error recovery
 - Two attempts max on the same error, then stop and escalate.
 - Attempt 1: the obvious fix. Attempt 2: a different approach, not a flag tweak.
@@ -128,6 +129,11 @@ Each exception is named in the rules file. "Known flaky test" isn't a free pass 
 The 2-retry rule assumes a user who can be asked. In fully-unattended mode (long-running
 automation), the escalation is to a dead-letter queue — the task fails and a human reviews the
 report later. Still cheaper than running the automation into the ground.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 

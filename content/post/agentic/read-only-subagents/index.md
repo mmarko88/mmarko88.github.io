@@ -29,6 +29,7 @@ exploration tasks, with no measurable accuracy loss.
 A separate agent profile stripped to the minimum needed for research:
 
 ```yaml
+# Pseudocode: subagent profile shape
 # subagent profiles
 name: ic-researcher
 model: claude-haiku  # or any small/fast model
@@ -160,6 +161,11 @@ Three cases:
 
 For everything else — the daily grind of "where does X live" — the read-only subagent wins on
 every metric that matters.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 

@@ -3,7 +3,7 @@ title: "The 500-Line Skill Limit: Measuring Your Agent's Context Cost"
 date: 2026-10-19
 draft: true
 usePageBundles: true
-description: "Every rule, skill, system prompt is a token tax on every turn. A Python budget script, three CI caps, 36% token savings after trimming three dead skills."
+description: "Every rule, skill, system prompt is a token tax on every turn. A Python budget script (in the framework), three CI caps, 36% token savings after trimming three dead skills."
 tags: ["agents", "ai", "cost", "productivity"]
 categories: ["agents"]
 featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
@@ -49,7 +49,7 @@ I wrote a Python budget script (`context-budget.py`) that counts tokens per file
 `tiktoken`, groups by category, and emits a `context-budget.md` report:
 
 ```python
-# simplified from the real thing
+# Pseudocode (simplified from the real framework script)
 def budget(root: Path) -> dict:
     enc = tiktoken.get_encoding("cl100k_base")
     totals = defaultdict(int)
@@ -65,7 +65,7 @@ touched in three months.
 
 ## The limits that actually work
 
-I set three hard caps and wired them into CI:
+the framework sets three hard caps, enforced in CI:
 
 **1. AGENTS.md ≤ 16 KB.** Hugo/Devin truncates the global AGENTS.md past 16 KB — details past
 that point just don't get seen by the agent. If a repo's AGENTS.md is approaching the cap,
@@ -134,6 +134,11 @@ tooling didn't catch.
 
 The practice has a secondary effect: *we delete more.* A skill that hasn't earned its tokens
 gets a `remove-skill` PR. Deleting is cheap when the cost is visible; invisible, it stays.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 **Up next:** [I ran 1,000 agent sessions through a scoring harness](/post/agentic/eval-harness/)
 — the eval methodology, the regressions caught, and the dumb rule tweaks that broke things.

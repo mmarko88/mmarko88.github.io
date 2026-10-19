@@ -68,6 +68,7 @@ turn" is immediate and verifiable.
 The original rule became three rules — same intent, enforceable:
 
 ```markdown
+<!-- Pseudocode: rewritten rule shape -->
 ## Session completion
 1. Every result/summary turn MUST include `ask_user_question`.
 2. **Acknowledging a rule violation does not satisfy the rule.** After
@@ -153,6 +154,11 @@ behavior with better manners*.
 
 Now I treat rule acknowledgments the way I treat failing tests: the test is red until it's
 green, no matter what the test is saying about itself.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 

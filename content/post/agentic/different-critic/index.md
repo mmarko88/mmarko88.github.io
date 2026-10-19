@@ -117,6 +117,11 @@ The real win is subtler: the pipeline became *predictable*. Before, "did this an
 anything?" was a question I'd answer by reading every handoff myself. After, the gate verdicts
 told me where to look. I only read the ones the critic flagged.
 
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
+
 ## Related reading
 
 - Huang et al., *Large Language Models Cannot Self-Correct Reasoning Yet* (ICLR 2024).

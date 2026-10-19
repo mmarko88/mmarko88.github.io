@@ -43,6 +43,7 @@ rule, but nothing silently merges.
 Rule file snippet from layer 2 (project):
 
 ```markdown
+# Pseudocode: shape of a project-layer rule file
 # Project rules (ic-core)
 
 ## Overrides from layer 3
@@ -120,6 +121,20 @@ Three real cases where layering changed the outcome:
 - **Personal taste → user global.** Commit message style, local tooling, review tone. Nothing
   that other developers should inherit by default.
 
+## When layering is overkill
+
+Two cases where layering hurts more than it helps:
+
+**1. Single-developer, single-repo projects.** If you're the only user and there's only one
+project, you have two "layers" — the framework and your own additions — and no team-wide
+coherence problem to solve. Flat rules are faster to reason about.
+
+**2. Rapid-prototyping agents.** When you're iterating on the agent itself week-to-week, layered
+rules add friction. Flatten first; add layering once the rules stabilize.
+
+The pattern pays off at team scale (multiple devs, multiple repos, long-running agent). For
+hobby projects, don't bother.
+
 ## The dashboard view
 
 <!-- TODO: diagram of a conflict resolution, three layers stacked, arrow showing which wins -->
@@ -136,6 +151,11 @@ Conflicts caught: 0
 That bottom line is the one I check. A conflict means an override wasn't named explicitly, and
 the fix is a one-line annotation. Four months in, we average one caught conflict per PR touching
 rules — exactly where I want it to be.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 

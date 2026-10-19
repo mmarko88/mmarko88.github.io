@@ -19,7 +19,7 @@ HikariCP." Four unrelated topics in one session.
 At turn 36, none of them were done. The agent had enough context on each to appear productive
 and not enough on any to finish. Token cost: $3.80. Value delivered: zero.
 
-That session became a case study in the framework docs: don't do this. The rule I shipped —
+That session became a case study in the framework docs: don't do this. The rule the framework shipped —
 *one topic per session* — is the single highest-ROI behavior change I've measured.
 
 > **The one thing to take from this post:** letting an agent switch topics mid-session is the
@@ -49,6 +49,7 @@ memory.
 Explicit, in the user-global rules:
 
 ```markdown
+<!-- Pseudocode: rule file snippet -->
 ## Session scope
 - One topic per session. If the user introduces a second topic:
   1. Finish or explicitly close the first.
@@ -154,6 +155,11 @@ Costs ~100 tokens; saves the cost of reconstructing all that context later.
 **Long-running autonomous tasks** (like the full SDLC pipeline I run) *are* multi-topic by
 design — investigate, analyze, implement, test. But each stage is a distinct subagent in its
 own context. Within a single stage, one topic is still the rule.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 

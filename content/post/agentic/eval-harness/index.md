@@ -13,7 +13,7 @@ shareImage: 'share.png'
 # shareImage: 'TODO.png'
 ---
 
-A rule I added to my coding agent reduced it from "sometimes finishes a feature" to "almost
+A rule we tried on the framework reduced it from "sometimes finishes a feature" to "almost
 never finishes a feature." I only knew because an eval harness scored a hundred sessions and
 caught the regression before I rolled the rule out.
 
@@ -30,6 +30,7 @@ The harness I run (`ic-eval.py score`) replays a set of **cases** against a targ
 scores each on a rubric. A case is a minimal, reproducible scenario:
 
 ```yaml
+# Pseudocode: shape of a real eval case
 # cases/b5-oversized-agents-md.yaml
 id: b5
 title: "AGENTS.md over 16 KB truncates past the cap"
@@ -145,6 +146,11 @@ Three metrics I watch:
    loop on cost.
 3. **Judge agreement** — on the sample I audit, how often do I disagree with the judge? If this
    trends above 10%, the rubric or model needs adjusting.
+
+> **Attribution:** The patterns and specific numbers in this post come from
+> [Devin](https://devin.ai) with the `ic-documentation` agent framework my team maintains — not
+> from an independent reproduction. See the [series intro](/post/agentic/intro/) for the full
+> disclosure. The patterns themselves generalize to any coding-agent setup.
 
 ## Related reading
 
