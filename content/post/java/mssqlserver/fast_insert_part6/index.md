@@ -12,12 +12,14 @@ series: [ "Fastest Way to Insert Data in MS SQL" ]
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part6-parallel-inserts'
 ---
 
-## Introduction
+Every strategy we've tested so far — Hibernate, JDBC, Bulk API — pushes data through a single
+connection. SQL Server handles concurrent writes just fine; the bottleneck is the serial nature of
+one TCP stream. Split 100k rows across 4 threads with 4 connections and the Bulk API drops from
+492 ms to **330 ms**, the fastest Java-client result in the whole series.
 
-Every strategy we've tested so far — Hibernate, JDBC, Bulk API — uses a single thread and a single
-database connection. SQL Server handles concurrent writes well; the real bottleneck is network
-round-trips and the serial nature of a single connection. What happens when we split the data across
-multiple threads?
+But parallelism isn't a free lunch — threads past 4 give diminishing returns, concurrent readers
+slow the writers 2.5x, and the TABLOCK hint changes the trade-off. Here's where the inflection
+points actually are.
 
 ## The Approach
 
@@ -154,17 +156,14 @@ allowing uninterrupted bulk insertion:
 Trade-off: TABLOCK blocks all other writers AND readers during the insert. Use it only for dedicated
 bulk load windows.
 
-## Summary
+## The one thing to remember
 
-| Strategy | 100k persons (avg ms) |
-|----------|----------------------|
-| Parallel Bulk API 8t | 434 |
-| Multi-value 400 + 8t | 368 |
-| Parallel Bulk API 4t | 330 |
-| Parallel JdbcTemplate 16t | 608 |
+> **4 threads × Bulk API = 330 ms.** You can't go meaningfully faster from a Java client. 8 threads
+> saves another 100 ms; 16 threads is noise. Multi-value INSERT at 400 rows per statement × 8
+> threads gets 368 ms without needing the Bulk API at all.
 
-Parallelism gives 2-7x speedup depending on the strategy. The optimal thread count depends on your
-I/O subsystem — 4 threads is a safe default, 8 for I/O-bound workloads.
+If your load window overlaps with concurrent SELECTs, parallel inserts take ~2.5x longer. Use
+`WITH (TABLOCK)` for dedicated windows — otherwise, pick 4 threads and move on.
 
-Next: [Part 7 — Index Impact](/post/java/mssqlserver/fast_insert_part7/) measures how non-clustered
-indexes affect insert performance.
+Next: [Part 7 — Index Impact](/post/java/mssqlserver/fast_insert_part7/) measures the hidden cost
+of non-clustered indexes during bulk loads.

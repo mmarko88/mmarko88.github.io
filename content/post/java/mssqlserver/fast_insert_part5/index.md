@@ -12,18 +12,15 @@ series: [ "Fastest Way to Insert Data in MS SQL" ]
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part5-hibernate-tuning'
 ---
 
-## Introduction
+In [Part 1](/post/java/mssqlserver/persist_vs_saveall/) we watched Spring Data's `saveAll()` take
+7x longer than batched `persist()` because every entity triggers a SELECT before its INSERT. In
+[Part 2](/post/java/mssqlserver/fast_insert_part2/) we switched to raw JDBC and cut the time
+further. But Hibernate still sits well behind — so how close can it actually get to the bare metal?
 
-In [Part 1](/post/java/mssqlserver/persist_vs_saveall/) we saw that `saveAll()` was ~7x slower than
-batched `persist()` because Spring Data JPA calls `merge()` on each entity — triggering a SELECT
-before every INSERT. In [Part 2](/post/java/mssqlserver/fast_insert_part2/) we moved to raw JDBC and
-cut the time further. But we never asked: **how close can Hibernate get to raw JDBC?**
-
-This post explores three Hibernate tuning techniques that dramatically narrow the gap:
-
-1. **`Persistable` interface** — eliminates the SELECT-before-INSERT problem in `saveAll()`
-2. **`StatelessSession`** — bypasses the first-level cache and dirty checking entirely
-3. **Batch size tuning** — finding the optimal batch size for Hibernate
+**Three settings close 80% of the gap:** implement `Persistable` to kill the pre-INSERT SELECTs
+(8x faster saveAll), use `StatelessSession` to drop the first-level cache (35% faster persist), and
+layer `useBulkCopyForBatchInsert=true` on top (another 2–2.5x). Combined with proper batch sizing,
+this is as fast as Hibernate gets.
 
 ## The saveAll Problem: SELECT Before INSERT
 
@@ -279,20 +276,15 @@ network/disk, not Java.
 
 ![Transaction & GC Tuning](transaction_gc.svg)
 
-## Summary
+## The one thing to remember
 
-| Technique | What it does | Impact |
-|-----------|-------------|--------|
-| `Persistable` | Eliminates SELECT-before-INSERT in saveAll | **8x faster** saveAll |
-| `StatelessSession` | Bypasses 1st-level cache + dirty checking | **35% faster** than persist |
-| `+ bulkCopy=true` | Transparent bulk copy for all batch strategies | **2-2.5x faster** everything |
-| `provider_disables_autocommit` | Skips setAutoCommit round-trip | **14% faster** saveAll only |
-| Batch size 500-1000 | Sweet spot for most strategies | Diminishing returns past 1000 |
-| objectsPerInsert = 200 | Multi-value INSERT sweet spot | **4.8x faster** than single-row |
+> **StatelessSession + `useBulkCopyForBatchInsert=true` = 1,075 ms** for 100k inserts — 2x slower
+> than raw Bulk Copy (492 ms), with ORM mapping metadata still working for you. If you need
+> Hibernate's convenience without paying Hibernate's full price, that's the combination.
 
-The answer to "how close can Hibernate get to raw JDBC?" is: **very close**. StatelessSession with
-bulkCopy=true closes 80% of the gap. The remaining 20% is the price of Hibernate's SQL generation
-— and for most applications, that's a trade-off worth making.
+If you can only make one change to speed up a `saveAll()` call: implement `Persistable<T>` with
+`isNew = true`. It eliminates the pre-INSERT SELECTs and makes `saveAll` 8x faster — a 10-line
+code change for a 10x result.
 
-Next: [Part 6 — Parallel Inserts](/post/java/mssqlserver/fast_insert_part6/) explores splitting
-data across multiple threads for even higher throughput.
+Next: [Part 6 — Parallel Inserts](/post/java/mssqlserver/fast_insert_part6/) splits the data across
+multiple connections to see how far parallel threads can push it.

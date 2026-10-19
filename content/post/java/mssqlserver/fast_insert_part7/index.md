@@ -12,11 +12,19 @@ series: [ "Fastest Way to Insert Data in MS SQL" ]
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part7-index-impact'
 ---
 
-## Introduction
+Every production table has indexes. Every INSERT has to maintain them. Add 5 non-clustered indexes
+to a table and the Bulk API — the fastest single-thread strategy — slows down **7x**. The other
+strategies converge: with enough indexes, the choice of insert strategy stops mattering because
+index maintenance dominates.
 
-So far, all our benchmarks ran against a table with only a primary key (the clustered index).
-Production tables typically have several non-clustered indexes for query performance. Every INSERT
-must update each non-clustered index's B-tree — how much does this cost?
+But that's only the start. The surrounding **table design decisions** matter as much: row width,
+compression, columnstore, fill factor, GUID vs INT keys, change tracking, temporal history,
+JSON/XML indexes, statistics auto-update, encryption, and so on all impose their own INSERT
+tax — and some of them are **counter-intuitive** (compression makes inserts slower; stats OFF makes
+them slower; sparse columns are worse than nothing when filled).
+
+This post measures them all. If you only read the first table, [index count](#results) is the
+headline — but the rest of the post is where the surprises live.
 
 ## The Test
 
@@ -118,19 +126,23 @@ when index maintenance dominates the insert cost.
 4. **Filtered indexes** (with a WHERE clause) are cheaper — they only need updating when the
    inserted row matches the filter.
 
-## Summary
+## Index count: the summary
 
-| Indexes | Best strategy | Avg ms |
-|---------|--------------|--------|
-| 0 | Bulk API | 784 |
-| 1 | Bulk API | 1,829 |
-| 3 | Hibernate | 7,563 (all strategies ~similar) |
-| 5 | Hibernate | 8,564 (all strategies ~similar) |
+| Indexes | Fastest strategy | Avg ms | Slowdown vs 0 |
+|---------|------------------|--------|---------------|
+| 0 | Bulk API | 784 | — |
+| 1 | Bulk API | 1,829 | 2.3x |
+| 3 | ~Any (converges) | 7,563 | 10x |
+| 5 | ~Any (converges) | 8,564 | 11x |
 
-Indexes are the hidden cost of bulk inserts. A table with 5 non-clustered indexes is **6-7x slower**
-to insert into than a table with only a primary key, regardless of strategy.
+A table with 5 non-clustered indexes is 6-11x slower to load than one with just the clustered PK —
+and the choice of insert strategy barely matters anymore. The actionable advice: **disable
+non-essential indexes before bulk loads, rebuild them after**.
 
-## Bonus: Row Size, Compression, and Columnstore
+## Beyond Indexes: Table Design & Logging Choices
+
+The index count is only one dimension of INSERT cost. Below are 10 more table-design decisions
+that each add their own tax, in order of magnitude:
 
 ### Row size impact
 
@@ -549,5 +561,15 @@ A common ETL pattern: INSERT into a heap temp table, then INSERT-SELECT into the
 **Staging is slower for simple inserts** because you're writing data twice. It's useful when you need
 to validate, deduplicate, or transform data before loading — not for raw throughput.
 
-Next: [Part 8 — TVP and Plain JDBC](/post/java/mssqlserver/fast_insert_part8/) explores
-Table-Valued Parameters and bare-metal JDBC without any ORM overhead.
+## The one thing to remember
+
+> **Table design dominates insert speed once you have more than one non-clustered index.** Five
+> indexes slows inserts 6-11x — far more than any client-side strategy change can recover. If
+> your bulk load is slow, drop indexes first, retry; then look at the client.
+
+Most other table-design knobs save or cost 20-50% each. The exceptions worth remembering:
+server-side encryption (4x slower), XML columns (2.3x slower than JSON), AFTER INSERT triggers
+(2.2x slower), and `AUTO_UPDATE_STATISTICS = OFF` (50% slower — don't turn it off).
+
+Next: [Part 8 — TVP and Plain JDBC](/post/java/mssqlserver/fast_insert_part8/) covers
+Table-Valued Parameters, bare-metal JDBC, and the final rankings across all 110+ configurations.
