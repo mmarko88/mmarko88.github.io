@@ -12,14 +12,18 @@ description: "Every post on professionaldev.dev — search the archive or browse
 Search the archive or browse every post grouped by topic. For the chronological feed, see
 [the home page](/) or the [RSS feed](/index.xml).
 
-<div class="search search_page_field" style="margin: 1.5rem 0;">
-  <input type="search" class="search_page_input form_field" id="find" autocomplete="off" placeholder="Search posts, pages, TIL…">
-  <label for="find" class="search_label">
-    <svg class="icon" aria-hidden="true"><use xlink:href="#search"/></svg>
-  </label>
-</div>
-<p class="pale" style="margin-top: -0.75rem; font-size: 0.9rem;">Press Enter to search all posts, pages and TIL notes.</p>
-<div id="results"><div class="results" id="searchpage"></div></div>
+<section class="ref_search" aria-label="Search posts">
+  <span class="ref_search_label">Search the archive</span>
+  <div class="ref_search_input_wrap">
+    <svg class="ref_search_icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"></circle>
+      <path d="M21 21l-4.3-4.3"></path>
+    </svg>
+    <input type="search" class="ref_search_input search_page_input form_field" id="find" autocomplete="off" placeholder="Try: hibernate, bulk insert, zip, memory, agent…">
+  </div>
+  <p class="ref_search_hint">Press Enter to search all posts, pages and TIL notes.</p>
+  <div class="ref_search_results" id="results"><div class="results" id="searchpage"></div></div>
+</section>
 <script src="/js/search-page.js" defer></script>
 
 ## Fastest MS SQL Inserts (series)

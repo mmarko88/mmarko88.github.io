@@ -447,6 +447,84 @@ html.page:not([data-mode="dim"])
   padding: 0.6rem 0
   border-bottom: 1px solid var(--border-color, #eee)
 
+// Reference-page search widget — brand-aligned pill + card. Reuses the
+// post-cta-form input shape, home_hero_now card tint, and feed_card
+// rounded-corner language so the search surface reads as part of the
+// site's design system, not a bolted-on form.
+.ref_search
+  margin: 1.75rem 0 2rem
+  padding: 1.5rem 1.75rem
+  background: color-mix(in srgb, var(--accent, #1d70a2) 5%, transparent)
+  border: 1px solid color-mix(in srgb, var(--accent, #1d70a2) 15%, transparent)
+  border-radius: 20px
+
+.ref_search_label
+  display: block
+  font-size: 0.78rem
+  font-weight: 700
+  text-transform: uppercase
+  letter-spacing: 0.08em
+  color: var(--accent, #1d70a2)
+  margin-bottom: 0.7rem
+
+.ref_search_input_wrap
+  position: relative
+
+.ref_search_icon
+  position: absolute
+  top: 50%
+  left: 1.1rem
+  transform: translateY(-50%)
+  color: var(--pale, #888)
+  width: 1.15rem
+  height: 1.15rem
+  pointer-events: none
+  transition: color 0.15s ease
+
+.ref_search_input
+  width: 100%
+  padding: 0.75rem 1.1rem 0.75rem 2.9rem
+  border: 1px solid var(--border-color, #ccc)
+  border-radius: 999px
+  background: var(--post-bg, #fff)
+  color: var(--text)
+  font-size: 1rem
+  transition: border-color 0.15s ease, box-shadow 0.15s ease
+
+.ref_search_input:focus
+  outline: none
+  border-color: var(--accent, #1d70a2)
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #1d70a2) 18%, transparent)
+
+.ref_search_input:focus ~ .ref_search_icon,
+.ref_search_input_wrap:focus-within .ref_search_icon
+  color: var(--accent, #1d70a2)
+
+.ref_search_hint
+  margin: 0.7rem 0 0
+  font-size: 0.85rem
+  color: var(--pale, #888)
+
+.ref_search_results
+  margin-top: 1.1rem
+
+.ref_search_results:empty
+  display: none
+
+// Rework result links to feel like feed_card entries
+.ref_search_results .search_result
+  display: block
+  padding: 0.75rem 1rem
+  margin: 0.3rem 0
+  border-radius: 10px
+  border: 1px solid transparent
+  transition: background 0.15s ease, border-color 0.15s ease
+  text-decoration: none
+
+.ref_search_results .search_result:hover
+  background: color-mix(in srgb, var(--accent, #1d70a2) 7%, transparent)
+  border-color: color-mix(in srgb, var(--accent, #1d70a2) 20%, transparent)
+
 // --- social feed home ---
 .feed_items
   display: flex
