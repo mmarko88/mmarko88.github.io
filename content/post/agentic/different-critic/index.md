@@ -3,7 +3,7 @@ title: "Why Your Coding Agent Needs a Different Critic"
 date: 2026-10-19
 draft: true
 usePageBundles: true
-description: "LLMs re-reading their own output don't catch defects. The research on self-enhancement bias plus my A/B results on a real coding pipeline — 3x more defects caught."
+description: "LLMs re-reading their own output don't catch defects. Research on self-enhancement bias plus my A/B on a real coding pipeline — 3x more defects caught."
 tags: ["agents", "ai", "verification"]
 categories: ["agents"]
 # featureImage: 'TODO.svg'

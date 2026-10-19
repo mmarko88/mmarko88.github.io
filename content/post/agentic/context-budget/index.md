@@ -3,7 +3,7 @@ title: "The 500-Line Skill Limit: Measuring Your Agent's Context Cost"
 date: 2026-10-19
 draft: true
 usePageBundles: true
-description: "Every rule, skill, and system prompt is a token tax on every turn. A Python budget script, three CI caps, and 36% token savings after trimming three dead skills."
+description: "Every rule, skill, system prompt is a token tax on every turn. A Python budget script, three CI caps, 36% token savings after trimming three dead skills."
 tags: ["agents", "ai", "cost", "productivity"]
 categories: ["agents"]
 # featureImage: 'TODO.svg'

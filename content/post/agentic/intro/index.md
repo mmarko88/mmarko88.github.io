@@ -3,7 +3,7 @@ title: "Agentic Development: What Actually Works in Legacy Java"
 date: 2026-10-19
 draft: true
 usePageBundles: true
-description: "Six months of running coding agents on a 4,000-file Java 17 codebase, measured by session cost and completion rate. What stuck, what I killed, in a 10-part series."
+description: "Six months of coding agents on a 4,000-file Java 17 codebase, measured by session cost and completion rate. What stuck, what I killed, in a 10-part series."
 tags: ["agents", "ai", "java", "productivity"]
 categories: ["agents"]
 # featureImage: 'TODO.svg'
