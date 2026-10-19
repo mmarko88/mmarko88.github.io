@@ -405,6 +405,79 @@ transactions instead of enabling DD on frequent small ones.
 
 ![Index Varieties & Logging](index_varieties.svg)
 
+### XML vs JSON columns
+
+Semi-structured data in SQL Server comes in two flavors:
+- **XML column type**: Schema-less XML with built-in XQuery support, validation on insert
+- **JSON stored as NVARCHAR(MAX) + `CHECK (ISJSON(data) = 1)`**: Lightweight JSON validation
+
+| Column Type | 100k rows (avg ms) | vs baseline |
+|-------------|-------------------|-------------|
+| JSON (NVARCHAR + ISJSON check) | 4,752 | +60% |
+| **XML column** | **10,916** | **+270%** |
+
+**XML is 2.3x slower than JSON** for the same semantic payload. XML columns:
+- Parse the XML into a native tree representation on insert
+- Validate well-formedness
+- Store in an optimized binary tree format (not the original string)
+
+If you need semi-structured storage, prefer JSON (NVARCHAR + ISJSON) unless you specifically need
+XQuery, XPath or XML schema validation.
+
+### Sparse columns
+
+Sparse columns are SQL Server's optimization for tables with many mostly-NULL columns:
+
+| Column type / fill pattern | 100k rows (avg ms) |
+|---------------------------|-------------------|
+| Non-sparse, mostly NULL | 3,912 |
+| **Sparse, mostly NULL** | **4,005** (+2% — essentially tied) |
+| Non-sparse, mostly filled | 5,053 |
+| **Sparse, mostly filled** | **5,772** (+14% slower!) |
+
+**Surprise:** sparse columns offer **no insert benefit when NULL-heavy** (expected tie) but are
+**14% SLOWER when filled**. Sparse columns use a special on-disk representation that's efficient for
+NULL storage but more expensive when the column has a value. Use SPARSE only when:
+- The column is **>95% NULL** on real data
+- You're optimizing storage (sparse saves disk space) rather than insert speed
+
+### AUTO_UPDATE_STATISTICS
+
+```sql
+ALTER DATABASE testdb SET AUTO_UPDATE_STATISTICS { ON | OFF }
+```
+
+| Setting | 100k rows (avg ms) |
+|---------|-------------------|
+| **AUTO_UPDATE_STATISTICS = ON** (default) | **2,966** |
+| AUTO_UPDATE_STATISTICS = OFF | 4,474 (**50% SLOWER!**) |
+
+**Counter-intuitive:** turning OFF auto-stats doesn't speed up inserts — it slows the overall
+workload by 50%. Why? With stats OFF, SQL Server's query optimizer makes poor decisions for the
+INSERT plan itself. The optimizer uses statistics to choose index access paths, batch sizes, and
+memory grants even for simple INSERTs with no WHERE clause.
+
+**Takeaway:** leave AUTO_UPDATE_STATISTICS on. The savings from skipping stats maintenance are
+dwarfed by the cost of a worse query plan.
+
+### Server-side encryption (ENCRYPTBYPASSPHRASE)
+
+SQL Server supports server-side encryption via `ENCRYPTBYKEY`, `ENCRYPTBYPASSPHRASE`, etc. We tested
+with 3 encrypted columns per row (user_name, first_name, last_name):
+
+| Scenario | 100k rows (avg ms) |
+|----------|-------------------|
+| Plain insert | 3,948 |
+| **3 columns ENCRYPTBYPASSPHRASE** | **15,952 (4x slower)** |
+
+Encryption is CPU-expensive. The actual AES-256 operations happen server-side, consuming SQL
+Server CPU. Minimize the number of encrypted columns and consider:
+- **Always Encrypted** — client-side encryption (CPU cost moves to the app)
+- **TDE** — database-level encryption (works at page level, lower per-row overhead)
+- **Column-level encryption** only on actual PII, not every text field
+
+![Column Types, Stats & Encryption](column_types.svg)
+
 ### Temp table staging
 
 A common ETL pattern: INSERT into a heap temp table, then INSERT-SELECT into the real table:

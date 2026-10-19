@@ -376,5 +376,17 @@ only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssql
 29. **Trace flag 610 doesn't help regular INSERTs** — only `BULK INSERT`, `BCP`, and
     `INSERT ... SELECT` benefit. The JDBC Bulk Copy API already handles this transparently.
 
+30. **XML columns are 2.3x slower than JSON** (NVARCHAR+ISJSON) for the same payload. Use JSON
+    unless you specifically need XQuery/XPath.
+
+31. **Sparse columns are 14% SLOWER** when columns are populated. Only use SPARSE when the column
+    is >95% NULL in real data — otherwise it's a lose-lose.
+
+32. **AUTO_UPDATE_STATISTICS = OFF makes inserts 50% slower**, not faster — the optimizer needs
+    stats even for simple INSERTs. Always leave it ON.
+
+33. **Server-side encryption (ENCRYPTBYPASSPHRASE) is 4x slower** for 3 encrypted columns. Prefer
+    Always Encrypted (client-side) or TDE (page-level) for most PII protection use cases.
+
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
