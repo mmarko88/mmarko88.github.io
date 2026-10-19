@@ -8,6 +8,7 @@ title = "Professional Developer"  # Edit directly from config/_default/languages
 # canonifyurls = true
 
 enableRobotsTXT = true
+enableGitInfo = true  # Use git log for .Lastmod (and .Date fallback) — maintenance-free "last updated"
 
 DefaultContentLanguage = "en"
 

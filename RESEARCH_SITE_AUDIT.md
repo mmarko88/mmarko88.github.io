@@ -19,9 +19,9 @@ The site reads as "a Java engineer's blog" — good for Google but light on reas
 | Theme | Hugo Clarity (modified) | Light/dark toggle, mobile responsive |
 | Posts | 18 live (just published 5-8) | 4 of them from this session |
 | Hero copy | 1 sentence pitch + stats | "14 posts · 1 TIL" |
-| About page | ❌ none | 404 on /about/ (live site) |
-| Nav | Just logo + search? | Thin nav |
-| Social links on homepage | ❌ not visible | Twitter in meta only |
+| About page | ✅ `/about/` returns 200 | (My initial grep missed it — correction) |
+| Nav | Home · Now · About · Search · Subscribe | OK |
+| Social links | ✅ GitHub, Twitter, LinkedIn, RSS in menu.en.toml `[[social]]` | Rendered in header/footer |
 | Newsletter CTA | ✅ Buttondown | On post pages + homepage |
 | Comments | ✅ Waline configured | Not visible on homepage preview |
 | Search | ✅ `enableSearch = true` | Fuse.js from theme |
@@ -35,29 +35,18 @@ The site reads as "a Java engineer's blog" — good for Google but light on reas
 
 ## Key Findings
 
-### Finding 1: Hero section is a missed introduction opportunity
+### Finding 1: Hero section pitch is good, could add primary CTA
 
-**Status:** CONFIRMED (standard pattern across overreacted.io, daverupert.com, css-tricks.com, kentcdodds.com, etc.)
+**Status:** PARTIAL
 **Current:** `Marko Milenkovic · I'm Marko — a Java backend engineer writing about what actually works · 14 posts · 1 TIL`
-**Issue:** No photo, no social proof (newsletter count, GitHub stars), no primary CTA, no "what to do next" guidance for a first-time visitor.
-**Industry pattern:** The best personal tech blogs put a **face + one-sentence pitch + 2-3 CTAs** above the fold. Overreacted.io, daverupert.com, and jvns.ca all follow this.
+**Already in place:** Pitch sentence, post count, name. Introduction text matches the overreacted/daverupert/jvns pattern.
+**Minor gap:** Could add a visible primary CTA button ("Start with Fastest MS SQL Inserts" or "Read the series") above the fold instead of letting readers scroll to find it.
 
-**Applicability:** HIGH impact on bounce rate for new visitors.
+**Applicability:** LOW–MEDIUM.
 
-### Finding 2: No visible "About" page or author profile
+### Finding 2: ~~No About page~~ — RETRACTED
 
-**Status:** CONFIRMED (`/about/` returns 404 on live site)
-**Issue:** First-time Google visitors cannot verify who you are, your background, or why to trust your benchmarks.
-**Industry pattern:** Every major personal tech blog has one. Google's E-E-A-T guidelines (Experience, Expertise, Authoritativeness, Trustworthiness) explicitly reward sites with author info. Source: Google Search Quality Rater Guidelines.
-**What belongs on an About page:**
-- Photo (same as hero)
-- Short bio (3-5 sentences — who you work for, what you specialize in, years in Java)
-- Links: GitHub, LinkedIn, Twitter, email
-- "Topics I write about" (pattern)
-- Speaking / open-source work (if any)
-- Contact method
-
-**Applicability:** HIGH. Also feeds JSON-LD author schema we added in `params.toml`.
+**Status:** CORRECTION — `/about/` returns 200 on the live site. The initial audit's `find -iname "about*"` missed it because the content lives under a non-standard filename. The About page exists and is linked from the main nav (`[[main]] name = "About"` in `menu.en.toml`).
 
 ### Finding 3: No embedded video or interactive demo
 
@@ -127,10 +116,10 @@ The site reads as "a Java engineer's blog" — good for Google but light on reas
 
 | # | Change | Effort | Impact |
 |---|--------|--------|--------|
-| 1 | **Create an About page** (`/content/about.md`) with photo, bio, GitHub, LinkedIn links | 1h | HIGH — trust + SEO |
-| 2 | **Add social links to homepage/nav** (GitHub, LinkedIn, Twitter — just icons in header) | 30m | HIGH — reach + trust |
-| 3 | **Add `lastmod` field** to all posts (= date for now; update as you edit) + show "Last updated: Date" in post header | 30m across all 18 | MEDIUM — freshness signal |
-| 4 | **Cross-link one-off posts** (e.g. zip post → memory_churn, teen_mistakes → soft_skills) | 1h | MEDIUM — internal SEO |
+| 1 | ~~Create About page~~ **already exists** — maybe add a photo if not present | — | — |
+| 2 | ~~Add social links~~ **already in `menu.en.toml`** — maybe verify they render in header | — | — |
+| 3 | **Enable `enableGitInfo = true` + `showLastmod = true`** — git-driven "Last updated" badge on every post, maintenance-free | 5m | MEDIUM — freshness signal + SEO |
+| 4 | **Cross-link one-off posts** (zip ↔ memory_churn, teen_mistakes ↔ soft_skills) | 1h | MEDIUM — internal SEO |
 | 5 | **Add Mermaid flow diagram** to zip extraction post + Hibernate state diagram to Part 1 | 2h | MEDIUM — engagement |
 
 ### Priority 2 — Next 2 weeks (interactive differentiation)
