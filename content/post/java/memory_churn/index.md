@@ -4,8 +4,8 @@ date: 2023-04-04
 draft: false
 usePageBundles: true
 description: "Memory churn in Java: short-lived objects break CPU cache locality and slow modern hardware. How to spot it with JMH and reduce it without hurting readability."
-tags: [ "java", "peformance"]
-categories: [ "java", "peformance"]
+tags: [ "java", "performance"]
+categories: [ "java", "performance"]
 featureImage: 'memory.svg' # Top image on post.
 shareImage: 'memory_og.png' # For SEO and social media snippets.
 featureImageAlt: 'Memory churn in Java: how short-lived allocations break CPU cache locality' # Alternative text for featured image.
