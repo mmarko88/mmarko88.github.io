@@ -499,6 +499,45 @@ Fine-tuning `SQLServerBulkCopyOptions`:
 
 ![Query Plans, Latency & INSERT…SELECT](plans_latency.svg)
 
+## SNAPSHOT Isolation Under Write Contention
+
+[Part 8 already covered RCSI](#snapshot-isolation-read_committed_snapshot) which turns `READ COMMITTED`
+into snapshot-based. Here we test full **SNAPSHOT isolation** (`ALLOW_SNAPSHOT_ISOLATION ON` +
+`SET TRANSACTION ISOLATION LEVEL SNAPSHOT`) under concurrent reads during a bulk insert.
+
+| Scenario | Insert time | Reader throughput |
+|----------|------------|-------------------|
+| SNAPSHOT single writer (no readers) | 2,997 ms | — |
+| **READ_COMMITTED + 4 concurrent readers** | **2,964 ms** | **~8 reads total** (blocked by writer locks) |
+| **SNAPSHOT + 2 concurrent readers** | **4,638 ms (+55%)** | **~430 reads per run** |
+| **SNAPSHOT + 4 concurrent readers** | **6,259 ms (+109%)** | **~1,100 reads per run** |
+
+**The trade-off is stark:**
+- With **READ_COMMITTED**: writes stay fast but readers get almost nothing (~8 reads vs 1,100).
+- With **SNAPSHOT**: readers aren't blocked (135x more throughput), but writes are 2x slower due to
+  version-store overhead.
+
+Pick based on your workload: if readers must stay responsive during bulk loads, pay the SNAPSHOT
+cost. If the load window is dedicated (no readers care), RC is fine.
+
+## Partition SWITCH with Indexes
+
+Earlier we saw [SWITCH PARTITION is a metadata-only operation](#partitioning--switch). But the
+*load into staging* still has to maintain any indexes that match the target. How much does
+pre-indexing the staging table cost?
+
+| Target indexes | 100k rows total (load + SWITCH) |
+|---------------|-------------------------------|
+| **0 non-clustered** | **2,952 ms** |
+| 1 non-clustered | 4,205 ms (+42%) |
+| 3 non-clustered | 6,369 ms (+116%) |
+
+Just like non-partitioned tables, index maintenance is the dominant cost. **If possible: load into
+a heap staging table, then build the matching indexes on it right before the SWITCH** — this is
+usually faster than maintaining indexes during the load.
+
+![SNAPSHOT & SWITCH with Indexes](snapshot_switch.svg)
+
 ## Key Takeaways from the Series
 
 1. **Parallel Bulk API** is the overall winner (330ms for 100k rows). The Bulk Copy API already uses
@@ -637,6 +676,12 @@ Fine-tuning `SQLServerBulkCopyOptions`:
 
 46. **Bigger `SQLServerBulkCopyOptions.batchSize` wins** — 5000 beats 1000 by 30%. Default is a
     conservative starting point, not the optimum.
+
+47. **SNAPSHOT isolation lets concurrent readers do 135x more work** during a bulk load (1,100
+    reads vs 8), but writes 2x slower. Pick based on whether readers need to stay responsive.
+
+48. **SWITCH PARTITION's load phase scales linearly with index count** — just like non-partitioned
+    tables. Load into a heap, then add matching indexes right before the SWITCH.
 
 The full benchmark code is available in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
