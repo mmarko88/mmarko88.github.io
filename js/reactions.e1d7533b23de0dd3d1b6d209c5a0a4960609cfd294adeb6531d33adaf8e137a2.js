@@ -131,6 +131,17 @@
     // optimistic toggle
     b.classList.toggle('liked', !liked);
     b.setAttribute('aria-pressed', String(!liked));
+    // Instagram-style one-shot "pulse" animation when transitioning
+    // unliked -> liked. We remove it after the keyframes finish so the
+    // same card can replay it on the next like.
+    if (!liked) {
+      b.classList.remove('just-liked');
+      // Force reflow so re-adding the class retriggers the animation.
+      // eslint-disable-next-line no-unused-expressions
+      b.offsetWidth;
+      b.classList.add('just-liked');
+      setTimeout(function () { b.classList.remove('just-liked'); }, 550);
+    }
     counts[idx] = Math.max(0, (counts[idx] || 0) + (liked ? -1 : 1));
     updateCounts(card);
     if (liked) localStorage.removeItem(key);
