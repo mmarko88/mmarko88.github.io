@@ -4,6 +4,8 @@ date: 2026-10-19
 draft: false
 type: page
 layout: single
+sidebar: false      # no sidebar — full-width page
+singleColumn: true  # drop the grid-inverse wrapper so content centres
 description: "Ten questions on the Fastest MS SQL Inserts series. Measure what you remember — click the answer to reveal the finding and the post it came from."
 ---
 
