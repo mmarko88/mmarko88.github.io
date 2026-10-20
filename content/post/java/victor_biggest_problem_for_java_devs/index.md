@@ -2,6 +2,10 @@
 title: "I Asked a Java Champion: What Is the Biggest Problem That Professional Java Developers Are Facing Today?"
 date: 2021-10-26
 draft: false
+usePageBundles: true
+featureImage: 'biggest-problem-hero.svg' # Branded 1200x630 hero: Victor Rentea's answer + advice list.
+featureImageAlt: 'Victor Rentea on the biggest problem for Java developers: not writing enough Java — plus his advice to master the language, go a bit full-stack, and learn from smarter people.'
+shareImage: 'share.png' # 1200x630 PNG rendered from the hero SVG.
 tags: ["java", "developers", "developers biggest problem"]
 categories: [
     "java",
