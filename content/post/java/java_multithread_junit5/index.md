@@ -4,8 +4,8 @@ date: 2022-10-15
 draft: false
 usePageBundles: true
 description: "Enable parallel test execution with JUnit 5 and Maven Surefire to speed up slow CI pipelines. Configuration, caveats, and when parallel tests actually help."
-featureImage: 'parallel_tests_maven_junit5.png' # Top image on post.
-featureImageAlt: 'Feature image - maven configuration example' # Alternative text for featured image.
+featureImage: 'parallel-tests-hero.svg' # Top image on post.
+featureImageAlt: 'Card showing a CPU with one active core versus all cores lit — parallel JUnit 5 tests' # Alternative text for featured image.
 shareImage: 'share.png' # Branded 1200x630 social-share card.
 tags: [
     "java", "maven", "junit 5", "testing", "parallel tests", "concurrent tests", "junit testing", "java testing", "junit 5 testing", "multithreaded tests in java"

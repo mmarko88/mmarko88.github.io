@@ -18,7 +18,13 @@ Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks on
    - **Visual metaphor** — the article's mechanism compressed into one glance (pipeline, split bar, ✗/✓ list)
    - **Title card** — fallback only: eyebrow tag + shortened title + one-line hook
 
-3. **Draft 2–3 SVG variants** at `1200x630` in the post's page bundle. Vary the direction (e.g. light list vs dark quote vs diagram), not just colors.
+3. **Draft 2–3 SVG variants** at `1200x630` in the post's page bundle. Each variant must differ in *perspective*, not just colors/layout — assign each a distinct creative angle, e.g. the reader's-pain angle, the authority/credibility angle, the mechanism angle (persona-based variation is what actually diversifies an idea pool; restyling the same concept does not). For posts about a *person*, prefer a variant with their real public headshot — faces outperform every other focal point (crop tight, expressive beats neutral). If the user rejects the first set, run a **reseed burst**: list the rejected concepts as one-line mechanisms and generate only directions not yet proposed.
+
+   **Serving rules (from RESEARCH-cover-image.md — most card failures are here, not design):**
+   - `shareImage` must be a raster file (PNG/JPG) with a real extension — social crawlers ignore SVG/WebP
+   - Platforms cache cards by URL forever: if re-generating a card for an already-shared post, bump the filename (e.g. `share-v2.png`)
+   - JPEG for photos, PNG for text cards; never rely on transparency; keep under a few hundred KB
+   - `featureImageAlt`/`og:image:alt`: describe the card in plain words — not a verbatim title repeat
 
    **Brand tokens** (match existing heroes, e.g. `fp-antipatterns-hero.svg`):
    - Light bg `#f7f9fc` / dark bg `#172033`; accent bar `rect` 12px `#1a5fb4` at top
@@ -32,6 +38,7 @@ Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks on
    - One message — billboard, not infographic. If a row needs a label >~35 chars at 22px, shorten it or move the annotation to a separate column (x≥580)
    - No fake buttons/CTA chrome; high contrast (dark text on light card or white on `#172033`)
    - Estimate text width ≈ `chars × font-size × 0.55`; check for overlaps before rendering
+   - Keep text ≤10 words and large — Google Discover recommends against *text-heavy* og:images (a performance recommendation, not a ban); the card must still read visually without its text
 
 4. **Render PNG previews** — headless Chrome (works offline, no rsvg/magick needed):
    ```bash
@@ -39,11 +46,13 @@ Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks on
      --headless --disable-gpu --window-size=1200,630 \
      --screenshot="<abs>/preview-<name>.png" "file://<abs>/hero-<name>.svg"
    ```
-   **Always `read_file` each PNG to check it visually** — overlaps, clipping, thumbnail readability. Fix and re-render before presenting.
+   If the SVG ever uses web fonts, wait for `document.fonts.ready` before screenshot — `load` doesn't cover them (Playwright > Puppeteer if this pipeline ever graduates to a script). **Always `read_file` each PNG to check it visually** — overlaps, clipping, and legibility at ~400px thumbnail width. Fix and re-render before presenting.
 
-5. **Present previews to the user.** On pick: rename winner to `<slug>-hero.svg` (or post's existing convention), re-render it as `share.png`, delete losing SVGs/previews.
+5. **Self-check before presenting** (reviewer pass — observable bans, not vibes). For each PNG, verify: nothing critical within 60px of edges; headline ≤10 words and legible at 400px; no fake buttons/CTA chrome; no text overlapping other elements; brand tokens used (accent `#1a5fb4`, site font, footer with `professionaldev.dev`); the card reads visually even without its text. Any failure → fix and re-render *before* the user sees it.
 
-6. **Wire front matter** — if the post isn't a page bundle yet, `git mv post.md post/index.md` first:
+6. **Present previews to the user.** On pick: rename winner to `<slug>-hero.svg` (or post's existing convention), re-render it as `share.png`, delete losing SVGs/previews.
+
+7. **Wire front matter** — if the post isn't a page bundle yet, `git mv post.md post/index.md` first:
    ```yaml
    usePageBundles: true
    featureImage: '<name>-hero.svg'   # hero shown atop the post
@@ -51,4 +60,4 @@ Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks on
    shareImage: 'share.png'           # PNG — social crawlers ignore SVG/WebP
    ```
 
-7. **Verify** on `localhost:1313` — post serves 200 and the hero renders. Do not commit unless asked.
+8. **Verify** on `localhost:1313` — post serves 200 and the hero renders. Optionally sanity-check the card with a link-preview debugger (Facebook Debugger, LinkedIn Post Inspector) before the post is shared — crawlers cache the first fetch. Do not commit unless asked.
