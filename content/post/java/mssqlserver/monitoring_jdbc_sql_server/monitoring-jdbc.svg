@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Monitoring JDBC communication with SQL Server</title>
+  <desc id="description">Two insert strategies finished in the same elapsed time, but one made 4 TDS network reads and the other made 55 — visible only by monitoring the JDBC conversation with DMV stats, Extended Events, and driver logging.</desc>
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">FAST INSERTS IN SQL SERVER · ON THE WIRE</text>
+  <text x="72" y="158" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">Same time, 4 reads vs 55</text>
+  <text x="72" y="202" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="26">See what the JDBC driver actually sends — not just how long it took</text>
+
+  <text x="300" y="300" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">TVP insert</text>
+  <rect x="330" y="270" width="88" height="42" rx="10" fill="#17864b"/>
+  <text x="434" y="300" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">4 reads</text>
+
+  <text x="300" y="372" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Batched INSERT</text>
+  <rect x="330" y="342" width="726" height="42" rx="10" fill="#c0392b"/>
+  <text x="1072" y="372" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">55 reads</text>
+
+  <rect x="330" y="430" width="726" height="2" fill="#d4dae3"/>
+  <text x="330" y="470" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="22">Both finished in the same elapsed time — the mechanism only shows on the wire</text>
+
+  <rect x="72" y="516" width="300" height="52" rx="12" fill="#eaf1fb"/>
+  <text x="222" y="549" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">DMV connection stats</text>
+  <rect x="392" y="516" width="270" height="52" rx="12" fill="#eaf1fb"/>
+  <text x="527" y="549" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Extended Events</text>
+  <rect x="682" y="516" width="280" height="52" rx="12" fill="#eaf1fb"/>
+  <text x="822" y="549" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">JDBC driver logging</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="20">Java · TDS · 6 insert strategies · Microsoft SQL Server</text>
+</svg>
