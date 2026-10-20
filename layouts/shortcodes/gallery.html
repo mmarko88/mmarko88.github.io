@@ -1,0 +1,95 @@
+{{- /*
+  Instagram-style image gallery shortcode.
+  Usage (in a page bundle with images):
+    {{< gallery
+      images="screenshot1.png|diagram.svg|benchmark-chart.png"
+      captions="The main dashboard|Architecture overview|Results after optimization"
+    >}}
+  Images are page-bundle resources. Renders a CSS grid; click to expand.
+*/ -}}
+{{- $images := split (.Get "images") "|" -}}
+{{- $captionStr := .Get "captions" | default "" -}}
+{{- $captions := split $captionStr "|" -}}
+{{- $id := printf "gallery-%s" (md5 (delimit $images ",")) -}}
+<div class="ig-gallery" id="{{ $id }}">
+  {{- range $i, $img := $images }}
+  {{- $cap := index $captions $i | default "" -}}
+  {{- with $.Page.Resources.GetMatch $img }}
+  <figure class="ig-gallery-item" data-idx="{{ $i }}">
+    <img src="{{ .RelPermalink }}" alt="{{ $cap }}" loading="lazy">
+    {{- with $cap }}<figcaption>{{ . }}</figcaption>{{ end }}
+  </figure>
+  {{- else }}
+  <figure class="ig-gallery-item" data-idx="{{ $i }}">
+    <img src="{{ $img }}" alt="{{ $cap }}" loading="lazy">
+    {{- with $cap }}<figcaption>{{ . }}</figcaption>{{ end }}
+  </figure>
+  {{- end }}
+  {{- end }}
+</div>
+<!-- Lightbox overlay -->
+<div class="ig-lightbox" id="{{ $id }}-lb" hidden>
+  <button class="ig-lightbox-close" type="button" aria-label="Close">&#x2715;</button>
+  <button class="ig-lightbox-prev" type="button" aria-label="Previous">&#x2039;</button>
+  <button class="ig-lightbox-next" type="button" aria-label="Next">&#x203a;</button>
+  <img class="ig-lightbox-img" src="" alt="">
+  <p class="ig-lightbox-cap"></p>
+</div>
+{{- if not (.Page.Store.Get "galleryLoaded") -}}
+{{- .Page.Store.Set "galleryLoaded" true -}}
+<style>
+.ig-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin:1.5rem 0}
+.ig-gallery-item{margin:0;cursor:pointer;border-radius:12px;overflow:hidden;border:1px solid var(--border-color,rgba(0,0,0,.08));transition:transform .2s ease,box-shadow .2s ease}
+.ig-gallery-item:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.ig-gallery-item img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.ig-gallery-item figcaption{padding:.5rem .75rem;font-size:.85rem;color:var(--pale,#666);background:var(--post-bg,#fff)}
+.ig-lightbox{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;flex-direction:column}
+.ig-lightbox[hidden]{display:none}
+.ig-lightbox-img{max-width:90vw;max-height:80vh;object-fit:contain;border-radius:8px}
+.ig-lightbox-cap{color:#ccc;font-size:.95rem;margin-top:.75rem;text-align:center;max-width:80vw}
+.ig-lightbox-close,.ig-lightbox-prev,.ig-lightbox-next{position:absolute;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;padding:.5rem;z-index:1;opacity:.7;transition:opacity .15s}
+.ig-lightbox-close:hover,.ig-lightbox-prev:hover,.ig-lightbox-next:hover{opacity:1}
+.ig-lightbox-close{top:1rem;right:1.5rem;font-size:1.5rem}
+.ig-lightbox-prev{left:1.5rem;top:50%;transform:translateY(-50%)}
+.ig-lightbox-next{right:1.5rem;top:50%;transform:translateY(-50%)}
+@media(max-width:600px){.ig-gallery{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script>
+(function(){
+  document.addEventListener('click',function(e){
+    var item=e.target.closest('.ig-gallery-item');
+    if(item){
+      var gallery=item.closest('.ig-gallery');
+      var lb=document.getElementById(gallery.id+'-lb');
+      if(!lb)return;
+      lb._items=Array.from(gallery.querySelectorAll('.ig-gallery-item'));
+      lb._idx=parseInt(item.dataset.idx,10);
+      showSlide(lb);
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+    }
+    var close=e.target.closest('.ig-lightbox-close');
+    if(close){var lb2=close.closest('.ig-lightbox');lb2.hidden=true;document.body.style.overflow=''}
+    var prev=e.target.closest('.ig-lightbox-prev');
+    if(prev){var lb3=prev.closest('.ig-lightbox');lb3._idx=(lb3._idx-1+lb3._items.length)%lb3._items.length;showSlide(lb3)}
+    var next=e.target.closest('.ig-lightbox-next');
+    if(next){var lb4=next.closest('.ig-lightbox');lb4._idx=(lb4._idx+1)%lb4._items.length;showSlide(lb4)}
+  });
+  document.addEventListener('keydown',function(e){
+    var lb=document.querySelector('.ig-lightbox:not([hidden])');
+    if(!lb)return;
+    if(e.key==='Escape'){lb.hidden=true;document.body.style.overflow=''}
+    if(e.key==='ArrowLeft'){lb._idx=(lb._idx-1+lb._items.length)%lb._items.length;showSlide(lb)}
+    if(e.key==='ArrowRight'){lb._idx=(lb._idx+1)%lb._items.length;showSlide(lb)}
+  });
+  function showSlide(lb){
+    var item=lb._items[lb._idx];
+    var img=item.querySelector('img');
+    var cap=item.querySelector('figcaption');
+    lb.querySelector('.ig-lightbox-img').src=img.src;
+    lb.querySelector('.ig-lightbox-img').alt=img.alt;
+    lb.querySelector('.ig-lightbox-cap').textContent=cap?cap.textContent:'';
+  }
+})();
+</script>
+{{- end -}}
