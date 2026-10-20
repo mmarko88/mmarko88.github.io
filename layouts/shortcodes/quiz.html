@@ -1,26 +1,26 @@
 {{- /*
-  Interactive quiz question shortcode.
-  Usage:
-    {{< quiz
-      question="What flag gives 2.5x speedup to batched inserts?"
-      options="useBulkCopyForBatchInsert=true|sendStringParametersAsUnicode=false|trustServerCertificate=true"
-      correct="0"
-      explanation="The MSSQL JDBC driver rewrites addBatch() into the Bulk Copy protocol."
-      source="/post/java/mssqlserver/fast_insert_part4/"
-    >}}
+  Interactive quiz question shortcode — single-choice (radio) or multi-choice (checkbox).
+
+  Single-choice (default):
+    {{< quiz question="..." options="A|B|C" correct="0" explanation="..." source="/..." >}}
+
+  Multi-choice (set multi="true", correct is comma-separated indices):
+    {{< quiz question="..." options="A|B|C|D" correct="0,2" multi="true" explanation="..." >}}
 */ -}}
 {{- $id := printf "quiz-%s" (md5 (.Get "question")) -}}
 {{- $question := .Get "question" -}}
 {{- $options := split (.Get "options") "|" -}}
-{{- $correct := .Get "correct" | int -}}
+{{- $correct := .Get "correct" -}}
+{{- $multi := eq (.Get "multi") "true" -}}
 {{- $explanation := .Get "explanation" -}}
 {{- $source := .Get "source" -}}
-<div class="quiz-card" id="{{ $id }}" data-correct="{{ $correct }}">
-  <p class="quiz-card-q">{{ $question }}</p>
+{{- $inputType := cond $multi "checkbox" "radio" -}}
+<div class="quiz-card{{ if $multi }} quiz-multi{{ end }}" id="{{ $id }}" data-correct="{{ $correct }}" data-multi="{{ $multi }}">
+  <p class="quiz-card-q">{{ $question }}{{ if $multi }} <span class="quiz-card-hint">(select all that apply)</span>{{ end }}</p>
   <div class="quiz-card-options">
     {{- range $i, $opt := $options }}
     <label class="quiz-card-option">
-      <input type="radio" name="{{ $id }}" value="{{ $i }}">
+      <input type="{{ $inputType }}" name="{{ $id }}" value="{{ $i }}">
       <span>{{ $opt }}</span>
     </label>
     {{- end }}
@@ -43,6 +43,7 @@
 .quiz-card-option{display:flex;align-items:center;gap:.6rem;padding:.55rem .9rem;border:1px solid var(--border-color,#ccc);border-radius:999px;cursor:pointer;transition:border-color .15s,background .15s}
 .quiz-card-option:hover{border-color:var(--accent,#1d70a2);background:color-mix(in srgb,var(--accent,#1d70a2)8%,transparent)}
 .quiz-card-option input{accent-color:var(--accent,#1d70a2)}
+.quiz-card-hint{font-weight:400;font-size:.9rem;color:var(--pale,#888);font-style:italic}
 .quiz-card-option.correct{border-color:#17864b;background:#d9f2e4}
 .quiz-card-option.wrong{border-color:#ca3f3f;background:#fde8e8}
 .quiz-card-submit{margin-top:1rem;padding:.55rem 1.3rem;border:none;border-radius:999px;background:var(--accent,#1d70a2);color:#fff;font-weight:600;cursor:pointer;transition:filter .15s,transform .1s}
@@ -63,29 +64,38 @@ document.addEventListener('click',function(e){
   if(!btn)return;
   var card=btn.closest('.quiz-card');
   if(!card||card.dataset.answered)return;
-  var checked=card.querySelector('input[type=radio]:checked');
-  if(!checked)return;
-  var chosen=parseInt(checked.value,10);
-  var correct=parseInt(card.dataset.correct,10);
+  var isMulti=card.dataset.multi==='true';
+  var correctSet=card.dataset.correct.split(',').map(Number).sort().join(',');
+  var checkedInputs=Array.from(card.querySelectorAll('input:checked'));
+  if(!checkedInputs.length)return;
+  var chosenSet=checkedInputs.map(function(i){return parseInt(i.value,10)}).sort().join(',');
+  var isCorrect=chosenSet===correctSet;
   card.dataset.answered='1';
   btn.disabled=true;
-  btn.textContent=chosen===correct?'Correct!':'Try the post for the answer';
+  btn.textContent=isCorrect?'Correct!':'Try the post for the answer';
+  var correctIndices=card.dataset.correct.split(',').map(Number);
+  var chosenIndices=checkedInputs.map(function(i){return parseInt(i.value,10)});
   var labels=card.querySelectorAll('.quiz-card-option');
   labels.forEach(function(l,i){
     l.querySelector('input').disabled=true;
-    if(i===correct)l.classList.add('correct');
-    else if(i===chosen)l.classList.add('wrong');
+    if(correctIndices.indexOf(i)>=0)l.classList.add('correct');
+    else if(chosenIndices.indexOf(i)>=0)l.classList.add('wrong');
   });
   var result=card.querySelector('.quiz-card-result');
   var verdict=card.querySelector('.quiz-card-verdict');
-  verdict.textContent=chosen===correct?'Correct!':'Not quite.';
-  verdict.className='quiz-card-verdict '+(chosen===correct?'right':'wrong');
+  if(isMulti){
+    var correctCount=chosenIndices.filter(function(c){return correctIndices.indexOf(c)>=0}).length;
+    verdict.textContent=isCorrect?'All correct!':correctCount+' of '+correctIndices.length+' correct.';
+  }else{
+    verdict.textContent=isCorrect?'Correct!':'Not quite.';
+  }
+  verdict.className='quiz-card-verdict '+(isCorrect?'right':'wrong');
   result.hidden=false;
 });
 document.addEventListener('change',function(e){
-  if(!e.target.matches('.quiz-card input[type=radio]'))return;
+  if(!e.target.matches('.quiz-card input[type=radio],.quiz-card input[type=checkbox]'))return;
   var card=e.target.closest('.quiz-card');
-  if(card)card.querySelector('.quiz-card-submit').disabled=false;
+  if(card)card.querySelector('.quiz-card-submit').disabled=!card.querySelector('input:checked');
 });
 </script>
 {{- end -}}
