@@ -23,7 +23,7 @@ Hero + share images **are present** (`hero.svg` / `share.png` per bundle). Remai
   - `specialist-checkpoints` (diagram: PR → trigger → parallel specialists → merge)
 - **"(coming soon)" cross-links** between posts resolve to nothing until the series is published — they must be wired up (or removed) at publish time.
 - **Publish decision + order** — 18 posts is a series launch; needs a sequencing/`seriesWeight` pass (same ordering concern we hit on the MS SQL series), plus a `series` taxonomy if they should render as a set.
-- **Cleanup**: 4 posts still have dead commented `# featureImageAlt: 'TODO'` / `# shareImage: 'TODO.png'` lines in front matter (harmless, but should be removed).
+- ~~**Cleanup**: 4 posts still have dead commented `# featureImageAlt: 'TODO'` / `# shareImage: 'TODO.png'` lines in front matter.~~ ✅ **Done [2026-10-20]** — removed from `intro`, `eval-harness`, `context-budget`, `different-critic`.
 
 Full post list (title): intro, getting-started, llms-for-developers, prompt-engineering, one-topic-per-session, two-retry-limit, rule-layering, rule-violation-postmortem, read-only-subagents, specialist-checkpoints, different-critic, multi-agent, context-budget, eval-harness, measuring-roi, security-trust, devin-desktop, six-month-retrospective.
 
@@ -54,7 +54,7 @@ All `draft: true`: `what-are-skills`, `creating-your-first`, `experts-and-resour
 ## 4. Cleanup (P3) — partially done
 
 - ~~**`content/post/placeholder-text.md`** — the Hugo sample "Lorem Ipsum" post…~~ ✅ **Deleted [2026-10-20].**
-- Remove dead commented `# …: 'TODO'` front-matter lines across the agentic drafts (see 1a). _(still open)_
+- ~~Remove dead commented `# …: 'TODO'` front-matter lines across the agentic drafts (see 1a).~~ ✅ **Done [2026-10-20].**
 
 ---
 
