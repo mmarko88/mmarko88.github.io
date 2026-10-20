@@ -35,7 +35,7 @@ All `draft: true`: `what-are-skills`, `creating-your-first`, `experts-and-resour
 
 ## 2. MS SQL / benchmarking drafts (the "Insert Optimization + Post Image" plan) (P1)
 
-- **`monitoring_jdbc_sql_server`** — `draft: true`, and the **only post with genuinely missing images**: front matter still has `# featureImage: 'TODO.svg'` / `# featureImageAlt: 'TODO'` / `# shareImage: 'TODO.png'`. Needs hero + share card generated, then publish. Part of the MS SQL series (add `seriesWeight`).
+- **`monitoring_jdbc_sql_server`** — ~~the only post with genuinely missing images~~ ✅ **Images done [2026-10-20]**: added `monitoring-jdbc.svg` hero + `share.png` card ("Same time, 4 reads vs 55") and wired the front matter. Still `draft: true` — only a publish decision (and optional `seriesWeight`) remains.
 - **`benchmarking_environment`** — `draft: true`. Written, part of the MS SQL series, images present. Needs a publish decision + `seriesWeight`.
 - **`java_benchmarking_jmh`** — `draft: true`. Review + publish decision.
 - **`youtube/victor_fp_antipatterns`** ("Functional Programming Antipatterns Notes") — `draft: true`, looks like raw notes. Finish or drop.
@@ -78,7 +78,20 @@ Already tracked in detail elsewhere; listed here so the picture is complete:
 ## Suggested order
 
 1. **Decide the fate of the 24 draft posts** (P1) — they are finished writing but unpublished; the agentic series especially is the biggest value sitting idle. Pick: publish as-is (accepting missing diagrams), or finish the 6 diagrams first.
-2. **`monitoring_jdbc` images** (P1) — only true image gap; smallest task to unblock a publish.
+2. ~~`monitoring_jdbc` images~~ ✅ done [2026-10-20].
 3. ~~Fix `projects.toml`~~ ✅ done [2026-10-20].
 4. ~~Delete `placeholder-text.md`~~ ✅ done [2026-10-20].
 5. Engagement items (§5) as time allows.
+
+---
+
+## Tooling notes
+
+- **SVG → PNG share cards, offline.** The npm `sharp`/`hugo-extended` path needs github.com, which is blocked on this machine. Working alternative: author the card as an SVG, then render it to PNG with headless Edge (also works with Chrome):
+  ```sh
+  msedge --headless=new --disable-gpu --no-sandbox --hide-scrollbars \
+    --force-device-scale-factor=1 --window-size=1200,630 \
+    --screenshot="C:/abs/path/share.png" "file:///C:/abs/path/card.svg"
+  ```
+  Use an **absolute** output path (the browser's CWD is not the repo) and an **absolute `file://`** source. Produced the 58 KB `monitoring_jdbc` share card this way.
+- **Local Hugo build is NOT available here** (no `hugo`, no Docker, github.com blocked). The GitHub Actions run on push is the only build verification — watch it after every push.
