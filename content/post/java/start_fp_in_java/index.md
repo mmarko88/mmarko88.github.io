@@ -24,6 +24,8 @@ FP is the most useful concept that I learned in the last several years. It helpe
 - If you are not a fan of “if” and “for” statements, then you will like FP. It can help you write more understandable code that doesn’t include those statements. I can do more with fewer lines of code.
 - The FP is a declarative paradigm. With FP you describe what you want, rather than how to get it. This means that the code is more readable, reusable, and it is easier to maintain.
 
+{{< quiz question="What does it mean that FP is a declarative paradigm?" options="You describe what you want, not how to compute it|You declare every variable final so nothing can mutate|You express all program logic in external config files|You annotate each method with its intended behaviour" correct="0" explanation="Declarative code states what the result should be; the runtime figures out the steps. That's why Streams read like a recipe instead of a manual loop." >}}
+
 # So, how I started with functional programming?
 We can find a ton of material on the internet related to FP. I usually like to watch video material when I want to learn about a new subject.
 
@@ -45,6 +47,8 @@ If you want to stick with JVM, then you can learn Kotlin, Scala, or Clojure. Kot
 
 Clojure is a modern Lisp variant that runs on JVM. It is useful to know that Lisp is the oldest FP language. Also, Uncle Bob is using Clojure.
 
+{{< quiz question="Which JVM languages does the post suggest for learning FP?" options="Kotlin|Scala|Clojure|Groovy" correct="0,1,2" multi="true" explanation="Kotlin, Scala, and Clojure all run on the JVM and support FP. The post suggests Kotlin as the easiest switch for Java developers — Spring supports it and the learning curve is gentle." >}}
+
 # My experience with Functional Programming
 To get familiar with FP, I studied and applied in practice FP concepts. The most important concepts that I learned are:
 
@@ -60,9 +64,17 @@ To get familiar with FP, I studied and applied in practice FP concepts. The most
 - **Optional class** - FP provides an efficient solution on how to work with nullable objects. I always return the Optional object instead of null in a method that can return null.
 - **Railway programming** - helped me understand how Stream API and Optional class works.
 
+{{< quiz question="What does a pure (referentially transparent) function guarantee?" options="It never throws an exception, no matter the input|Same input always yields the same output, with no side effects|It can only be invoked inside a Stream pipeline|It automatically defers work to a background thread" correct="1" explanation="Referential transparency means a function behaves like a mathematical function: same input, same output, every time. That's what makes pure functions predictable, easy to test, and safe in concurrent code." >}}
+
+{{< quiz question="How does Java express lazy evaluation?" options="With the lazy keyword on the declaration|With lambdas — nothing runs until you invoke them|With final fields computed on first access|With synchronized blocks around the computation" correct="1" explanation="Java has no lazy keyword; lambdas defer evaluation — the work inside the lambda doesn't run until you invoke it. That's how Optional.orElseGet and Stream suppliers avoid eager computation." >}}
+
+{{< quiz question="What does the post recommend instead of returning null from a method?" options="Throw an exception|Return a sentinel value like -1|Return an empty string|Return an Optional" correct="3" explanation="Optional makes the 'maybe absent' case explicit in the return type — callers are forced to handle it instead of hitting a NullPointerException three calls later." >}}
+
 Using FP in code doesn't prevent us, developers, from writing bad code. We still need to write unit tests, have a good understanding of our task and our codebase. We still need to apply all the best practices that we learned in the past. FP is promoting good practices and makes it easier for us developers to write good and maintainable code.
 
 I plan to further learn about FP and Java. I will continue to write posts on this subject.
+
+{{< quiz question="Which of these FP concepts does the post apply in Java?" options="Immutability|Function composition|Shared mutable state|Higher-order functions" correct="0,1,3" multi="true" explanation="FP promotes immutability, composing small functions, and passing functions as arguments. Shared mutable state is exactly what FP avoids — it's the main source of concurrency bugs." >}}
 
 ## Related reading
 

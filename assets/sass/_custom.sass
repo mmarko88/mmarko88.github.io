@@ -845,7 +845,7 @@ button.feed_action
   display: inline-flex
   align-items: center
 
-// Instagram-style like heart: hollow grey outline when unliked, solid red
+// Instagram-style like heart: hollow red outline when unliked, solid red
 // with a quick scale-pulse when liked. No opacity dimming — opacity treats
 // unliked content as "lesser", which it isn't; the user just hasn't acted
 // yet. Replaced opacity transition with a filter-based grayscale.
@@ -864,13 +864,14 @@ button.feed_action
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease
 
 // Inline SVG heart — works in both light and dark mode (no CSS filter on
-// bitmaps). Unliked = outlined heart in muted colour. Liked = solid red.
-.feed_react_heart
+// bitmaps). Unliked = outlined red heart. Liked = solid red.
+// Scoped under .feed_react so it beats `.feed_action svg { stroke: currentColor }`.
+.feed_react .feed_react_heart
   width: 1.25rem
   height: 1.25rem
   display: block
   fill: none
-  stroke: var(--pale, #888)
+  stroke: #e0245e
   stroke-width: 2
   transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease
 

@@ -66,8 +66,3 @@ executive summary and final ranking of 33 strategies.
 | [How to Learn Functional Programming in Java](/post/java/start_fp_in_java/) | The FP patterns that stuck in production code — and the ones that didn't |
 | [10 Mistakes Java Developers Make Early On](/post/java/teen_mistakes/) | Not writing tests, no refactoring, no code reviews, no asking for help |
 | [Why Should You, as a Software Developer, Learn Soft Skills?](/post/soft_skills/) | Five concrete reasons soft skills matter more than you think |
-
-## Test your knowledge
-
-Think you've got the series down? Try the [Fastest MS SQL Inserts quiz](/quiz/) — 10
-questions, with answers linked back to the right post.

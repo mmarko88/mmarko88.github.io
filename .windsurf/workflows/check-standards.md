@@ -33,6 +33,12 @@ Usage: `/check-standards <post>` where `<post>` is a path, directory name, or sl
    - **Code blocks**: every fence has a language tag; ≤ ~30 lines each (longer ones split per concept); 2–3 focused blocks preferred over exhaustive dumps; omissions marked.
    - **Runnable code**: no undefined variables, no forward references to types/signatures defined later, consistent arity and idioms across blocks (e.g., same constructor style), no placeholder logic, expected output shown where useful.
    - **Diagram styling**: mermaid code stays semantic — `classDef` only for meaning (terminal/action nodes), Lucide icons where steps benefit; flag decorative per-diagram restyling that belongs in the global theme.
+   - **Quizzes** (`{{< quiz >}}` shortcode, when present):
+     - **Placement**: distributed at natural section boundaries — after the concept each question tests, never at the top before context; blocked end-dumps FAIL. Max ~3 questions per checkpoint.
+     - **Count**: 5–8 questions total (~60–90 s to complete); WARN >8 or questions that test trivia/single-sentence recall instead of concepts.
+     - **Distractors**: plausible (common misconceptions work best), mutually exclusive, comparable length and grammar; WARN if the correct option is conspicuously the longest or the only qualified one, or if a distractor is arguably correct.
+     - **Answer position**: `correct` indices spread across positions, not clustered at one index.
+     - **Feedback**: every question has an `explanation`; framing stays low-stakes (redirects to the content, never punishing).
    - **Honest trade-offs**: limitations section present for technique/pattern posts, quantified or compressed.
    - **Conclusion**: synthesizes with a takeaway + next step; FAIL if it re-lists what the post already said.
    - **NOCAY**: personal voice only where it serves content; no self-important padding.

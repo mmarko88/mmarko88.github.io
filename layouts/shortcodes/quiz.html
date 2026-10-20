@@ -6,6 +6,14 @@
 
   Multi-choice (set multi="true", correct is comma-separated indices):
     {{< quiz question="..." options="A|B|C|D" correct="0,2" multi="true" explanation="..." >}}
+
+  Results persist per-reader in localStorage (key: quiz:<path>:<question-md5>) —
+  answered state is restored on revisit and a score line appears after the last card.
+
+  Aggregates are recorded online via Waline's article counter API: each question
+  posts to a synthetic path "<page path>?quiz=<question-md5>" where
+  reaction0 = submissions, reaction1 = correct answers. Query per-post stats:
+    GET <walineServer>/api/article?path=<page>?quiz=<md5>&type=reaction0,reaction1
 */ -}}
 {{- $id := printf "quiz-%s" (md5 (.Get "question")) -}}
 {{- $question := .Get "question" -}}
@@ -15,7 +23,7 @@
 {{- $explanation := .Get "explanation" -}}
 {{- $source := .Get "source" -}}
 {{- $inputType := cond $multi "checkbox" "radio" -}}
-<div class="quiz-card{{ if $multi }} quiz-multi{{ end }}" id="{{ $id }}" data-correct="{{ $correct }}" data-multi="{{ $multi }}">
+<div class="quiz-card{{ if $multi }} quiz-multi{{ end }}" id="{{ $id }}" data-correct="{{ $correct }}" data-multi="{{ $multi }}"{{ with site.Params.walineServerURL }} data-waline="{{ . }}"{{ end }}>
   <p class="quiz-card-q">{{ $question }}{{ if $multi }} <span class="quiz-card-hint">(select all that apply)</span>{{ end }}</p>
   <div class="quiz-card-options">
     {{- range $i, $opt := $options }}
@@ -34,8 +42,10 @@
     {{- end }}
   </div>
 </div>
-{{- if not (.Page.Store.Get "quizLoaded") -}}
-{{- .Page.Store.Set "quizLoaded" true -}}
+{{- /* Emit the shared runtime once per page: .Ordinal is 0 on the first shortcode
+  usage. (.Page.Store persists across `hugo server` rebuilds, which would skip the
+  block on every render after the first.) */ -}}
+{{- if eq .Ordinal 0 -}}
 <style>
 .quiz-card{margin:1.5rem 0;padding:1.25rem 1.5rem;background:color-mix(in srgb,var(--accent,#1d70a2)5%,transparent);border:1px solid color-mix(in srgb,var(--accent,#1d70a2)15%,transparent);border-radius:16px}
 .quiz-card-q{font-weight:700;font-size:1.05rem;margin:0 0 1rem}
@@ -57,45 +67,110 @@
 .quiz-card-explanation{margin:.5rem 0;color:var(--text)}
 .quiz-card-source{font-size:.9rem;color:var(--pale,#888)}
 .quiz-card-source a{color:var(--accent,#1d70a2)}
+.quiz-score{margin:1.5rem 0;font-weight:700;color:var(--text)}
 </style>
 <script>
-document.addEventListener('click',function(e){
-  var btn=e.target.closest('.quiz-card-submit');
-  if(!btn)return;
-  var card=btn.closest('.quiz-card');
-  if(!card||card.dataset.answered)return;
-  var isMulti=card.dataset.multi==='true';
-  var correctSet=card.dataset.correct.split(',').map(Number).sort().join(',');
-  var checkedInputs=Array.from(card.querySelectorAll('input:checked'));
-  if(!checkedInputs.length)return;
-  var chosenSet=checkedInputs.map(function(i){return parseInt(i.value,10)}).sort().join(',');
-  var isCorrect=chosenSet===correctSet;
-  card.dataset.answered='1';
-  btn.disabled=true;
-  btn.textContent=isCorrect?'Correct!':'Try the post for the answer';
-  var correctIndices=card.dataset.correct.split(',').map(Number);
-  var chosenIndices=checkedInputs.map(function(i){return parseInt(i.value,10)});
-  var labels=card.querySelectorAll('.quiz-card-option');
-  labels.forEach(function(l,i){
-    l.querySelector('input').disabled=true;
-    if(correctIndices.indexOf(i)>=0)l.classList.add('correct');
-    else if(chosenIndices.indexOf(i)>=0)l.classList.add('wrong');
-  });
-  var result=card.querySelector('.quiz-card-result');
-  var verdict=card.querySelector('.quiz-card-verdict');
-  if(isMulti){
-    var correctCount=chosenIndices.filter(function(c){return correctIndices.indexOf(c)>=0}).length;
-    verdict.textContent=isCorrect?'All correct!':correctCount+' of '+correctIndices.length+' correct.';
-  }else{
-    verdict.textContent=isCorrect?'Correct!':'Not quite.';
+(function(){
+  function key(card){ return 'quiz:' + location.pathname + ':' + card.id; }
+
+  // Paint the end state: disabled inputs, option highlighting, verdict text.
+  function applyResult(card, isCorrect, chosenIndices){
+    card.dataset.answered='1';
+    card.dataset.result=isCorrect?'1':'0';
+    var btn=card.querySelector('.quiz-card-submit');
+    btn.disabled=true;
+    btn.textContent=isCorrect?'Correct!':'Try the post for the answer';
+    var correctIndices=card.dataset.correct.split(',').map(Number);
+    var labels=card.querySelectorAll('.quiz-card-option');
+    labels.forEach(function(l,i){
+      l.querySelector('input').disabled=true;
+      if(correctIndices.indexOf(i)>=0)l.classList.add('correct');
+      else if(chosenIndices.indexOf(i)>=0)l.classList.add('wrong');
+    });
+    var verdict=card.querySelector('.quiz-card-verdict');
+    if(card.dataset.multi==='true'){
+      var correctCount=chosenIndices.filter(function(c){return correctIndices.indexOf(c)>=0}).length;
+      verdict.textContent=isCorrect?'All correct!':correctCount+' of '+correctIndices.length+' correct.';
+    }else{
+      verdict.textContent=isCorrect?'Correct!':'Not quite.';
+    }
+    verdict.className='quiz-card-verdict '+(isCorrect?'right':'wrong');
+    card.querySelector('.quiz-card-result').hidden=false;
   }
-  verdict.className='quiz-card-verdict '+(isCorrect?'right':'wrong');
-  result.hidden=false;
-});
-document.addEventListener('change',function(e){
-  if(!e.target.matches('.quiz-card input[type=radio],.quiz-card input[type=checkbox]'))return;
-  var card=e.target.closest('.quiz-card');
-  if(card)card.querySelector('.quiz-card-submit').disabled=!card.querySelector('input:checked');
-});
+
+  function grade(card){
+    var correctSet=card.dataset.correct.split(',').map(Number).sort().join(',');
+    var checkedInputs=Array.from(card.querySelectorAll('input:checked'));
+    var chosenIndices=checkedInputs.map(function(i){return parseInt(i.value,10)});
+    var isCorrect=chosenIndices.slice().sort().join(',')===correctSet;
+    applyResult(card, isCorrect, chosenIndices);
+    return { correct: isCorrect, chosen: chosenIndices };
+  }
+
+  // Score line after the last card — “Your score: N of M correct”.
+  function updateScore(){
+    var cards=Array.from(document.querySelectorAll('.quiz-card'));
+    var answered=cards.filter(function(c){return c.dataset.answered});
+    if(!answered.length)return;
+    var ok=cards.filter(function(c){return c.dataset.result==='1'}).length;
+    var el=document.querySelector('.quiz-score');
+    if(!el){
+      el=document.createElement('p');
+      el.className='quiz-score';
+      var last=cards[cards.length-1];
+      last.parentNode.insertBefore(el,last.nextSibling);
+    }
+    el.textContent='Your score: '+ok+' of '+cards.length+' correct'+(ok===cards.length?' — nice work.':'');
+  }
+
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('.quiz-card-submit');
+    if(!btn)return;
+    var card=btn.closest('.quiz-card');
+    if(!card||card.dataset.answered)return;
+    if(!card.querySelector('input:checked'))return;
+    var r=grade(card);
+    try{ localStorage.setItem(key(card), JSON.stringify(r)); }catch(_){}
+    updateScore();
+    // Record aggregate online: synthetic per-question path in Waline counters.
+    // Skipped on localhost so dev/test submissions don't pollute stats.
+    var server=card.dataset.waline;
+    if(server&&!/^(localhost|127\.)/.test(location.hostname)){
+      var qpath=location.pathname+'?quiz='+card.id;
+      var post=function(type){
+        fetch(server.replace(/\/+$/,'')+'/api/article',{
+          method:'POST',keepalive:true,
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({path:qpath,type:type,action:'inc'})
+        }).catch(function(){});
+      };
+      post('reaction0');                    // submission
+      if(r.correct)post('reaction1');       // correct
+    }
+  });
+
+  document.addEventListener('change',function(e){
+    if(!e.target.matches('.quiz-card input[type=radio],.quiz-card input[type=checkbox]'))return;
+    var card=e.target.closest('.quiz-card');
+    if(card&&!card.dataset.answered)card.querySelector('.quiz-card-submit').disabled=!card.querySelector('input:checked');
+  });
+
+  // Restore previously answered cards on revisit.
+  function restore(){
+    document.querySelectorAll('.quiz-card').forEach(function(card){
+      var rec=null;
+      try{ rec=JSON.parse(localStorage.getItem(key(card))||'null'); }catch(_){}
+      if(!rec||!Array.isArray(rec.chosen))return;
+      rec.chosen.forEach(function(v){
+        var inp=card.querySelector('input[value="'+v+'"]');
+        if(inp)inp.checked=true;
+      });
+      applyResult(card, rec.correct===true, rec.chosen);
+    });
+    updateScore();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore);
+  else restore();
+})();
 </script>
 {{- end -}}
