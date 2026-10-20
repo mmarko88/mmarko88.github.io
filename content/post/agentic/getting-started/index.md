@@ -97,8 +97,8 @@ or too many) confuse it. The sweet spot is a small set of specific, actionable c
 
 ```text
 # Good rule
-Use JUnit 4 (@Test from org.junit.Test), not JUnit 5.
-This project has not migrated.
+Use JUnit 5 (@Test from org.junit.jupiter.api.Test).
+Use @ExtendWith instead of @RunWith for extensions.
 
 # Bad rule
 Write good tests that follow best practices

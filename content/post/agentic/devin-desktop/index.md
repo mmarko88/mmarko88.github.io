@@ -64,7 +64,7 @@ This file loads only when working in this repository. It's where project-specifi
 
 ## Tech stack
 - Java 17, Spring Boot 3, Hibernate 6, Jersey (JAX-RS)
-- JUnit 4 (not JUnit 5)
+- JUnit 5 with @ExtendWith (not legacy JUnit 4)
 - Custom @Transactional wrapper (investmentcafe.ngs.util.Transactional)
 
 ## Build

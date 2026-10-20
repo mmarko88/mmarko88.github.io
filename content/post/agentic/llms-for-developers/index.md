@@ -45,10 +45,12 @@ The key numbers for current models (2026):
 
 | Model | Parameters | Training data | Context window |
 |-------|-----------|---------------|----------------|
-| GPT-4o | ~200B (estimated) | Trillions of tokens | 128K tokens |
-| Claude Opus 4 | ~250B (estimated) | Trillions of tokens | 200K tokens |
-| Llama 3.1 405B | 405B | 15T+ tokens | 128K tokens |
-| Gemini 2.5 Pro | ~500B (estimated) | Trillions of tokens | 1M tokens |
+| GPT-4.1 | ~200B (estimated) | Trillions of tokens | 1M tokens |
+| Claude Opus 4 | undisclosed | Trillions of tokens | 200K tokens |
+| Claude Sonnet 4 | undisclosed | Trillions of tokens | 200K tokens |
+| Llama 4 Maverick | 400B (17B active, MoE) | 40T+ tokens | 1M tokens |
+| Gemini 2.5 Pro | undisclosed | Trillions of tokens | 1M tokens |
+| DeepSeek-R1 | 671B (37B active, MoE) | 14.8T tokens | 128K tokens |
 
 The parameter count determines the model's capacity to store patterns. The training data
 determines which patterns it learned. The context window determines how much it can consider
@@ -162,7 +164,7 @@ the important parts.
 
 ### Working within well-defined constraints
 
-When you give the model clear constraints — "use JUnit 4, not JUnit 5", "follow this naming
+When you give the model clear constraints — "use JUnit 5 with `@ExtendWith`", "follow this naming
 convention", "produce output in this JSON format" — it follows them reliably. Constraints
 narrow the prediction space, making the model more accurate.
 

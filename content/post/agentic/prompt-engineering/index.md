@@ -150,7 +150,7 @@ After:  "Add unit tests for FundInvestorService.createFundInvestor().
         Cover: successful creation, duplicate detection (should throw
         DuplicateFundInvestorException), and null fund ID (should throw
         IllegalArgumentException). Follow the pattern in
-        FundServiceTest.java. Use JUnit 4, not JUnit 5."
+        FundServiceTest.java. Use JUnit 5 with @ExtendWith."
 ```
 
 ### Example 3: Outcome-focused → Process-focused
