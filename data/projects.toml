@@ -2,12 +2,6 @@
 # Keep to 3-4 entries — quality over quantity.
 
 [[project]]
-name = "fastest-insert"
-description = "Benchmark harness behind the \"Fastest Way To Insert Data in MS SQL\" post series — JDBC, Hibernate, JdbcTemplate and bulk API compared."
-url = "https://github.com/mmarko88/fastest-insert"
-lang = "Java"
-
-[[project]]
 name = "blog-examples"
 description = "Runnable code examples for posts on professionaldev.dev — clone, mvn test, verify."
 url = "https://github.com/mmarko88/blog-examples"
