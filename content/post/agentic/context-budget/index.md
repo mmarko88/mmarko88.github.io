@@ -123,7 +123,7 @@ Both exceptions are *named*. Nothing else gets a pass.
 
 ## What the dashboard looks like now
 
-<!-- TODO: screenshot of the context-budget.md report, sorted by cost -->
+![The context-budget report sorted by cost: each skill and rule file with its line count, estimated tokens and a proportional bar, the heaviest at the top, plus the per-turn total against the CI cap](budget-report.svg)
 
 Every PR touching skills or rules shows a context-budget diff in the review. If it's negative
 (cheaper), we celebrate briefly. If it's positive, the author explains why — in the PR

@@ -135,8 +135,7 @@ catches those.
 
 ## What the subagent protocol looks like
 
-<!-- TODO: diagram — main agent delegates research → subagent fires in own context →
-     structured findings return → main agent proceeds -->
+![Read-only subagent delegation: the main agent delegates research to a read-only subagent running in its own context, which returns structured findings so the main agent proceeds without the raw search noise](subagent-flow.svg)
 
 A delegation call is roughly:
 

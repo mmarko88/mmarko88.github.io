@@ -137,7 +137,7 @@ hobby projects, don't bother.
 
 ## The dashboard view
 
-<!-- TODO: diagram of a conflict resolution, three layers stacked, arrow showing which wins -->
+![Rule layering precedence: User over Project over Framework. For a max_retries conflict where User says 2, Project 3 and Framework 5, the User value of 2 wins](layering.svg)
 
 Every time the validation script runs, it emits a layer summary:
 

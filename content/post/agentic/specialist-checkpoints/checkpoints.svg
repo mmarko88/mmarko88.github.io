@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" role="img" aria-labelledby="t d">
+  <title id="t">Specialist checkpoint gating</title>
+  <desc id="d">A pull request is matched against trigger rules; the specialists whose triggers fire (database, security, performance) run in parallel, each in its own context, and the reviewer merges their findings into one verdict.</desc>
+  <rect width="960" height="340" fill="#f7f9fc"/>
+  <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#4b5565"/></marker></defs>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="30" y="140" width="130" height="68" rx="14" fill="#eaf1fb" stroke="#1a5fb4" stroke-width="2"/>
+    <text x="95" y="180" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">PR</text>
+
+    <line x1="160" y1="174" x2="214" y2="174" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+
+    <rect x="218" y="134" width="150" height="80" rx="14" fill="#fff" stroke="#173f6d" stroke-width="2"/>
+    <text x="293" y="170" text-anchor="middle" fill="#172033" font-size="18" font-weight="700">Trigger match</text>
+    <text x="293" y="192" text-anchor="middle" fill="#617086" font-size="13">which checkpoints fire?</text>
+
+    <line x1="368" y1="150" x2="470" y2="86" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="368" y1="174" x2="470" y2="174" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="368" y1="198" x2="470" y2="262" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+    <text x="410" y="120" text-anchor="middle" fill="#617086" font-size="13">parallel</text>
+
+    <rect x="474" y="56" width="190" height="56" rx="12" fill="#d9f2e4" stroke="#17864b" stroke-width="2"/>
+    <text x="569" y="90" text-anchor="middle" fill="#172033" font-size="17" font-weight="700">Database</text>
+    <rect x="474" y="146" width="190" height="56" rx="12" fill="#d9f2e4" stroke="#17864b" stroke-width="2"/>
+    <text x="569" y="180" text-anchor="middle" fill="#172033" font-size="17" font-weight="700">Security</text>
+    <rect x="474" y="236" width="190" height="56" rx="12" fill="#d9f2e4" stroke="#17864b" stroke-width="2"/>
+    <text x="569" y="270" text-anchor="middle" fill="#172033" font-size="17" font-weight="700">Performance</text>
+
+    <line x1="664" y1="84" x2="760" y2="156" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="664" y1="174" x2="760" y2="174" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="664" y1="264" x2="760" y2="192" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+
+    <rect x="764" y="138" width="170" height="72" rx="14" fill="#1a5fb4"/>
+    <text x="849" y="170" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">Reviewer</text>
+    <text x="849" y="192" text-anchor="middle" fill="#cfe2fb" font-size="13">merges findings</text>
+
+    <text x="30" y="316" fill="#617086" font-size="15">Only the specialists whose triggers fire run — a doc-only PR wakes none of them.</text>
+  </g>
+</svg>

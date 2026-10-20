@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" role="img" aria-labelledby="t d">
+  <title id="t">Rule layering precedence</title>
+  <desc id="d">Three rule layers stacked by precedence — User overrides Project, which overrides Framework. In a conflict over max retries (User says 2, Project says 3, Framework says 5), the User value of 2 wins.</desc>
+  <rect width="960" height="340" fill="#f7f9fc"/>
+  <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1a5fb4"/></marker></defs>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="40" y="52" fill="#172033" font-size="22" font-weight="700">Precedence: User &gt; Project &gt; Framework</text>
+
+    <rect x="40" y="76" width="470" height="56" rx="12" fill="#1a5fb4"/>
+    <text x="64" y="111" fill="#fff" font-size="20" font-weight="700">User</text>
+    <text x="300" y="111" fill="#cfe2fb" font-size="16">highest — personal preferences</text>
+
+    <rect x="40" y="142" width="470" height="56" rx="12" fill="#3f7fc4"/>
+    <text x="64" y="177" fill="#fff" font-size="20" font-weight="700">Project</text>
+    <text x="300" y="177" fill="#e7f0fb" font-size="16">team / repo conventions</text>
+
+    <rect x="40" y="208" width="470" height="56" rx="12" fill="#9db9d9"/>
+    <text x="64" y="243" fill="#172033" font-size="20" font-weight="700">Framework</text>
+    <text x="300" y="243" fill="#2b4a6b" font-size="16">lowest — sensible defaults</text>
+
+    <text x="40" y="300" fill="#617086" font-size="15">Higher layers override lower on conflict.</text>
+
+    <rect x="560" y="92" width="360" height="172" rx="14" fill="#fff" stroke="#d4dae3" stroke-width="2"/>
+    <text x="584" y="124" fill="#172033" font-size="17" font-weight="700">Conflict: max_retries</text>
+    <text x="584" y="156" fill="#1a5fb4" font-size="16" font-weight="700">User = 2</text>
+    <text x="700" y="156" fill="#17864b" font-size="14" font-weight="700">◄ wins</text>
+    <text x="584" y="184" fill="#8a93a3" font-size="16">Project = 3</text>
+    <text x="584" y="212" fill="#8a93a3" font-size="16">Framework = 5</text>
+    <text x="584" y="244" fill="#617086" font-size="14">Effective value: 2</text>
+    <line x1="560" y1="150" x2="512" y2="104" stroke="#1a5fb4" stroke-width="2.5" marker-end="url(#arr)"/>
+  </g>
+</svg>

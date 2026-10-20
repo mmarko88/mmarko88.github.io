@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-labelledby="t d">
+  <title id="t">Critic gate flow</title>
+  <desc id="d">A stage writes an artifact and hands it off to a critic running in a separate context. The critic returns a verdict: accept advances to the next stage; rework loops back to the stage that wrote the artifact.</desc>
+  <rect width="960" height="320" fill="#f7f9fc"/>
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#4b5565"/></marker>
+    <marker id="arrR" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#c0392b"/></marker>
+  </defs>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="24" y="96" width="180" height="72" rx="14" fill="#eaf1fb" stroke="#1a5fb4" stroke-width="2"/>
+    <text x="114" y="128" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">Stage writes</text>
+    <text x="114" y="152" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">artifact</text>
+
+    <line x1="204" y1="132" x2="268" y2="132" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+    <text x="236" y="120" text-anchor="middle" fill="#617086" font-size="14">handoff</text>
+
+    <rect x="272" y="84" width="200" height="96" rx="14" fill="#fff" stroke="#173f6d" stroke-width="2"/>
+    <text x="372" y="124" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">Critic</text>
+    <text x="372" y="150" text-anchor="middle" fill="#617086" font-size="15">fresh, separate context</text>
+
+    <line x1="472" y1="132" x2="536" y2="132" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+
+    <rect x="540" y="96" width="150" height="72" rx="14" fill="#fff" stroke="#4b5565" stroke-width="2"/>
+    <text x="615" y="138" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">Verdict</text>
+
+    <line x1="690" y1="118" x2="760" y2="92" stroke="#17864b" stroke-width="2.5" marker-end="url(#arr)"/>
+    <text x="724" y="84" text-anchor="middle" fill="#17864b" font-size="14" font-weight="700">accept</text>
+    <rect x="764" y="56" width="172" height="64" rx="14" fill="#d9f2e4" stroke="#17864b" stroke-width="2"/>
+    <text x="850" y="94" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">Next stage</text>
+
+    <path d="M615,168 L615,250 L114,250 L114,168" fill="none" stroke="#c0392b" stroke-width="2.5" marker-end="url(#arrR)"/>
+    <text x="364" y="272" text-anchor="middle" fill="#c0392b" font-size="14" font-weight="700">rework → back to the stage that wrote it</text>
+  </g>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="300" viewBox="0 0 960 300" role="img" aria-labelledby="t d">
+  <title id="t">Read-only subagent delegation</title>
+  <desc id="d">The main agent delegates a research task to a read-only subagent that runs in its own context window, which returns structured findings so the main agent can proceed without the raw search noise in its context.</desc>
+  <rect width="960" height="300" fill="#f7f9fc"/>
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#4b5565"/></marker>
+    <marker id="arrG" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#17864b"/></marker>
+  </defs>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="40" y="110" width="200" height="80" rx="14" fill="#eaf1fb" stroke="#1a5fb4" stroke-width="2"/>
+    <text x="140" y="144" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">Main agent</text>
+    <text x="140" y="168" text-anchor="middle" fill="#617086" font-size="14">keeps its context clean</text>
+
+    <line x1="240" y1="128" x2="372" y2="128" stroke="#4b5565" stroke-width="2.5" marker-end="url(#arr)"/>
+    <text x="306" y="116" text-anchor="middle" fill="#617086" font-size="14">delegate research</text>
+
+    <rect x="376" y="96" width="210" height="108" rx="14" fill="#fff" stroke="#173f6d" stroke-width="2"/>
+    <text x="481" y="134" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">Read-only subagent</text>
+    <text x="481" y="160" text-anchor="middle" fill="#617086" font-size="14">own context window</text>
+    <text x="481" y="182" text-anchor="middle" fill="#617086" font-size="14">grep · read · search</text>
+
+    <line x1="586" y1="172" x2="718" y2="172" stroke="#17864b" stroke-width="2.5" marker-end="url(#arrG)"/>
+    <text x="652" y="196" text-anchor="middle" fill="#17864b" font-size="14" font-weight="700">structured findings</text>
+
+    <rect x="722" y="110" width="198" height="80" rx="14" fill="#d9f2e4" stroke="#17864b" stroke-width="2"/>
+    <text x="821" y="144" text-anchor="middle" fill="#172033" font-size="19" font-weight="700">Main agent</text>
+    <text x="821" y="168" text-anchor="middle" fill="#617086" font-size="14">proceeds with the answer</text>
+
+    <text x="481" y="248" text-anchor="middle" fill="#617086" font-size="15">The raw search noise never enters the main context — that is where the 5× saving comes from.</text>
+  </g>
+</svg>

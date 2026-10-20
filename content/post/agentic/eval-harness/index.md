@@ -108,7 +108,7 @@ is low enough to live with.
 
 ## What the dashboard shows
 
-<!-- TODO: screenshot of a trend line, cases pass rate over time -->
+![Case pass rate over time: the trend rises from the low 60s to the low 90s across eight eval runs, with two marked dips where a prompt change and a rubric change regressed the score before being corrected](pass-rate.svg)
 
 Each eval run writes:
 

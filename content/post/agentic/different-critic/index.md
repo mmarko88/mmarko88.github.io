@@ -104,7 +104,7 @@ rule I settled on: **if the output drives the next decision, it earns a critic.*
 
 ## What this looks like in practice
 
-<!-- TODO: diagram of handoff → separate-context critic → verdict → next stage -->
+![Critic gate flow: a stage writes an artifact, hands it to a critic in a fresh context, and the verdict either accepts (advance) or sends rework back to the writing stage](critic-flow.svg)
 
 A full gate takes 20–40 seconds and 2–5k tokens on top of the stage that wrote the artifact.
 Across a 100-session pilot, Arm B's extra cost was more than paid back in avoided rework after

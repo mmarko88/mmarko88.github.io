@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" role="img" aria-labelledby="t d">
+  <title id="t">Case pass rate over time</title>
+  <desc id="d">A line chart of the eval harness case pass rate across successive runs. The overall trend rises from the low 60s to the low 90s, with two dips where a prompt change regressed and was reverted.</desc>
+  <rect width="960" height="340" fill="#f7f9fc"/>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="80" y="40" fill="#172033" font-size="20" font-weight="700">Case pass rate over time</text>
+
+    <!-- gridlines + y labels -->
+    <g stroke="#e4e9f0" stroke-width="1.5">
+      <line x1="100" y1="60" x2="900" y2="60"/>
+      <line x1="100" y1="115" x2="900" y2="115"/>
+      <line x1="100" y1="170" x2="900" y2="170"/>
+      <line x1="100" y1="225" x2="900" y2="225"/>
+      <line x1="100" y1="280" x2="900" y2="280"/>
+    </g>
+    <g font-size="13" fill="#8a93a3" text-anchor="end">
+      <text x="90" y="65">100%</text>
+      <text x="90" y="120">75%</text>
+      <text x="90" y="175">50%</text>
+      <text x="90" y="230">25%</text>
+      <text x="90" y="285">0%</text>
+    </g>
+
+    <polyline fill="none" stroke="#1a5fb4" stroke-width="3" points="100,144 211,126 322,130 433,108 544,95 655,102 766,82 877,75"/>
+    <g fill="#1a5fb4">
+      <circle cx="100" cy="144" r="5"/><circle cx="211" cy="126" r="5"/><circle cx="322" cy="130" r="5"/>
+      <circle cx="433" cy="108" r="5"/><circle cx="544" cy="95" r="5"/><circle cx="655" cy="102" r="5"/>
+      <circle cx="766" cy="82" r="5"/><circle cx="877" cy="75" r="5"/>
+    </g>
+
+    <!-- dip annotations -->
+    <circle cx="322" cy="130" r="7" fill="none" stroke="#c0392b" stroke-width="2"/>
+    <circle cx="655" cy="102" r="7" fill="none" stroke="#c0392b" stroke-width="2"/>
+    <text x="322" y="156" text-anchor="middle" fill="#c0392b" font-size="12">prompt change</text>
+    <text x="322" y="170" text-anchor="middle" fill="#c0392b" font-size="12">reverted</text>
+    <text x="655" y="128" text-anchor="middle" fill="#c0392b" font-size="12">rubric tightened</text>
+
+    <text x="100" y="304" fill="#8a93a3" font-size="13">run 1</text>
+    <text x="877" y="304" text-anchor="end" fill="#8a93a3" font-size="13">run 8</text>
+    <text x="500" y="326" text-anchor="middle" fill="#617086" font-size="14">Every prompt change is scored against the frozen case set before it ships.</text>
+  </g>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360" role="img" aria-labelledby="t d">
+  <title id="t">Context-budget report, sorted by cost</title>
+  <desc id="d">A mock of the context-budget report sorted by token cost: each skill or rule file shows its line count and estimated tokens with a proportional bar. The largest consumers sit at the top, with a per-turn total and the CI cap at the bottom.</desc>
+  <rect width="960" height="360" fill="#f7f9fc"/>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="30" y="24" width="900" height="312" rx="16" fill="#fff" stroke="#d4dae3" stroke-width="2"/>
+    <text x="54" y="60" fill="#172033" font-size="20" font-weight="700">context-budget.md · sorted by cost</text>
+    <text x="54" y="84" fill="#617086" font-size="14">file</text>
+    <text x="500" y="84" fill="#617086" font-size="14">lines</text>
+    <text x="600" y="84" fill="#617086" font-size="14">~tokens</text>
+    <line x1="54" y1="94" x2="906" y2="94" stroke="#e4e9f0" stroke-width="1.5"/>
+
+    <!-- rows -->
+    <g font-size="15" fill="#172033">
+      <text x="54" y="124">ic-expert/SKILL.md</text>
+      <text x="520" y="124" text-anchor="end" fill="#4b5565">812</text>
+      <text x="636" y="124" text-anchor="end" fill="#4b5565">3,050</text>
+      <rect x="650" y="112" width="256" height="16" rx="6" fill="#c0392b"/>
+
+      <text x="54" y="160">party-mode/SKILL.md</text>
+      <text x="520" y="160" text-anchor="end" fill="#4b5565">498</text>
+      <text x="636" y="160" text-anchor="end" fill="#4b5565">1,980</text>
+      <rect x="650" y="148" width="166" height="16" rx="6" fill="#e58b2e"/>
+
+      <text x="54" y="196">coding-standards.md</text>
+      <text x="520" y="196" text-anchor="end" fill="#4b5565">355</text>
+      <text x="636" y="196" text-anchor="end" fill="#4b5565">1,340</text>
+      <rect x="650" y="184" width="112" height="16" rx="6" fill="#f6c344"/>
+
+      <text x="54" y="232">testing-standards.md</text>
+      <text x="520" y="232" text-anchor="end" fill="#4b5565">240</text>
+      <text x="636" y="232" text-anchor="end" fill="#4b5565">910</text>
+      <rect x="650" y="220" width="76" height="16" rx="6" fill="#f6c344"/>
+
+      <text x="54" y="268">git-workflow.md</text>
+      <text x="520" y="268" text-anchor="end" fill="#4b5565">120</text>
+      <text x="636" y="268" text-anchor="end" fill="#4b5565">450</text>
+      <rect x="650" y="256" width="38" height="16" rx="6" fill="#17864b"/>
+    </g>
+
+    <line x1="54" y1="288" x2="906" y2="288" stroke="#e4e9f0" stroke-width="1.5"/>
+    <text x="54" y="314" fill="#172033" font-size="16" font-weight="700">loaded per turn</text>
+    <text x="636" y="314" text-anchor="end" fill="#172033" font-size="16" font-weight="700">7,730</text>
+    <text x="650" y="314" fill="#c0392b" font-size="14" font-weight="700">CI cap: 8,000</text>
+  </g>
+</svg>

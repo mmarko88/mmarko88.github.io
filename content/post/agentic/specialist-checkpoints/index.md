@@ -98,7 +98,7 @@ exclusion, specialists drift into generalism and the token cost explodes.
 
 ## What the gating looks like
 
-<!-- TODO: diagram — PR → trigger match → specialists fire in parallel → reviewer merges findings -->
+![Specialist checkpoint gating: a PR is matched against triggers; the specialists whose triggers fire (database, security, performance) run in parallel and the reviewer merges their findings into one verdict](checkpoints.svg)
 
 A review session with three specialists running in parallel takes ~2 minutes and $0.80. A
 review that found a critical bug saves hours of human time plus one production incident. The
