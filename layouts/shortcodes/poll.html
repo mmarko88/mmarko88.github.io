@@ -1,0 +1,57 @@
+{{- /*
+  Reader poll — embeds an external poll (StrawPoll, Opinion Stage, etc.) on demand.
+
+  The iframe is NOT loaded until the reader clicks "Load the poll", so there is
+  zero external request on the critical path.
+
+    {{< poll question="Which insert strategy do you use in production?"
+             url="https://strawpoll.com/embed/<poll-id>" height="480" >}}
+
+  Params:
+    url       (required) the provider's embed URL
+    question  (optional) heading shown above the poll
+    height    (optional) iframe height in px, default 480
+    label     (optional) button text, default "Load the poll"
+*/ -}}
+{{- $url := .Get "url" -}}
+{{- if not $url -}}
+  {{- errorf "poll shortcode in %q is missing the required 'url' parameter" .Page.Path -}}
+{{- end -}}
+{{- $question := .Get "question" -}}
+{{- $height := .Get "height" | default "480" -}}
+{{- $label := .Get "label" | default "Load the poll" -}}
+<div class="poll-card">
+  {{- with $question }}<p class="poll-card-q">{{ . }}</p>{{ end }}
+  <button type="button" class="poll-card-load" data-poll-url="{{ $url }}" data-poll-height="{{ $height }}">{{ $label }}</button>
+  <p class="poll-card-note">Loads an external poll from <code>{{ (urls.Parse $url).Host }}</code>.</p>
+</div>
+{{- if not (.Page.Store.Get "pollLoaded") -}}
+{{- .Page.Store.Set "pollLoaded" true -}}
+<style>
+.poll-card{margin:1.5rem 0;padding:1.25rem 1.5rem;background:color-mix(in srgb,var(--accent,#1d70a2)5%,transparent);border:1px solid color-mix(in srgb,var(--accent,#1d70a2)15%,transparent);border-radius:16px}
+.poll-card-q{font-weight:700;font-size:1.05rem;margin:0 0 1rem}
+.poll-card-load{padding:.55rem 1.3rem;border:none;border-radius:999px;background:var(--accent,#1d70a2);color:#fff;font-weight:600;cursor:pointer;transition:filter .15s,transform .1s}
+.poll-card-load:hover{filter:brightness(1.1)}
+.poll-card-load:active{transform:scale(.97)}
+.poll-card-note{margin:.75rem 0 0;font-size:.8rem;color:var(--pale,#888)}
+.poll-card-frame{width:100%;border:none;border-radius:12px;margin-top:.5rem}
+</style>
+<script>
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('.poll-card-load');
+  if(!btn)return;
+  var card=btn.closest('.poll-card');
+  var frame=document.createElement('iframe');
+  frame.className='poll-card-frame';
+  frame.src=btn.dataset.pollUrl;
+  frame.height=btn.dataset.pollHeight;
+  frame.setAttribute('loading','lazy');
+  frame.setAttribute('title','Reader poll');
+  frame.setAttribute('allowfullscreen','');
+  btn.remove();
+  var note=card.querySelector('.poll-card-note');
+  if(note)note.remove();
+  card.appendChild(frame);
+});
+</script>
+{{- end -}}
