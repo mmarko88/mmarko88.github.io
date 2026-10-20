@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Your CI server is mostly asleep — JUnit 5 parallel tests</title>
+  <desc id="description">A CPU die grid: one core lit while seven idle during sequential test runs, then all cores lit under parallel execution.</desc>
+
+  <rect width="1200" height="630" fill="#172033"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+
+  <text x="72" y="76" fill="#6ea8ec" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">JAVA · JUNIT 5 · MAVEN</text>
+  <text x="72" y="150" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">Your Build Server Is Mostly Asleep</text>
+  <text x="72" y="194" fill="#9aa8bf" font-family="Segoe UI, Arial, sans-serif" font-size="22">Parallel test execution in JUnit 5 — one switch, more cores working</text>
+
+  <!-- sequential CPU -->
+  <g transform="translate(160 250)">
+    <rect x="0" y="0" width="230" height="230" rx="18" fill="#22324c" stroke="#3a4d70" stroke-width="3"/>
+    <g>
+      <rect x="22" y="22" width="88" height="88" rx="10" fill="#f5b93f"/>
+      <rect x="120" y="22" width="88" height="88" rx="10" fill="#2c3f5e"/>
+      <rect x="22" y="120" width="88" height="88" rx="10" fill="#2c3f5e"/>
+      <rect x="120" y="120" width="88" height="88" rx="10" fill="#2c3f5e"/>
+    </g>
+    <text x="115" y="268" fill="#9aa8bf" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="600" text-anchor="middle">mvn test — 1 core working</text>
+  </g>
+
+  <!-- arrow -->
+  <path d="M430 360 L520 360" stroke="#6ea8ec" stroke-width="4" marker-end="none"/>
+  <path d="M520 360 l-18 -12 v24 Z" fill="#6ea8ec"/>
+  <text x="475" y="340" fill="#6ea8ec" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="600" text-anchor="middle">enable parallel</text>
+
+  <!-- parallel CPU -->
+  <g transform="translate(560 250)">
+    <rect x="0" y="0" width="230" height="230" rx="18" fill="#22324c" stroke="#1a5fb4" stroke-width="3"/>
+    <g>
+      <rect x="22" y="22" width="88" height="88" rx="10" fill="#f5b93f"/>
+      <rect x="120" y="22" width="88" height="88" rx="10" fill="#f5b93f"/>
+      <rect x="22" y="120" width="88" height="88" rx="10" fill="#f5b93f"/>
+      <rect x="120" y="120" width="88" height="88" rx="10" fill="#f5b93f"/>
+    </g>
+    <text x="115" y="268" fill="#3ecf8e" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="600" text-anchor="middle">all cores on the suite</text>
+  </g>
+
+  <!-- punchline right -->
+  <text x="850" y="330" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">Two config lines</text>
+  <text x="850" y="370" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">wake them up.</text>
+  <text x="850" y="416" fill="#9aa8bf" font-family="Segoe UI, Arial, sans-serif" font-size="19">enabled + concurrent mode —</text>
+  <text x="850" y="444" fill="#9aa8bf" font-family="Segoe UI, Arial, sans-serif" font-size="19">or forkCount=1C for JVMs.</text>
+
+  <text x="72" y="604" fill="#5b6a84" font-family="Segoe UI, Arial, sans-serif" font-size="18">professionaldev.dev · Java · Testing</text>
+</svg>
