@@ -44,16 +44,17 @@ All `draft: true`: `what-are-skills`, `creating-your-first`, `experts-and-resour
 
 ---
 
-## 3. Projects data (the "Fetch Projects from GitHub" plan) (P2)
+## 3. Projects data (the "Fetch Projects from GitHub" plan) — ✅ DONE [2026-10-20]
 
-- `data/projects.toml` lists a project `fastest-insert` → `https://github.com/mmarko88/fastest-insert`, but the code actually lives inside `blog-examples/fastest-insert/`. **Verify that standalone repo exists** — if not, the homepage "Selected Work" card links to a 404. Fix the URL (point at the `blog-examples` subdir) or confirm the repo.
+- ~~`data/projects.toml` lists a project `fastest-insert` → `https://github.com/mmarko88/fastest-insert`…~~ **Resolved:** the `fastest-insert` card was removed (overlapped the `blog-examples` card, which already covers that code). `projects.toml` now has 2 cards (`blog-examples`, `ahk-setup`).
+  - Follow-up (optional, P3): the file's comment suggests 3–4 entries — consider adding a third project.
 
 ---
 
-## 4. Cleanup (P3)
+## 4. Cleanup (P3) — partially done
 
-- **`content/post/placeholder-text.md`** — the Hugo sample "Lorem Ipsum" post (author "Hugo Authors"), still in the repo as a draft. Delete it.
-- Remove dead commented `# …: 'TODO'` front-matter lines across the agentic drafts (see 1a).
+- ~~**`content/post/placeholder-text.md`** — the Hugo sample "Lorem Ipsum" post…~~ ✅ **Deleted [2026-10-20].**
+- Remove dead commented `# …: 'TODO'` front-matter lines across the agentic drafts (see 1a). _(still open)_
 
 ---
 
@@ -78,6 +79,6 @@ Already tracked in detail elsewhere; listed here so the picture is complete:
 
 1. **Decide the fate of the 24 draft posts** (P1) — they are finished writing but unpublished; the agentic series especially is the biggest value sitting idle. Pick: publish as-is (accepting missing diagrams), or finish the 6 diagrams first.
 2. **`monitoring_jdbc` images** (P1) — only true image gap; smallest task to unblock a publish.
-3. **Fix `projects.toml` URL** (P2) — quick, fixes a possible live 404.
-4. **Delete `placeholder-text.md`** (P3) — trivial cleanup.
+3. ~~Fix `projects.toml`~~ ✅ done [2026-10-20].
+4. ~~Delete `placeholder-text.md`~~ ✅ done [2026-10-20].
 5. Engagement items (§5) as time allows.
