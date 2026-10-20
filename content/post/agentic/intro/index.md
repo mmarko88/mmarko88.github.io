@@ -9,8 +9,6 @@ categories: ["agents"]
 featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
 featureImageAlt: 'Agentic Development series card for intro — see post body for details.'
 shareImage: 'share.png'
-# featureImageAlt: 'TODO'
-# shareImage: 'TODO.png'
 ---
 
 For six months I've been running coding agents on a real legacy codebase — Java 17, Spring Boot,

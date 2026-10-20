@@ -9,8 +9,6 @@ categories: ["agents"]
 featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
 featureImageAlt: 'Agentic Development series card for different-critic — see post body for details.'
 shareImage: 'share.png'
-# featureImageAlt: 'TODO'
-# shareImage: 'TODO.png'
 ---
 
 The first time I built a coding agent that produced non-trivial PRs, my obvious next step was to

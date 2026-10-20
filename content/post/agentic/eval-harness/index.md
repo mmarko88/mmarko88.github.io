@@ -9,8 +9,6 @@ categories: ["agents"]
 featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
 featureImageAlt: 'Agentic Development series card for eval-harness — see post body for details.'
 shareImage: 'share.png'
-# featureImageAlt: 'TODO'
-# shareImage: 'TODO.png'
 ---
 
 A rule we tried on the framework reduced it from "sometimes finishes a feature" to "almost

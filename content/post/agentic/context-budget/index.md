@@ -9,8 +9,6 @@ categories: ["agents"]
 featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
 featureImageAlt: 'Agentic Development series card for context-budget — see post body for details.'
 shareImage: 'share.png'
-# featureImageAlt: 'TODO'
-# shareImage: 'TODO.png'
 ---
 
 Every rule in your agent's prompt costs tokens on *every single turn* for the rest of the
