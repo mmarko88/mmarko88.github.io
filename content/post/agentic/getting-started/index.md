@@ -8,7 +8,7 @@ tags: ["agents", "ai", "java", "getting-started"]
 categories: ["agents"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Getting started with agentic development — five core concepts for coding agents.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 Last year I asked a coding agent to fix a null-pointer exception in a Spring Boot service. It read

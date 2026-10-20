@@ -9,7 +9,7 @@ categories: ["agents"]
 series: ["Agent Skills"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Agent Skills series — rules, skills, and personalities as three compounding layers.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 I watched a coding agent spend 45 minutes investigating a Hibernate N+1 query. It searched the

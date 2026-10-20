@@ -9,7 +9,7 @@ categories: ["agents"]
 series: ["Agent Skills"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Creating agent skills — five essential skills and anti-patterns to avoid.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 The first skill I wrote was 800 lines long. It covered every edge case I could think of,

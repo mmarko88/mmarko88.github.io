@@ -8,7 +8,7 @@ tags: ["agents", "ai", "devin", "productivity"]
 categories: ["agents"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Devin Desktop best practices — daily workflow steps from session start to weekly skill audit.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 Devin Desktop runs coding agents locally — on your machine, with your file system, your

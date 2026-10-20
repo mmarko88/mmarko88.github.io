@@ -8,7 +8,7 @@ tags: ["ai", "llm", "getting-started"]
 categories: ["agents"]
 featureImage: 'hero.svg'
 featureImageAlt: 'LLMs for developers — training, inference, output pipeline and strengths vs weaknesses.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 A colleague asked me last month: "So ChatGPT just has a massive database of code and looks up

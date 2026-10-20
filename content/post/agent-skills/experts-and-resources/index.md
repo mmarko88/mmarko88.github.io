@@ -9,7 +9,7 @@ categories: ["agents"]
 series: ["Agent Skills"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Agentic development experts and resources — researchers, practitioners, and community links.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 When I started building agent skills, I made every mistake from scratch. Months later I found

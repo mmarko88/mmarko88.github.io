@@ -8,7 +8,7 @@ tags: ["agents", "ai", "security", "trust"]
 categories: ["agents"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Agent security trust zones — green (read/edit), yellow (shell/commit), red (push/deploy/delete).'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 An agent expanded a PAT token into a shell command argument. The token appeared in the process

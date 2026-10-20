@@ -8,7 +8,7 @@ tags: ["agents", "ai", "architecture", "multi-agent"]
 categories: ["agents"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Multi-agent orchestration — four-agent pipeline from investigator to specialist with completion comparison.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 My first agent pipeline was one agent doing everything: investigate, implement, test, review.

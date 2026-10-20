@@ -8,7 +8,7 @@ tags: ["agents", "ai", "prompts", "productivity"]
 categories: ["agents"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Prompt engineering for coding agents — vague vs specific prompt comparison with cost difference.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 "Fix the failing test." I typed this into a coding agent and watched it read 47 files,

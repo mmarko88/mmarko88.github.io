@@ -8,7 +8,7 @@ tags: ["agents", "ai", "productivity", "measurement"]
 categories: ["agents"]
 featureImage: 'hero.svg'
 featureImageAlt: 'Measuring agent ROI — bar chart showing time saved by task type from bulk refactoring to architecture.'
-# shareImage: 'share.png'
+shareImage: 'share.png'
 ---
 
 My team spent $847 on agent tokens last month. We also shipped 23% more PRs than the month
