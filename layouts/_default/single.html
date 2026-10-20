@@ -28,8 +28,20 @@
       {{- .Content }}
     </div>
 
+    {{- if isset $p "series" }}
+      {{- partial "series-nav" . }}
+    {{- end }}
+
     {{- with .Params.sourceCode }}
       {{ partial "source-link" (dict "url" . "label" "Browse the example code") }}
+    {{- end }}
+
+    {{- if and (.Params.sourceCode) (in ($p.series | default slice) "Fastest Way to Insert Data in MS SQL") }}
+      <p class="codespaces-badge">
+        <a href="https://codespaces.new/mmarko88/blog-examples?quickstart=1" target="_blank" rel="noopener" aria-label="Open the blog-examples repository in GitHub Codespaces">
+          <img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces" height="28" loading="lazy">
+        </a>
+      </p>
     {{- end }}
 
     {{- if eq .Section "post" }}

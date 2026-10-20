@@ -11,6 +11,7 @@ shareImage: 'share-part8.png' # Branded 1200x630 social-share card showing the P
 tags: [ "java", "ms sql server", "jdbc" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 8
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part8-tvp-jdbc'
 ---
 
@@ -790,3 +791,9 @@ The full benchmark code — 18 test classes, 4,222 runs, 17 charts — is in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
 Clone it, point it at your own SQL Server, and the numbers will shift — but the rankings will
 almost certainly hold.
+
+## Test yourself
+
+{{< quiz question="What is the absolute fastest insert path measured in the series?" options="Parallel Bulk API, 4 threads|INSERT...SELECT on the same server|Table-Valued Parameters|Natively compiled stored procedure" correct="1" explanation="INSERT...SELECT (data already on the server) finished in 319 ms, fastest overall. Parallel Bulk API at 330 ms is the fastest path when pushing from Java." >}}
+
+{{< quiz question="Why is OPTION(RECOMPILE) dangerous with batched inserts?" options="It disables batching|It forces a plan recompile per batch, making it about 52x slower|It locks the whole table|It silently drops rows" correct="1" explanation="OPTION(RECOMPILE) recompiles the plan for every batch: 145 s vs 2.8 s, about 52x slower. Never combine it with batched inserts." >}}

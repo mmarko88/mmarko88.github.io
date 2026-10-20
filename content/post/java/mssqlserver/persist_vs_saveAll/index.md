@@ -10,6 +10,7 @@ shareImage: 'share-part1.png' # Branded 1200x630 social-share card showing the P
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 1
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part1-hibernate-batching'
 ---
 
@@ -295,3 +296,9 @@ may not operate optimally out of the box, but with some straightforward
 code adjustments, you can achieve dramatic performance enhancements.
 This highlights how important it is to carefully measure performance 
 and examine it closely to get the best results.
+
+## Test yourself
+
+{{< quiz question="What makes saveAll() 8x slower than persist() with batching?" options="A SELECT before each INSERT to decide insert vs update|It opens a new transaction per entity|It disables JDBC batching automatically|It flushes the Hibernate cache after every row" correct="0" explanation="saveAll() uses merge semantics: for each entity Hibernate issues a SELECT to decide INSERT vs UPDATE. Implementing Persistable with isNew=true removes those SELECTs and makes it about 8x faster." >}}
+
+{{< quiz question="What batch size works best for inserting 100,000 rows?" options="10|1,000|100,000 (one batch)|Batch size has no measurable effect" correct="1" explanation="A batch size around 1,000 is the sweet spot: large enough to cut round-trips, small enough to keep memory and statement size reasonable." >}}

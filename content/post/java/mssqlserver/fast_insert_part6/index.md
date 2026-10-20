@@ -10,6 +10,7 @@ shareImage: 'share-part6.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server", "concurrency" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 6
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part6-parallel-inserts'
 ---
 
@@ -165,6 +166,10 @@ bulk load windows.
 
 If your load window overlaps with concurrent SELECTs, parallel inserts take ~2.5x longer. Use
 `WITH (TABLOCK)` for dedicated windows — otherwise, pick 4 threads and move on.
+
+## Test yourself
+
+{{< quiz question="How many threads is the sweet spot for Parallel Bulk API inserts?" options="1-2 threads|4-8 threads|16 threads|One thread per row" correct="1" explanation="4 threads hit 330 ms; 8 threads shaved another ~100 ms; 16 threads was noise. 4-8 is the practical sweet spot." >}}
 
 Next: [Part 7 — Index Impact](/post/java/mssqlserver/fast_insert_part7/) measures the hidden cost
 of non-clustered indexes during bulk loads.

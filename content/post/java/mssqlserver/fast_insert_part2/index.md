@@ -10,6 +10,7 @@ shareImage: 'share-part2.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 2
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part2-jdbc-strategies'
 
 ---
@@ -251,3 +252,7 @@ In my upcoming post, I will assess the performance of this method and compare it
 to determine its efficiency.
 
 Thank you for your attention.
+
+## Test yourself
+
+{{< quiz question="Which strategy was fastest for bulk inserts in the benchmark?" options="Hibernate persist with batching|JdbcTemplate batchUpdate|SQL Server Bulk Copy API|Plain PreparedStatement, one row at a time" correct="2" explanation="The SQL Server Bulk Copy API finished 100,000 inserts in 492 ms, about 6x faster than Hibernate persist." >}}

@@ -323,6 +323,10 @@ public class MemoryChurnBench {
 }
 ```
 
+## Test yourself
+
+{{< quiz question="What causes memory churn in Java?" options="A single very large long-lived allocation|A high rate of short-lived allocations that thrash the cache and GC|Using primitive types instead of boxed types|Running with too large a heap" correct="1" explanation="Memory churn is a high rate of short-lived allocations: they break cache locality and keep the young-generation GC busy, even though each object is tiny." >}}
+
 ## Related reading
 
 - [How to Learn Functional Programming in Java](/post/java/start_fp_in_java/) — Streams and

@@ -1,0 +1,61 @@
+{{- /*
+  Series navigation bar — "Part X of N · ← Prev | Next →".
+  Renders only when the page belongs to a series with more than one post.
+  Order is chronological (ByDate), which matches the numbered part order.
+*/ -}}
+{{- with .GetTerms "series" -}}
+  {{- $cur := $ -}}
+  {{- $term := index . 0 -}}
+  {{- $pages := $term.Pages.ByDate -}}
+  {{- if $cur.Param "seriesWeight" -}}
+    {{- $pages = $term.Pages.ByParam "seriesWeight" -}}
+  {{- end -}}
+  {{- $total := len $pages -}}
+  {{- if gt $total 1 -}}
+    {{- $idx := -1 -}}
+    {{- range $i, $p := $pages -}}
+      {{- if eq $p.RelPermalink $cur.RelPermalink -}}{{- $idx = $i -}}{{- end -}}
+    {{- end -}}
+    {{- if ge $idx 0 -}}
+      {{- $prev := false -}}
+      {{- if gt $idx 0 -}}{{- $prev = index $pages (sub $idx 1) -}}{{- end -}}
+      {{- $next := false -}}
+      {{- if lt $idx (sub $total 1) -}}{{- $next = index $pages (add $idx 1) -}}{{- end -}}
+      <nav class="series-nav" aria-label="Series navigation">
+        <div class="series-nav-meta">
+          <a href="{{ $term.RelPermalink }}" class="series-nav-title">{{ $term.LinkTitle }}</a>
+          <span class="series-nav-count">Part {{ add $idx 1 }} of {{ $total }}</span>
+        </div>
+        <div class="series-nav-links">
+          {{- with $prev }}
+          <a class="series-nav-link series-nav-prev" href="{{ .RelPermalink }}">
+            <span class="series-nav-dir">← Previous</span>
+            <span class="series-nav-label">{{ .LinkTitle }}</span>
+          </a>
+          {{- else }}<span class="series-nav-link series-nav-empty" aria-hidden="true"></span>{{ end }}
+          {{- with $next }}
+          <a class="series-nav-link series-nav-next" href="{{ .RelPermalink }}">
+            <span class="series-nav-dir">Next →</span>
+            <span class="series-nav-label">{{ .LinkTitle }}</span>
+          </a>
+          {{- else }}<span class="series-nav-link series-nav-empty" aria-hidden="true"></span>{{ end }}
+        </div>
+      </nav>
+      <style>
+      .series-nav{margin:2.5rem 0 1.5rem;padding:1.1rem 1.3rem;background:color-mix(in srgb,var(--accent,#1d70a2)5%,transparent);border:1px solid color-mix(in srgb,var(--accent,#1d70a2)15%,transparent);border-radius:16px}
+      .series-nav-meta{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem}
+      .series-nav-title{font-weight:700;color:var(--accent,#1d70a2);text-decoration:none}
+      .series-nav-title:hover{text-decoration:underline}
+      .series-nav-count{font-size:.85rem;color:var(--pale,#888);font-weight:600;white-space:nowrap}
+      .series-nav-links{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+      .series-nav-link{display:flex;flex-direction:column;gap:.2rem;padding:.7rem .9rem;border:1px solid var(--border-color,#ccc);border-radius:12px;text-decoration:none;transition:border-color .15s,background .15s}
+      a.series-nav-link:hover{border-color:var(--accent,#1d70a2);background:color-mix(in srgb,var(--accent,#1d70a2)8%,transparent)}
+      .series-nav-next{text-align:right}
+      .series-nav-dir{font-size:.8rem;color:var(--pale,#888);font-weight:600}
+      .series-nav-label{font-size:.95rem;color:var(--text);font-weight:600}
+      .series-nav-empty{border:none;background:none}
+      @media(max-width:520px){.series-nav-links{grid-template-columns:1fr}.series-nav-next{text-align:left}}
+      </style>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

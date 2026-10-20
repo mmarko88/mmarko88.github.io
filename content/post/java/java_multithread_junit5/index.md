@@ -114,6 +114,10 @@ Parallel test execution can speed up your build, but you must be careful when en
 
 Another more significant problem with parallel tests is if the tests are not independent, there can be [flaky tests](https://www.techtarget.com/whatis/definition/flaky-test). They are very hard to debug and identify.
 
+## Test yourself
+
+{{< quiz question="When do parallel tests NOT speed up your build?" options="When you have more than 4 CPU cores|When tests contend for the same shared resource|When using JUnit 5 instead of JUnit 4|When the dynamic strategy is enabled" correct="1" explanation="If tests share a resource they wait on each other, so parallelism gives no gain, and non-independent tests can turn flaky. Test and measure before enabling it." >}}
+
 # Resources
 [Maven documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html)
 

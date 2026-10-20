@@ -10,6 +10,7 @@ shareImage: 'share-part3.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 3
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part3-multivalue-insert'
 ---
 
@@ -151,3 +152,7 @@ you should definitely consider it if you have performance problems. On the other
 amount of data, then Bulk API insert is the king.
 
 Thank you for your attention.
+
+## Test yourself
+
+{{< quiz question="How many values per multi-value INSERT statement is the sweet spot?" options="10|200|2,100|As many as the 2,100-parameter limit allows" correct="1" explanation="Around 200 rows per statement gave the best multi-value INSERT performance; pushing JDBC Template batch size above about 100 made it worse." >}}

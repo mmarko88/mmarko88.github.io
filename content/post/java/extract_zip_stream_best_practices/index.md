@@ -253,6 +253,10 @@ The extractor itself is only one layer. In 2026 production systems:
 If you spot something I've missed, [open an issue](https://github.com/mmarko88/blog-examples/issues) —
 I treat this as a living post.
 
+## Test yourself
+
+{{< quiz question="What is the correct way to defend against Zip Slip?" options="Resolve the canonical path of the target file|Verify the canonical target starts with the canonical destination directory|Trust the entry name because the zip was uploaded by an authenticated user|Reject only entries whose name contains the literal string ../" correct="0,1" multi="true" explanation="Resolve the canonical path of each extracted file and confirm it still starts with the canonical destination directory. String checks for ../ are easily bypassed, and trusting the source is never a defense." >}}
+
 ## Related reading
 
 - [What Is Memory Churn and How to Avoid It in Java](/post/java/memory_churn/) — the extraction

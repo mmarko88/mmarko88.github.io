@@ -177,3 +177,7 @@ public class CiStringTest {
 
 ## Other Solutions: Baeldung
 In this [article](https://www.baeldung.com/java-map-with-case-insensitive-keys), you can find a description of the problem we are discussing. The article also proposes several solutions to the problem, including the previously mentioned [Solution 1](#solution-1-use-treemap). In addition to that, the article suggests using Apache's `CaseInsensitiveMap` or Spring's `LinkedCaseInsensitiveMap` as alternative solutions. However, it is important to note that both of these solutions are based on lowercasing the keys, which may not be the desired behavior in certain scenarios.
+
+## Test yourself
+
+{{< quiz question="Why not just call toLowerCase() on every map get()?" options="toLowerCase() is not thread-safe|It allocates a new String on every lookup|It changes the map's iteration order|HashMap does not allow String keys" correct="1" explanation="Calling toLowerCase() on each get() allocates a brand-new String every lookup, which is wasteful churn. A case-insensitive key type (or a TreeMap with a case-insensitive comparator) avoids the per-lookup allocation." >}}

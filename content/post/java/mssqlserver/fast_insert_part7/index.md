@@ -11,6 +11,7 @@ shareImage: 'share-part7.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server", "indexes" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 7
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part7-index-impact'
 ---
 
@@ -572,6 +573,12 @@ to validate, deduplicate, or transform data before loading — not for raw throu
 Most other table-design knobs save or cost 20-50% each. The exceptions worth remembering:
 server-side encryption (4x slower), XML columns (2.3x slower than JSON), AFTER INSERT triggers
 (2.2x slower), and `AUTO_UPDATE_STATISTICS = OFF` (50% slower — don't turn it off).
+
+## Test yourself
+
+{{< quiz question="Which settings should you leave at their defaults for fast inserts?" options="AUTO_UPDATE_STATISTICS (ON)|MAXDOP|Fill factor (100)|The number of non-clustered indexes during the load" correct="0,1,2" multi="true" explanation="Leave AUTO_UPDATE_STATISTICS on, MAXDOP and fill factor at defaults. Non-clustered indexes are the thing to drop before a bulk load: 5 of them slow inserts 6-11x." >}}
+
+{{< quiz question="Does ROW compression make inserts faster?" options="Yes, less data to write|No, it adds about 7% overhead|Only with columnstore|It has no measurable effect" correct="1" explanation="Compression is a read-side optimization. ROW adds about 7% and PAGE about 33% overhead on inserts because the engine compresses on write." >}}
 
 Next: [Part 8 — TVP and Plain JDBC](/post/java/mssqlserver/fast_insert_part8/) covers
 Table-Valued Parameters, bare-metal JDBC, and the final rankings across all 110+ configurations.

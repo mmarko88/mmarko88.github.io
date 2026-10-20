@@ -10,6 +10,7 @@ shareImage: 'share-part4.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 4
 featured: true
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part4-bulk-copy-parameter'
 ---
@@ -107,3 +108,9 @@ This issue has been resolved in the latest version of the Java MS SQL Server JDB
 
 This parameter has limited utility; avoid enabling it blindly without first assessing the
 benefits and drawbacks it may bring to your application.
+
+## Test yourself
+
+{{< quiz question="Which connection-string flag gives batched inserts a 2-2.5x speedup?" options="sendStringParametersAsUnicode=false|useBulkCopyForBatchInsert=true|rewriteBatchedStatements=true|cachePrepStmts=true" correct="1" explanation="useBulkCopyForBatchInsert=true routes batched INSERTs through the Bulk Copy path, giving a 2-2.5x speedup to Hibernate, JdbcTemplate and plain JDBC." >}}
+
+{{< quiz question="Is useBulkCopyForBatchInsert compatible with multi-value INSERT?" options="Yes, they stack for even more speed|No, they are incompatible|Only on SQL Server 2022+|Only when batch size is under 100" correct="1" explanation="The flag and multi-value INSERT are mutually exclusive: enabling the flag has no effect on multi-value statements." >}}

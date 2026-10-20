@@ -10,6 +10,7 @@ shareImage: 'share-part5.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server", "hibernate" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
+seriesWeight: 5
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part5-hibernate-tuning'
 ---
 
@@ -286,6 +287,10 @@ network/disk, not Java.
 If you can only make one change to speed up a `saveAll()` call: implement `Persistable<T>` with
 `isNew = true`. It eliminates the pre-INSERT SELECTs and makes `saveAll` 8x faster — a 10-line
 code change for a 10x result.
+
+## Test yourself
+
+{{< quiz question="Which Hibernate features help close the gap to raw JDBC?" options="StatelessSession|Implementing Persistable with isNew=true|useBulkCopyForBatchInsert=true|Second-level cache" correct="0,1,2" multi="true" explanation="StatelessSession, Persistable (isNew=true) and useBulkCopyForBatchInsert together close about 80% of the gap. The second-level cache is a read optimization and does not help inserts." >}}
 
 Next: [Part 6 — Parallel Inserts](/post/java/mssqlserver/fast_insert_part6/) splits the data across
 multiple connections to see how far parallel threads can push it.
