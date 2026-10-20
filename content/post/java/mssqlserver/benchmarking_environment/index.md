@@ -1,6 +1,7 @@
 ---
 title: "How to Set Up a Reliable Java Benchmarking Environment for SQL Server"
 date: 2026-10-19
+toc: true
 draft: true
 usePageBundles: true
 description: "Your benchmark numbers are only as reliable as your environment. Hardware, OS, JVM flags, SQL Server config, and the warm-up protocol that makes the difference."

@@ -1,6 +1,7 @@
 ---
 title: "Safe Zip Extraction in Java: Zip Slip, Bombs, Limits"
 date: 2022-12-06
+toc: true
 draft: false
 usePageBundles: true
 description: "Zip Slip, zip bombs, size limits, entry counts, memory caps. Six thresholds every Java zip-extraction routine should enforce before touching disk or memory."

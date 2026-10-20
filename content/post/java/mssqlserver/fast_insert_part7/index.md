@@ -1,6 +1,7 @@
 ---
 title: "Fastest MS SQL Inserts — Part 7: Index Impact"
 date: 2026-10-19
+toc: true
 draft: false
 usePageBundles: true
 description: "5 non-clustered indexes slow a bulk INSERT 11x. Measurements for compression, columnstore, GUID keys, triggers, encryption and more on SQL Server."
