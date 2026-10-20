@@ -6,9 +6,9 @@ usePageBundles: true
 description: "JMH explained from first principles: why warm-up iterations exist, what each @Benchmark parameter controls, and when to use JMH vs a simple timed loop."
 tags: ["java", "benchmarks", "performance", "jmh"]
 categories: ["java", "performance"]
-# featureImage: 'TODO.svg'
-# featureImageAlt: 'TODO'
-# shareImage: 'TODO.png'
+featureImage: 'jmh-hero.svg' # Three problem/solution cards: JIT→Warmup, Dead-code→Blackhole, Pollution→Fork + when-to-use matrix.
+featureImageAlt: 'Three JMH solutions to benchmark problems: warm-up iterations fix JIT noise, Blackhole.consume() prevents dead-code elimination, @Fork isolates benchmarks. Decision matrix: nanoseconds use JMH, seconds use timed loop.'
+shareImage: 'share.png' # 1200x630 PNG for social crawlers.
 ---
 
 When I started the
