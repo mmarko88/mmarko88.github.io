@@ -18,9 +18,8 @@
   <text x="92" y="348" fill="#617086" font-family="Consolas, 'Courier New', monospace" font-size="16" font-weight="400">)</text>
   <text x="92" y="396" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="15">firstName · lastName</text>
 
-  <!-- .equals() middle -->
-  <text x="600" y="340" text-anchor="middle" fill="#172033" font-family="Consolas, 'Courier New', monospace" font-size="30" font-weight="700">.equals(</text>
-  <text x="600" y="384" text-anchor="middle" fill="#172033" font-family="Consolas, 'Courier New', monospace" font-size="30" font-weight="700">)</text>
+  <!-- .equals() middle — single line, centered vertically between the cards -->
+  <text x="600" y="355" text-anchor="middle" fill="#172033" font-family="Consolas, 'Courier New', monospace" font-size="28" font-weight="700">.equals( )</text>
 
   <!-- Right: differently-cased Person instance -->
   <rect x="768" y="248" width="360" height="190" rx="12" fill="#ffffff" stroke="#1a5fb4" stroke-width="2"/>
