@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · FOUNDATIONS</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">LLMs for developers</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">What they actually are, how they work, and when they fail — no PhD required</text>
+
+  <text x="72" y="270" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">The mental model</text>
+
+  <rect x="72" y="300" width="260" height="80" rx="12" fill="#e8f0fe"/>
+  <text x="202" y="332" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Training</text>
+  <text x="202" y="360" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Learn patterns from text</text>
+
+  <text x="362" y="340" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">→</text>
+
+  <rect x="400" y="300" width="260" height="80" rx="12" fill="#e8f0fe"/>
+  <text x="530" y="332" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Inference</text>
+  <text x="530" y="360" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Predict next token</text>
+
+  <text x="690" y="340" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">→</text>
+
+  <rect x="728" y="300" width="260" height="80" rx="12" fill="#e8f0fe"/>
+  <text x="858" y="332" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Output</text>
+  <text x="858" y="360" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="16">Code, text, reasoning</text>
+
+  <text x="72" y="440" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Excels at</text>
+  <text x="72" y="472" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="18">✓ Pattern recognition  ✓ Boilerplate  ✓ Refactoring  ✓ Explanation</text>
+
+  <text x="72" y="510" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Struggles with</text>
+  <text x="72" y="542" fill="#dc2626" font-family="Segoe UI, Arial, sans-serif" font-size="18">✗ Novel reasoning  ✗ Counting  ✗ State tracking  ✗ Saying "I don't know"</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">A prediction engine, not a knowledge database — understanding this changes how you use it</text>
+</svg>

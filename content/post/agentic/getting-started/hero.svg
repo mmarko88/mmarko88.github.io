@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · GETTING STARTED</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">The concepts that actually matter</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Five ideas you need before your first coding agent session</text>
+
+  <rect x="72" y="240" width="200" height="100" rx="14" fill="#173f6d"/>
+  <text x="172" y="282" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700">Context Window</text>
+  <text x="172" y="310" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Working memory</text>
+
+  <rect x="292" y="240" width="200" height="100" rx="14" fill="#173f6d"/>
+  <text x="392" y="282" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700">Tools</text>
+  <text x="392" y="310" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Read, edit, search, run</text>
+
+  <rect x="512" y="240" width="200" height="100" rx="14" fill="#173f6d"/>
+  <text x="612" y="282" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700">Prompts &amp; Rules</text>
+  <text x="612" y="310" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Your instructions</text>
+
+  <rect x="732" y="240" width="200" height="100" rx="14" fill="#173f6d"/>
+  <text x="832" y="282" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700">Feedback Loop</text>
+  <text x="832" y="310" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Test → fail → fix → pass</text>
+
+  <rect x="952" y="240" width="200" height="100" rx="14" fill="#173f6d"/>
+  <text x="1052" y="282" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700">Verification</text>
+  <text x="1052" y="310" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">You're the senior dev</text>
+
+  <rect x="72" y="400" width="510" height="60" rx="10" fill="#e8f0fe"/>
+  <text x="327" y="438" text-anchor="middle" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18">You describe the problem → Agent proposes → Tools verify → You review</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Not "AI writes code for me" — a loop where you decide and the agent executes</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · PROMPTING</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">Prompt engineering for coding agents</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">The difference between "fix the bug" and a prompt that works</text>
+
+  <text x="72" y="270" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Same agent, same model — different prompt</text>
+
+  <rect x="72" y="295" width="490" height="70" rx="10" fill="#fce4e4"/>
+  <text x="82" y="322" fill="#dc2626" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">✗ Vague prompt</text>
+  <text x="82" y="348" fill="#172033" font-family="Segoe UI, monospace, sans-serif" font-size="15">"Fix the failing test."</text>
+  <text x="530" y="322" fill="#dc2626" font-family="Segoe UI, Arial, sans-serif" font-size="15">47 files read</text>
+  <text x="530" y="348" fill="#dc2626" font-family="Segoe UI, Arial, sans-serif" font-size="15">$4.20 · 35 min</text>
+
+  <rect x="72" y="385" width="490" height="70" rx="10" fill="#dcfce7"/>
+  <text x="82" y="412" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">✓ Specific prompt</text>
+  <text x="82" y="438" fill="#172033" font-family="Segoe UI, monospace, sans-serif" font-size="15">"NPE at ContactService:142, missing @Inject"</text>
+  <text x="530" y="412" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="15">3 files read</text>
+  <text x="530" y="438" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="15">$0.12 · 90 sec</text>
+
+  <rect x="700" y="295" width="420" height="160" rx="14" fill="#173f6d"/>
+  <text x="910" y="340" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">The anatomy of a good prompt</text>
+  <text x="730" y="375" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="17">1. Symptom — what's wrong</text>
+  <text x="730" y="405" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="17">2. Evidence — what you know</text>
+  <text x="730" y="435" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="17">3. Boundary — what to touch</text>
+
+  <rect x="950" y="500" width="100" height="60" rx="12" fill="#17864b"/>
+  <text x="1000" y="535" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">35×</text>
+  <text x="1000" y="555" text-anchor="middle" fill="#dcfce7" font-family="Segoe UI, Arial, sans-serif" font-size="12">cheaper</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Six patterns, before/after examples, and the checklist that saves tokens</text>
+</svg>

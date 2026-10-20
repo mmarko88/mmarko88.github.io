@@ -1,0 +1,91 @@
+{{- /*
+  Interactive quiz question shortcode.
+  Usage:
+    {{< quiz
+      question="What flag gives 2.5x speedup to batched inserts?"
+      options="useBulkCopyForBatchInsert=true|sendStringParametersAsUnicode=false|trustServerCertificate=true"
+      correct="0"
+      explanation="The MSSQL JDBC driver rewrites addBatch() into the Bulk Copy protocol."
+      source="/post/java/mssqlserver/fast_insert_part4/"
+    >}}
+*/ -}}
+{{- $id := printf "quiz-%s" (md5 (.Get "question")) -}}
+{{- $question := .Get "question" -}}
+{{- $options := split (.Get "options") "|" -}}
+{{- $correct := .Get "correct" | int -}}
+{{- $explanation := .Get "explanation" -}}
+{{- $source := .Get "source" -}}
+<div class="quiz-card" id="{{ $id }}" data-correct="{{ $correct }}">
+  <p class="quiz-card-q">{{ $question }}</p>
+  <div class="quiz-card-options">
+    {{- range $i, $opt := $options }}
+    <label class="quiz-card-option">
+      <input type="radio" name="{{ $id }}" value="{{ $i }}">
+      <span>{{ $opt }}</span>
+    </label>
+    {{- end }}
+  </div>
+  <button type="button" class="quiz-card-submit" disabled>Check answer</button>
+  <div class="quiz-card-result" hidden>
+    <p class="quiz-card-verdict"></p>
+    <p class="quiz-card-explanation">{{ $explanation }}</p>
+    {{- with $source }}
+    <p class="quiz-card-source"><a href="{{ . }}">Read more in the post →</a></p>
+    {{- end }}
+  </div>
+</div>
+{{- if not (.Page.Store.Get "quizLoaded") -}}
+{{- .Page.Store.Set "quizLoaded" true -}}
+<style>
+.quiz-card{margin:1.5rem 0;padding:1.25rem 1.5rem;background:color-mix(in srgb,var(--accent,#1d70a2)5%,transparent);border:1px solid color-mix(in srgb,var(--accent,#1d70a2)15%,transparent);border-radius:16px}
+.quiz-card-q{font-weight:700;font-size:1.05rem;margin:0 0 1rem}
+.quiz-card-options{display:flex;flex-direction:column;gap:.5rem}
+.quiz-card-option{display:flex;align-items:center;gap:.6rem;padding:.55rem .9rem;border:1px solid var(--border-color,#ccc);border-radius:999px;cursor:pointer;transition:border-color .15s,background .15s}
+.quiz-card-option:hover{border-color:var(--accent,#1d70a2);background:color-mix(in srgb,var(--accent,#1d70a2)8%,transparent)}
+.quiz-card-option input{accent-color:var(--accent,#1d70a2)}
+.quiz-card-option.correct{border-color:#17864b;background:#d9f2e4}
+.quiz-card-option.wrong{border-color:#ca3f3f;background:#fde8e8}
+.quiz-card-submit{margin-top:1rem;padding:.55rem 1.3rem;border:none;border-radius:999px;background:var(--accent,#1d70a2);color:#fff;font-weight:600;cursor:pointer;transition:filter .15s,transform .1s}
+.quiz-card-submit:disabled{opacity:.5;cursor:not-allowed}
+.quiz-card-submit:not(:disabled):hover{filter:brightness(1.1)}
+.quiz-card-submit:not(:disabled):active{transform:scale(.97)}
+.quiz-card-result{margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--border-color,#ccc)}
+.quiz-card-verdict{font-weight:700;font-size:1.1rem}
+.quiz-card-verdict.right{color:#17864b}
+.quiz-card-verdict.wrong{color:#ca3f3f}
+.quiz-card-explanation{margin:.5rem 0;color:var(--text)}
+.quiz-card-source{font-size:.9rem;color:var(--pale,#888)}
+.quiz-card-source a{color:var(--accent,#1d70a2)}
+</style>
+<script>
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('.quiz-card-submit');
+  if(!btn)return;
+  var card=btn.closest('.quiz-card');
+  if(!card||card.dataset.answered)return;
+  var checked=card.querySelector('input[type=radio]:checked');
+  if(!checked)return;
+  var chosen=parseInt(checked.value,10);
+  var correct=parseInt(card.dataset.correct,10);
+  card.dataset.answered='1';
+  btn.disabled=true;
+  btn.textContent=chosen===correct?'Correct!':'Try the post for the answer';
+  var labels=card.querySelectorAll('.quiz-card-option');
+  labels.forEach(function(l,i){
+    l.querySelector('input').disabled=true;
+    if(i===correct)l.classList.add('correct');
+    else if(i===chosen)l.classList.add('wrong');
+  });
+  var result=card.querySelector('.quiz-card-result');
+  var verdict=card.querySelector('.quiz-card-verdict');
+  verdict.textContent=chosen===correct?'Correct!':'Not quite.';
+  verdict.className='quiz-card-verdict '+(chosen===correct?'right':'wrong');
+  result.hidden=false;
+});
+document.addEventListener('change',function(e){
+  if(!e.target.matches('.quiz-card input[type=radio]'))return;
+  var card=e.target.closest('.quiz-card');
+  if(card)card.querySelector('.quiz-card-submit').disabled=false;
+});
+</script>
+{{- end -}}
