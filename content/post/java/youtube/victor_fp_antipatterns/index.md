@@ -4,9 +4,9 @@ date: 2024-05-11
 draft: true
 usePageBundles: true
 description: "Functional programming antipatterns in Java and when FP goes wrong: reactive overuse, memory churn from streams, side-effect-hiding, and simpler alternatives."
-featureImage: 'fp_antipatterns.webp' # Top image on post.
-featureImageAlt: 'functional programming antipatterns by Victor Rentea' # Alternative text for featured image.
-shareImage: 'fp_antipatterns.jpg' # For SEO and social media snippets.
+featureImage: 'fp-antipatterns-hero.svg' # Branded 1200x630 hero showing the 4 antipatterns with ✗/✓ markers.
+featureImageAlt: 'Four FP antipatterns in Java from Victor Rentea: long-lived mutable data, mutant pipeline, reactive overuse, side-effect hiding — with semantic alternatives shown.'
+shareImage: 'share.png' # 1200x630 PNG rendered from the hero SVG.
 tags: ["java", "java developers", "mistakes", "java mistakes", "developers mistakes", "functional programming"]
 categories: [
     "java", "functional programming"

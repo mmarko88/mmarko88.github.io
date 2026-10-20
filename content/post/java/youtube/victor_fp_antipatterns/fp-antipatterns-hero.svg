@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">FP Antipatterns in Java — Notes from Victor Rentea</title>
+  <desc id="description">Four functional programming antipatterns in Java that Victor Rentea warns against: long-lived mutable data, mutant pipelines, reactive overuse, and side-effect hiding.</desc>
+
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">JAVA · FUNCTIONAL PROGRAMMING · NOTES</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="700">FP Antipatterns in Java</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Notes from Victor Rentea — what sounds good in FP but hurts in practice</text>
+
+  <!-- Antipattern list with ✗ markers -->
+  <text x="110" y="276" fill="#ca3f3f" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">✗</text>
+  <text x="140" y="276" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Long-lived mutable data</text>
+  <text x="540" y="276" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Immutable Hibernate entities = memory churn</text>
+
+  <text x="110" y="326" fill="#ca3f3f" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">✗</text>
+  <text x="140" y="326" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Mutant pipeline</text>
+  <text x="540" y="326" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Stream operations that secretly mutate state</text>
+
+  <text x="110" y="376" fill="#ca3f3f" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">✗</text>
+  <text x="140" y="376" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Reactive overuse</text>
+  <text x="540" y="376" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Virtual threads solve the same problem, simpler</text>
+
+  <text x="110" y="426" fill="#ca3f3f" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">✗</text>
+  <text x="140" y="426" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Side-effect hiding</text>
+  <text x="540" y="426" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Pure-looking functions with database calls inside</text>
+
+  <!-- The fix: semantic methods -->
+  <rect x="72" y="466" width="1056" height="74" rx="12" fill="#d9f2e4"/>
+  <text x="110" y="498" fill="#17864b" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">✓ Instead</text>
+  <text x="240" y="498" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Semantic withers · deeper model types · virtual threads over reactive · explicit side effects</text>
+  <text x="110" y="524" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="16">obj.renamedWith(new FullName("F", "L")) beats obj.toBuilder().firstName("F").lastName("L").build()</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Java · Functional Programming · Victor Rentea · Conference Notes</text>
+</svg>
