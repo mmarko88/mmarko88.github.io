@@ -44,11 +44,34 @@ Four components, ranked by impact on insert benchmark variability:
 On an HDD, the strategy comparison is unreliable — the disk I/O noise drowns the
 strategy-vs-strategy signal. Use an SSD. If you're on a laptop, your built-in NVMe is fine.
 
-### 2. CPU cores
+### 2. CPU and processor setup
 
 Parallel benchmarks (Part 6) need real cores. On a 4-core / 8-thread CPU, using 8 threads
 gives a real speedup; using 16 doesn't, because half the "threads" share a physical core. For
 single-threaded benchmarks, one fast core is enough; clock speed matters more than core count.
+
+**Power plan:** set to **High Performance** (Windows) or `performance` governor (Linux). The
+default "Balanced" plan throttles CPU frequency during I/O waits, which is exactly when an
+insert benchmark is waiting for SQL Server. On Balanced, I've seen 10-15% run-to-run variance
+disappear when switching to High Performance.
+
+```powershell
+# Windows — set power plan to High Performance
+powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+```
+
+```bash
+# Linux — set CPU governor
+echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+```
+
+**Turbo Boost / Precision Boost:** leave enabled. Disabling it pins the CPU to base frequency,
+which is slower. The variance from turbo is small (1-3%) compared to the variance from power
+plan (10-15%).
+
+**Hyper-threading:** leave enabled. The parallel benchmarks (Part 6) show that HT threads
+give a modest speedup (8 HT threads beat 4 physical cores by ~20%). Disabling HT doesn't help
+benchmarks — it just makes the parallel tests slower.
 
 ### 3. RAM
 
@@ -71,6 +94,38 @@ The numbers in the blog series were measured on Windows 11 with SQL Server 2025 
 **Linux works.** SQL Server on Linux (native or Docker) produces comparable results. The main
 difference is I/O scheduling: Linux's `deadline` or `mq-deadline` scheduler handles the
 concurrent-writer workload (Part 6) slightly differently from NTFS.
+
+### OS-level tuning (Windows)
+
+These settings reduce background noise that inflates run-to-run variance:
+
+- **Windows Defender exclusions.** Add the SQL Server data directory and the JDK's `bin/`
+  folder to the real-time scanning exclusion list. Without this, Defender scans every `.mdf`
+  write and every `javac` invocation.
+
+  ```powershell
+  Add-MpPreference -ExclusionPath "C:\Program Files\Microsoft SQL Server\MSSQL17.MSSQLSERVER\MSSQL\DATA"
+  Add-MpPreference -ExclusionPath "C:\Program Files\Eclipse Adoptium\jdk-17*\bin"
+  ```
+
+- **Disable Windows Search indexing** on the SQL Server data drive. The indexing service writes
+  to the same drive as your database files.
+
+- **Page file.** Leave it system-managed on the OS drive. If SQL Server and the page file are
+  on the same SSD, paging spikes add noise — but on 8+ GB of RAM with a 1.4 GB Express instance,
+  paging shouldn't happen.
+
+- **Superfetch / SysMain service.** On SSDs, Windows's prefetching is unnecessary and can cause
+  unexpected I/O during benchmarks. It's safe to set the service to Manual for benchmark
+  sessions.
+
+### OS-level tuning (Linux)
+
+- **I/O scheduler:** `mq-deadline` for NVMe, `deadline` for SATA SSD. Check with
+  `cat /sys/block/nvme0n1/queue/scheduler`.
+- **Transparent Huge Pages (THP):** leave at default (`madvise`). Forcing `always` can cause
+  latency spikes during memory-mapped operations.
+- **vm.swappiness:** set to `10` (default is 60). Reduces swapping under memory pressure.
 
 **macOS: use Docker.**
 
@@ -173,6 +228,34 @@ nanoseconds.
 
 If your insert benchmarks are sub-millisecond (in-memory tables, tiny batches), use JMH. For
 100,000-row bulk inserts, the methodology above is enough.
+
+## Other components that influence results
+
+Four more factors I've seen shift benchmark numbers by 5-20%:
+
+**1. SQL Server instant file initialization.** When SQL Server grows a data file, it can either
+zero-fill the new pages (slow) or mark them as available immediately (fast). Enable instant
+file initialization by granting the SQL Server service account the `SE_MANAGE_VOLUME_NAME`
+privilege. Without it, growing `testdb` mid-benchmark adds a multi-second stall.
+
+```sql
+-- Check if it's enabled:
+EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
+SELECT instant_file_initialization_enabled FROM sys.dm_server_services WHERE process_id IS NOT NULL;
+```
+
+**2. SQL Server max degree of parallelism (MAXDOP).** Leave at 0 (auto) for insert benchmarks.
+Setting MAXDOP=1 forces serial execution, which hurts `INSERT...SELECT` (Part 8) by 30-40%.
+The optimizer knows when parallelism helps and when it doesn't.
+
+**3. Antivirus on the data directory.** Mentioned above under Windows Defender, but other AV
+products (McAfee, Symantec, CrowdStrike) have the same impact. Any AV that scans `.mdf`,
+`.ldf`, or `.ndf` file writes in real time adds 5-15% overhead to every insert benchmark.
+
+**4. Virtual machine overhead.** Running SQL Server inside a VM (Hyper-V, VMware, VirtualBox)
+adds 5-10% overhead on I/O-bound workloads compared to bare metal. Docker on WSL2 is similar.
+For *comparative* benchmarks (strategy A vs B), this doesn't matter — the overhead is
+proportional. For *absolute* numbers, bare metal is the reference.
 
 ## Common pitfalls that silently invalidate results
 
