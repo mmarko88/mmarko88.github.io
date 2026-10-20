@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · DEVIN DESKTOP</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">Devin Desktop best practices</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Getting the most from local agent sessions — setup, skills, workflows, gotchas</text>
+
+  <text x="72" y="270" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">The daily workflow</text>
+
+  <rect x="72" y="300" width="165" height="80" rx="10" fill="#173f6d"/>
+  <text x="154" y="335" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">1. Start session</text>
+  <text x="154" y="362" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="13">One topic only</text>
+
+  <rect x="257" y="300" width="165" height="80" rx="10" fill="#173f6d"/>
+  <text x="339" y="335" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">2. Verify git</text>
+  <text x="339" y="362" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="13">Clean working tree</text>
+
+  <rect x="442" y="300" width="165" height="80" rx="10" fill="#173f6d"/>
+  <text x="524" y="335" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">3. Work</text>
+  <text x="524" y="362" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="13">ask_user_question</text>
+
+  <rect x="627" y="300" width="165" height="80" rx="10" fill="#173f6d"/>
+  <text x="709" y="335" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">4. Check diff</text>
+  <text x="709" y="362" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="13">Only expected files</text>
+
+  <rect x="812" y="300" width="165" height="80" rx="10" fill="#173f6d"/>
+  <text x="894" y="335" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">5. Review</text>
+  <text x="894" y="362" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="13">Full diff tool review</text>
+
+  <rect x="997" y="300" width="135" height="80" rx="10" fill="#17864b"/>
+  <text x="1064" y="335" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">6. Weekly</text>
+  <text x="1064" y="362" text-anchor="middle" fill="#dcfce7" font-family="Segoe UI, Arial, sans-serif" font-size="13">Audit rules/skills</text>
+
+  <text x="72" y="440" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Key practices</text>
+  <text x="72" y="475" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="17">Global AGENTS.md (12 lines) · Project AGENTS.md · 3 starter skills · Multi-repo mapping</text>
+  <text x="72" y="505" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="17">Secrets via $env:VAR · Subagents for exploration · Batch tool calls · Monthly skill audit</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Setup takes an afternoon, payoff is every day after — local power with production discipline</text>
+</svg>

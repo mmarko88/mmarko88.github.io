@@ -6,7 +6,8 @@ usePageBundles: true
 description: "How to measure if coding agents actually save time. Token costs vs developer hours, the tasks where agents pay for themselves, and the ones where they don't."
 tags: ["agents", "ai", "productivity", "measurement"]
 categories: ["agents"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Measuring agent ROI — bar chart showing time saved by task type from bulk refactoring to architecture.'
 # shareImage: 'share.png'
 ---
 

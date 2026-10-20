@@ -6,7 +6,8 @@ usePageBundles: true
 description: "Specific patterns for writing task prompts that coding agents actually follow. Before/after examples, the anatomy of an effective prompt, and the mistakes that waste the most tokens."
 tags: ["agents", "ai", "prompts", "productivity"]
 categories: ["agents"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Prompt engineering for coding agents — vague vs specific prompt comparison with cost difference.'
 # shareImage: 'share.png'
 ---
 

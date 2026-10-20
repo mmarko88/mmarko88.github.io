@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#7c3aed"/>
+  <text x="72" y="76" fill="#7c3aed" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENT SKILLS · 01/03</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700">Skills, workflows, and personalities</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Why your coding agent needs all three — and what happens without them</text>
+
+  <text x="72" y="270" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">The three layers</text>
+
+  <rect x="72" y="295" width="320" height="120" rx="14" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="232" y="338" text-anchor="middle" fill="#7c3aed" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Rules</text>
+  <text x="232" y="368" text-anchor="middle" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="16">Always active constraints</text>
+  <text x="232" y="395" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">"Use constructor injection"</text>
+
+  <rect x="420" y="295" width="320" height="120" rx="14" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="580" y="338" text-anchor="middle" fill="#7c3aed" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Skills</text>
+  <text x="580" y="368" text-anchor="middle" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="16">Reusable playbooks</text>
+  <text x="580" y="395" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">"Investigate performance: step 1..."</text>
+
+  <rect x="768" y="295" width="360" height="120" rx="14" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="948" y="338" text-anchor="middle" fill="#7c3aed" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Personalities</text>
+  <text x="948" y="368" text-anchor="middle" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="16">Evaluation lenses</text>
+  <text x="948" y="395" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">"You are an adversarial reviewer"</text>
+
+  <text x="72" y="480" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18">Works with: Devin skills · Cursor rules · Claude AGENTS.md · Windsurf rules · Copilot instructions</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Each layer compounds — rules prevent mistakes, skills avoid rework, personalities catch what generalists miss</text>
+</svg>

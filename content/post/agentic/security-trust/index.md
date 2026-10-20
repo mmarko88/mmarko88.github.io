@@ -6,7 +6,8 @@ usePageBundles: true
 description: "The trust model for coding agents on production codebases. Secret handling, destructive operation gates, auth boundaries, and the rules that prevent expensive mistakes."
 tags: ["agents", "ai", "security", "trust"]
 categories: ["agents"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Agent security trust zones — green (read/edit), yellow (shell/commit), red (push/deploy/delete).'
 # shareImage: 'share.png'
 ---
 

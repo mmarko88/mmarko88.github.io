@@ -7,7 +7,8 @@ description: "The researchers, practitioners, and open-source projects shaping h
 tags: ["agents", "ai", "resources", "community"]
 categories: ["agents"]
 series: ["Agent Skills"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Agentic development experts and resources — researchers, practitioners, and community links.'
 # shareImage: 'share.png'
 ---
 

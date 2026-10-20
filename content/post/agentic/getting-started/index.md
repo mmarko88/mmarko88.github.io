@@ -6,8 +6,8 @@ usePageBundles: true
 description: "What agentic development is, how it differs from autocomplete AI, and the five concepts you need before your first real coding agent session."
 tags: ["agents", "ai", "java", "getting-started"]
 categories: ["agents"]
-# featureImage: 'hero.svg'
-# featureImageAlt: 'Getting started with agentic development — see post body for details.'
+featureImage: 'hero.svg'
+featureImageAlt: 'Getting started with agentic development — five core concepts for coding agents.'
 # shareImage: 'share.png'
 ---
 

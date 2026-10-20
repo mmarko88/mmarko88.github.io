@@ -6,7 +6,8 @@ usePageBundles: true
 description: "How to coordinate multiple coding agents — investigator, implementer, reviewer, specialists. Communication patterns, handoff formats, and when multi-agent beats single-agent."
 tags: ["agents", "ai", "architecture", "multi-agent"]
 categories: ["agents"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Multi-agent orchestration — four-agent pipeline from investigator to specialist with completion comparison.'
 # shareImage: 'share.png'
 ---
 

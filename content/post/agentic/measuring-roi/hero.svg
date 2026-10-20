@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · MEASUREMENT</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">Measuring agent ROI</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">When coding agents save time and when they cost more</text>
+
+  <text x="72" y="270" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">ROI by task type</text>
+
+  <text x="310" y="320" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18">Bulk refactoring</text>
+  <rect x="320" y="296" width="520" height="32" rx="6" fill="#17864b"/>
+  <text x="850" y="319" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">60-80% saved</text>
+
+  <text x="310" y="365" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18">Bug fixes (scoped)</text>
+  <rect x="320" y="341" width="340" height="32" rx="6" fill="#17864b"/>
+  <text x="670" y="364" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">30-50% saved</text>
+
+  <text x="310" y="410" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18">Complex features</text>
+  <rect x="320" y="386" width="130" height="32" rx="6" fill="#eab308"/>
+  <text x="460" y="409" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">0-20% saved</text>
+
+  <text x="310" y="455" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18">Architecture decisions</text>
+  <rect x="320" y="431" width="80" height="32" rx="6" fill="#dc2626"/>
+  <text x="410" y="454" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Negative ROI</text>
+
+  <rect x="820" y="380" width="300" height="120" rx="14" fill="#173f6d"/>
+  <text x="970" y="420" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Total cost equation</text>
+  <text x="970" y="450" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">dev_time + tokens</text>
+  <text x="970" y="475" text-anchor="middle" fill="#cce6ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">+ review + rework</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Measure all four costs or you're fooling yourself — tracked data from six months of real use</text>
+</svg>

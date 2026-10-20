@@ -7,7 +7,8 @@ description: "Skills give agents reusable playbooks. Workflows chain them into p
 tags: ["agents", "ai", "skills", "workflows"]
 categories: ["agents"]
 series: ["Agent Skills"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Agent Skills series — rules, skills, and personalities as three compounding layers.'
 # shareImage: 'share.png'
 ---
 

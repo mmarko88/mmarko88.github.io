@@ -6,7 +6,8 @@ usePageBundles: true
 description: "A developer's mental model for large language models — no PhD required. How they work, what they're good at, where they break, and why that matters for your daily work."
 tags: ["ai", "llm", "getting-started"]
 categories: ["agents"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'LLMs for developers — training, inference, output pipeline and strengths vs weaknesses.'
 # shareImage: 'share.png'
 ---
 

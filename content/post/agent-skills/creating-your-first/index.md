@@ -7,7 +7,8 @@ description: "How to write effective agent skills from scratch. Practical templa
 tags: ["agents", "ai", "skills", "tutorial"]
 categories: ["agents"]
 series: ["Agent Skills"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Creating agent skills — five essential skills and anti-patterns to avoid.'
 # shareImage: 'share.png'
 ---
 

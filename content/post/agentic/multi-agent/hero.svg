@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#1a5fb4"/>
+  <text x="72" y="76" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENTIC DEVELOPMENT · MULTI-AGENT</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700">Multi-agent orchestration</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">When to split one agent into many — and the pipeline that took completion from 60% to 85%</text>
+
+  <text x="72" y="270" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">The four-agent pipeline</text>
+
+  <rect x="72" y="300" width="220" height="90" rx="12" fill="#e8f0fe" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="182" y="340" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Investigator</text>
+  <text x="182" y="368" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">Read-only · Understand</text>
+
+  <text x="310" y="348" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">→</text>
+
+  <rect x="340" y="300" width="220" height="90" rx="12" fill="#e8f0fe" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="450" y="340" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Implementer</text>
+  <text x="450" y="368" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">Read-write · Build</text>
+
+  <text x="578" y="348" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">→</text>
+
+  <rect x="608" y="300" width="220" height="90" rx="12" fill="#fce4e4" stroke="#dc2626" stroke-width="2"/>
+  <text x="718" y="340" text-anchor="middle" fill="#dc2626" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Reviewer</text>
+  <text x="718" y="368" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">Fresh context · Falsify</text>
+
+  <text x="846" y="348" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">→</text>
+
+  <rect x="876" y="300" width="250" height="90" rx="12" fill="#e8f0fe" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="1001" y="340" text-anchor="middle" fill="#1a5fb4" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Specialist</text>
+  <text x="1001" y="368" text-anchor="middle" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="14">DB · Security · Perf</text>
+
+  <text x="410" y="445" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Single agent</text>
+  <rect x="430" y="420" width="220" height="38" rx="8" fill="#6b7280"/>
+  <text x="660" y="446" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">60% completion</text>
+
+  <text x="410" y="505" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20">Four agents</text>
+  <rect x="430" y="480" width="310" height="38" rx="8" fill="#17864b"/>
+  <text x="750" y="506" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">85% completion</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">Context contamination is the enemy — a reviewer that never saw the reasoning catches what the implementer can't</text>
+</svg>

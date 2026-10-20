@@ -6,7 +6,8 @@ usePageBundles: true
 description: "Practical best practices for Devin Desktop — session management, skill setup, shell configuration, multi-repo workflows, and the gotchas that waste the most time."
 tags: ["agents", "ai", "devin", "productivity"]
 categories: ["agents"]
-# featureImage: 'hero.svg'
+featureImage: 'hero.svg'
+featureImageAlt: 'Devin Desktop best practices — daily workflow steps from session start to weekly skill audit.'
 # shareImage: 'share.png'
 ---
 

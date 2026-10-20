@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#7c3aed"/>
+  <text x="72" y="76" fill="#7c3aed" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2">AGENT SKILLS · 02/03</text>
+  <text x="72" y="150" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700">Creating your first agent skills</text>
+  <text x="72" y="194" fill="#4b5565" font-family="Segoe UI, Arial, sans-serif" font-size="22">Templates, anti-patterns, and the five skills every codebase needs</text>
+
+  <text x="72" y="270" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">The five essential skills</text>
+
+  <rect x="72" y="298" width="204" height="80" rx="10" fill="#7c3aed"/>
+  <text x="174" y="332" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Investigate</text>
+  <text x="174" y="360" text-anchor="middle" fill="#e8d5ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Read-only analysis</text>
+
+  <rect x="296" y="298" width="204" height="80" rx="10" fill="#7c3aed"/>
+  <text x="398" y="332" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Review</text>
+  <text x="398" y="360" text-anchor="middle" fill="#e8d5ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Adversarial critic</text>
+
+  <rect x="520" y="298" width="204" height="80" rx="10" fill="#7c3aed"/>
+  <text x="622" y="332" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Test</text>
+  <text x="622" y="360" text-anchor="middle" fill="#e8d5ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Failing test first</text>
+
+  <rect x="744" y="298" width="204" height="80" rx="10" fill="#7c3aed"/>
+  <text x="846" y="332" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Onboard</text>
+  <text x="846" y="360" text-anchor="middle" fill="#e8d5ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Context loader</text>
+
+  <rect x="968" y="298" width="160" height="80" rx="10" fill="#7c3aed"/>
+  <text x="1048" y="332" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Commit</text>
+  <text x="1048" y="360" text-anchor="middle" fill="#e8d5ff" font-family="Segoe UI, Arial, sans-serif" font-size="14">Safe git guard</text>
+
+  <text x="72" y="440" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Skill anatomy</text>
+  <text x="72" y="475" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="17">When to use (trigger) · Steps (numbered, verifiable) · Output format · What NOT to do</text>
+
+  <text x="72" y="530" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="600">Anti-patterns to avoid</text>
+  <text x="72" y="562" fill="#dc2626" font-family="Segoe UI, Arial, sans-serif" font-size="17">✗ Encyclopedia (800 lines) · ✗ Vibes ("be good") · ✗ Stale · ✗ Duplicate · ✗ Unverifiable</text>
+
+  <text x="72" y="604" fill="#617086" font-family="Segoe UI, Arial, sans-serif" font-size="18">30 minutes from zero to productive — rules file + investigate skill + review skill</text>
+</svg>
