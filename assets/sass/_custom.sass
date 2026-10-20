@@ -863,22 +863,26 @@ button.feed_action
   touch-action: manipulation  // no double-tap-zoom delay on mobile
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease
 
-// Default (unliked) state: twemoji heart desaturated to a hollow-looking grey
-.feed_react img
-  width: 1.15rem
-  height: 1.15rem
+// Inline SVG heart — works in both light and dark mode (no CSS filter on
+// bitmaps). Unliked = outlined heart in muted colour. Liked = solid red.
+.feed_react_heart
+  width: 1.25rem
+  height: 1.25rem
   display: block
-  filter: grayscale(100%) brightness(0.65) contrast(1.4)
-  transition: filter 0.2s ease, transform 0.2s ease
+  fill: none
+  stroke: var(--pale, #888)
+  stroke-width: 2
+  transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease
 
-// Liked state: full-colour red heart, slight permanent scale, a brief pop
-.feed_react.liked img
-  filter: none
+// Liked state: solid red heart, slight permanent scale
+.feed_react.liked .feed_react_heart
+  fill: #e0245e
+  stroke: #e0245e
   transform: scale(1.08)
 
-// The IG-style "bump" animation played when a card transitions from
-// unliked -> liked. Triggered by adding .just-liked in reactions.js.
-.feed_react.just-liked img
+// IG-style "bump" animation when transitioning unliked -> liked.
+// Triggered by adding .just-liked in reactions.js.
+.feed_react.just-liked .feed_react_heart
   animation: ig-like-pulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)
 
 @keyframes ig-like-pulse
@@ -892,12 +896,13 @@ button.feed_action
     transform: scale(1.08)
 
 @media (hover: hover)
-  .feed_react:hover img
+  .feed_react:hover .feed_react_heart
+    stroke: #e0245e
     transform: scale(1.12)
-  .feed_react.liked:hover img
+  .feed_react.liked:hover .feed_react_heart
     transform: scale(1.18)
 
-.feed_react:active img
+.feed_react:active .feed_react_heart
   transform: scale(0.95)
 
 .feed_react:focus-visible
