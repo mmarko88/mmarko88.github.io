@@ -20,8 +20,8 @@
   <text x="970" y="416" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">3,632 ms</text>
 
   <text x="330" y="486" text-anchor="end" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">5 indexes</text>
-  <rect x="360" y="456" width="800" height="42" rx="10" fill="#c0392b"/>
-  <text x="1178" y="486" text-anchor="end" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">5,290 ms</text>
+  <rect x="360" y="456" width="720" height="42" rx="10" fill="#c0392b"/>
+  <text x="1098" y="486" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">5,290 ms</text>
 
   <rect x="986" y="238" width="156" height="76" rx="16" fill="#173f6d"/>
   <text x="1064" y="276" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">6.7×</text>
