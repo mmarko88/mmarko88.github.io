@@ -5,7 +5,7 @@ draft: false
 usePageBundles: true
 description: "Case-insensitive comparison across multiple string fields of a class without wrapping each String. Memory-efficient alternatives to the custom-wrapper pattern."
 featureImage: 'case-insensitive-hash-code.svg' # Technical SVG: two Person records differing in case compared with .equals() returning true.
-featureImageAlt: 'Diagram: two Java Person records — "John Smith" and "JOHN smith" — compared with .equals() returning true, demonstrating case-insensitive equality on multiple String fields with no per-field wrapper class.'
+featureImageAlt: 'Card showing two name badges — "john smith" and "JOHN SMITH" — both scanning MATCH on a case-insensitive door, with wrapping each field costing +N objects versus class utils costing +0 — "One recipe. Every field."'
 shareImage: 'share.png' # 1200x630 PNG rendered from the featureImage SVG.
 tags: ["java", "hashMap", "strings"]
 categories: [ "java"]
