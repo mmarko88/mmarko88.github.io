@@ -118,6 +118,12 @@ Another more significant problem with parallel tests is if the tests are not ind
 
 {{< quiz question="When do parallel tests NOT speed up your build?" options="When you have more than 4 CPU cores|When tests contend for the same shared resource|When using JUnit 5 instead of JUnit 4|When the dynamic strategy is enabled" correct="1" explanation="If tests share a resource they wait on each other, so parallelism gives no gain, and non-independent tests can turn flaky. Test and measure before enabling it." >}}
 
+{{< quiz question="You set junit.jupiter.execution.parallel.enabled=true in pom.xml, but your suite still runs sequentially. What's missing?" options="Raise the Surefire plugin's threadCount|Upgrade to a newer Surefire version|Set parallel.mode.default to concurrent|Set forkCount greater than 1" correct="2" explanation="Enabling only allows parallelism — JUnit's default mode is still sequential. You must also set mode.default=concurrent (or annotate with @Execution(CONCURRENT)). Surefire's threadCount and forkCount configure the separate multi-JVM mechanism, which is a different path." >}}
+
+{{< quiz question="Your tests rely on an in-memory database and must not share state. Which approach fits best?" options="Fork JVMs with forkCount=1C|JUnit threads with dynamic.factor=2|Annotate shared tests with @Execution(SAME_THREAD)|Keep tests sequential and raise the heap" correct="0" explanation="Forking gives each test process its own memory space, so nothing is shared between them — ideal for in-memory DBs. Threads in one JVM would make the shared database a flakiness source." >}}
+
+{{< quiz question="On an 8-core build agent you want roughly half the cores serving test threads. Which setting does that?" options="junit...parallel.config.fixed.parallelism=4|Surefire threadCount=4|Maven forkCount=0.5C|junit...parallel.config.dynamic.factor=0.5" correct="3" explanation="The dynamic strategy multiplies the core count by the factor (8 × 0.5 ≈ 4 threads). forkCount=0.5C looks tempting but controls the multi-JVM mechanism, not JUnit's threads; fixed.parallelism=4 hard-codes a number that won't adapt to other machines." >}}
+
 # Resources
 [Maven documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html)
 
