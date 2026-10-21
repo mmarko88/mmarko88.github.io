@@ -6,7 +6,7 @@ description: Design a branded cover image (featureImage hero + share.png) for a 
 
 Usage: `/cover-image <post>` — `<post>` is a directory or slug under `content/post/` (e.g. `cover-image teen_mistakes`).
 
-Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks one. Distilled from OG-image CTR research — do not skip the read-first steps.
+Produces ≥5 candidate cards as SVG + rendered PNG previews; the user picks one. The chosen hero ships as a **light/dark-adaptive SVG** (the site has both themes). Distilled from OG-image CTR research — do not skip the read-first steps.
 
 ## Steps
 
@@ -18,7 +18,11 @@ Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks on
    - **Visual metaphor** — the article's mechanism compressed into one glance (pipeline, split bar, ✗/✓ list)
    - **Title card** — fallback only: eyebrow tag + shortened title + one-line hook
 
-3. **Draft 2–3 SVG variants** at `1200x630` in the post's page bundle. Each variant must differ in *perspective*, not just colors/layout — assign each a distinct creative angle, e.g. the reader's-pain angle, the authority/credibility angle, the mechanism angle (persona-based variation is what actually diversifies an idea pool; restyling the same concept does not). For posts about a *person*, prefer a variant with their real public headshot — faces outperform every other focal point (crop tight, expressive beats neutral). If the user rejects the first set, run a **reseed burst**: list the rejected concepts as one-line mechanisms and generate only directions not yet proposed.
+3. **Draft ≥5 SVG variants** at `1200x630` in the post's page bundle — **one variant per persona** from `DESIGNER_PERSONAS.md` (Reporter, Mechanic, Skeptic, Curator, Storyteller, Minimalist; pick ≥5, never two from the same persona). Work each persona as an independent pass — select persona → pull raw material → generate its variant — so concepts don't bleed into each other. For posts about a *person*, prefer a variant with their real public headshot — faces outperform every other focal point (crop tight, expressive beats neutral).
+
+   **Personas may research.** When the post's own material is thin for a persona's lens, run a targeted `search_web` burst (the `/research` shape — vary vocabulary and stance, title/snippet-filter first): real incidents and famous bugs for Reporter/Skeptic, measurable numbers for Curator, analogies from other domains for Storyteller. One burst per persona max, sources must actually be opened before a claim lands on the card. Skip research when the post supplies everything the persona needs.
+
+   If the user rejects the set, run a **reseed burst**: list rejected concepts as one-line mechanisms, swap in personas not yet used, and generate only new directions.
 
    **Serving rules (from RESEARCH-cover-image.md — most card failures are here, not design):**
    - `shareImage` must be a raster file (PNG/JPG) with a real extension — social crawlers ignore SVG/WebP
@@ -31,6 +35,14 @@ Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks on
    - Font `Segoe UI, Arial, sans-serif` only; red `#ca3f3f` (+bg `#fde8e8`), green `#17864b` (+bg `#d9f2e4`), muted `#617086` (light) / `#9aa8bf` (dark)
    - Eyebrow row: `font-size 24`, `font-weight 700`, `letter-spacing 2`, caps, accent color
    - Footer: `TOPIC · TOPIC · professionaldev.dev`, `font-size 18`, muted
+
+   **Adaptive hero rules** (winner must satisfy; variants may be single-theme for draft speed):
+   - Palette via CSS classes + `@media (prefers-color-scheme: dark)` inside `<style>` — one SVG serves both themes. SVGs loaded via `<img>` DO honor `prefers-color-scheme` internally.
+   - Class-name colors, never hardcoded fills on elements that must flip: `.bg`, `.panel`, `.ink`, `.mut`, `.chip`, `.foot`.
+   - Keep semantic colors constant across themes (`#1a5fb4`, green/red verdicts) — flip only surfaces and text.
+   - Elements masking other elements (e.g. label pills over dashed lines) must use the `.bg` class so they match in both themes.
+   - Previewing a specific theme headlessly: `--force-prefers-color-scheme` is unreliable; instead render from a temp copy with the media query flipped — `sed 's/prefers-color-scheme: dark/min-width: 9999px/'` forces light, `min-width: 0px` forces dark.
+   - `share.png` is always rendered from the LIGHT variant (social crawlers, single raster).
 
    **Layout rules** (from research — violations get cropped or ignored):
    - Safe zone: keep everything critical inside the center ~1000x500; ≥60px from edges (platforms crop unpredictably)
@@ -50,7 +62,7 @@ Produces 2–3 candidate cards as SVG + rendered PNG previews; the user picks on
 
 5. **Self-check before presenting** (reviewer pass — observable bans, not vibes). For each PNG, verify: nothing critical within 60px of edges; headline ≤10 words and legible at 400px; no fake buttons/CTA chrome; no text overlapping other elements; brand tokens used (accent `#1a5fb4`, site font, footer with `professionaldev.dev`); the card reads visually even without its text. Any failure → fix and re-render *before* the user sees it.
 
-6. **Present previews to the user.** On pick: rename winner to `<slug>-hero.svg` (or post's existing convention), re-render it as `share.png`, delete losing SVGs/previews.
+6. **Present previews to the user.** On pick: if the winner isn't already adaptive, convert it to class-based fills with the `prefers-color-scheme` block; render **both light and dark previews** and re-run the self-check on each (contrast, invisible icons, masked labels). Rename winner to `<slug>-hero.svg` (or post's existing convention), render `share.png` from the light variant, delete losing SVGs/previews.
 
 7. **Wire front matter** — if the post isn't a page bundle yet, `git mv post.md post/index.md` first:
    ```yaml

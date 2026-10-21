@@ -4,8 +4,8 @@ date: 2023-04-24
 draft: false
 usePageBundles: true
 description: "Case-sensitive strings in Java cause bugs when matching data from SQL Server. A custom wrapper class makes HashMap lookups case-insensitive without new strings."
-featureImage: 'case-insensitive-hashmap.svg' # Technical SVG: put with lowercase email, get with uppercase email, both resolve to the same user.
-featureImageAlt: 'Diagram: map.put with key "john@example.com" followed by map.get with "JOHN@EXAMPLE.COM" via a custom case-insensitive wrapper key — both resolve to the same stored user, with zero new String allocations per get.'
+featureImage: 'case-insensitive-hero.svg' # Two-panel card: SQL Server finds the email, Java HashMap returns null — light/dark adaptive.
+featureImageAlt: 'Card showing SQL Server returning FOUND for BOB@example.com while Java HashMap returns null for the same lookup — "Found in SQL. Lost in Java."'
 shareImage: 'share.png' # 1200x630 PNG rendered from the featureImage SVG.
 tags: ["java", "hashMap", "strings"]
 categories: [ "java"]
