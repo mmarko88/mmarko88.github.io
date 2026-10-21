@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Concurrency on Professional developer</title><link>https://www.professionaldev.dev/tags/concurrency/</link><description>Recent content in Concurrency on Professional developer</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 19 Oct 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://www.professionaldev.dev/tags/concurrency/index.xml" rel="self" type="application/rss+xml"/><item><title>Fastest MS SQL Inserts — Part 6: Parallel Threads</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part6/</link><pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part6/</guid><description>
-&lt;p&gt;Every strategy we've tested so far — Hibernate, JDBC, Bulk API — pushes data through a single
-connection. SQL Server handles concurrent writes just fine; the bottleneck is the serial nature of
-one TCP stream. Split 100k rows across 4 threads with 4 connections and the Bulk API drops from
-492 ms to &lt;strong&gt;330 ms&lt;/strong&gt;, the fastest Java-client result in the whole series.&lt;/p&gt;
-&lt;p&gt;But parallelism isn't a free lunch — threads past 4 give diminishing returns, concurrent readers
-slow the writers 2.5x, and the TABLOCK hint changes the trade-off. Here's where the inflection
-points actually are.&lt;/p&gt;</description></item></channel></rss>
