@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Segoe UI, Arial, sans-serif">
+  <style>
+    .bg{fill:#172033}.panel{fill:#222e45;stroke:#3a4a68}.ink{fill:#ffffff}.mut{fill:#9aa8bf}.foot{fill:#5b6a84}.wire{stroke:#3a4a68}.track{fill:#3a4a68}
+    @media (prefers-color-scheme: light){
+      .bg{fill:#f7f9fc}.panel{fill:#ffffff;stroke:#d5dde8}.ink{fill:#172033}.mut{fill:#617086}.foot{fill:#617086}.wire{stroke:#b9c4d4}.track{fill:#b9c4d4}
+    }
+  </style>
+
+  <rect class="bg" width="1200" height="630"/>
+  <rect width="1200" height="12" fill="#1a5fb4"/>
+
+  <text x="72" y="56" fill="#1a5fb4" font-size="24" font-weight="700" letter-spacing="2">FASTEST INSERTS · PART 4 · JDBC</text>
+  <text class="ink" x="72" y="128" font-size="56" font-weight="700">Same calls. The driver switches lanes.</text>
+  <text class="mut" x="72" y="168" font-size="21">useBulkCopyForBatchInsert — a junction inside the JDBC driver</text>
+
+  <!-- source calls -->
+  <rect class="panel" x="72" y="300" width="220" height="56" rx="10" stroke-width="2"/>
+  <text class="ink" x="182" y="335" font-family="Consolas, Menlo, monospace" font-size="17" text-anchor="middle">addBatch × batchSize</text>
+
+  <!-- junction -->
+  <path class="wire" d="M292 328 L560 328" stroke-width="5"/>
+  <!-- branch 1: normal row packets (rejected) -->
+  <path d="M560 328 C 640 328 640 240 720 240" stroke="#ca3f3f" stroke-width="4" stroke-dasharray="8 8" fill="none"/>
+  <text x="730" y="208" fill="#ca3f3f" font-size="16" font-weight="700">row-packet inserts</text>
+  <text class="foot" x="730" y="230" font-size="15">14.1 s — the default road</text>
+  <!-- branch 2: bulk path (taken) -->
+  <path d="M560 328 C 640 328 640 420 720 420" stroke="#17864b" stroke-width="9" fill="none" marker-end="url(#h4)"/>
+  <text x="730" y="406" fill="#17864b" font-size="16" font-weight="700">bulk-copy protocol</text>
+  <text class="mut" x="730" y="428" font-size="15">5.8 s — same batchSize</text>
+
+  <!-- the flag as the switch lever -->
+  <rect x="470" y="232" width="180" height="40" rx="20" fill="#1a5fb4"/>
+  <text x="560" y="258" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">flag = true</text>
+
+  <!-- SQL Server cylinder -->
+  <g transform="translate(1010,330)">
+    <ellipse cx="0" cy="-60" rx="56" ry="18" fill="#1a5fb4"/>
+    <path d="M-56 -60 v120 c0 10 25 18 56 18 s56-8 56-18 v-120" fill="#1a5fb4" opacity="0.85"/>
+    <text class="mut" x="0" y="112" font-size="17" text-anchor="middle">SQL Server</text>
+  </g>
+  <path d="M880 262 L945 292" stroke="#ca3f3f" stroke-width="4" stroke-dasharray="8 8" fill="none"/>
+  <path d="M860 420 L945 375" stroke="#17864b" stroke-width="9" fill="none"/>
+
+  <text class="mut" x="72" y="530" font-size="20">No API change, no new object — a parameter flips the junction.</text>
+  <text class="foot" x="72" y="596" font-size="18">Java · SQL Server · professionaldev.dev</text>
+
+  <defs>
+    <marker id="h4" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="12" refX="13" refY="6" orient="auto"><path d="M0,0 L16,6 L0,12 z" fill="#17864b"/></marker>
+  </defs>
+</svg>
