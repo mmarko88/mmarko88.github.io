@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Segoe UI, Arial, sans-serif">
+  <style>
+    .bg{fill:#f7f9fc}.ink{fill:#172033}.mut{fill:#617086}.foot{fill:#617086}.wheel{fill:#172033}.glass{fill:#d0e0f5}.sign{fill:#ffffff}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#172033}.ink{fill:#ffffff}.mut{fill:#9aa8bf}.foot{fill:#5b6a84}.wheel{fill:#dfe6f2}.glass{fill:#3a4a68}.sign{fill:#222e45}
+    }
+  </style>
+
+  <rect class="bg" width="1200" height="630"/>
+  <rect width="1200" height="12" fill="#1a5fb4"/>
+
+  <text x="72" y="56" fill="#1a5fb4" font-size="24" font-weight="700" letter-spacing="2">FASTEST INSERTS · PART 3 · JDBC</text>
+  <text class="ink" x="72" y="128" font-size="56" font-weight="700">One bus beats a million taxis.</text>
+  <text class="mut" x="72" y="168" font-size="21">a million single-row INSERTs vs 2,500 multi-value ones</text>
+
+  <!-- taxi queue -->
+  <g>
+    <rect x="72" y="240" width="70" height="34" rx="8" fill="#f5b93f"/>
+    <rect x="88" y="226" width="38" height="16" rx="6" fill="#f5b93f"/>
+    <circle class="wheel" cx="90" cy="280" r="9"/><circle class="wheel" cx="124" cy="280" r="9"/>
+    <rect x="158" y="240" width="70" height="34" rx="8" fill="#f5b93f" opacity="0.8"/>
+    <rect x="174" y="226" width="38" height="16" rx="6" fill="#f5b93f" opacity="0.8"/>
+    <circle class="wheel" cx="176" cy="280" r="9"/><circle class="wheel" cx="210" cy="280" r="9"/>
+    <rect x="244" y="240" width="70" height="34" rx="8" fill="#f5b93f" opacity="0.6"/>
+    <rect x="260" y="226" width="38" height="16" rx="6" fill="#f5b93f" opacity="0.6"/>
+    <circle class="wheel" cx="262" cy="280" r="9"/><circle class="wheel" cx="296" cy="280" r="9"/>
+  </g>
+  <text x="72" y="330" fill="#ca3f3f" font-size="24" font-weight="700">1,000,000 trips — 14.8 s</text>
+  <text class="mut" x="72" y="360" font-size="17">every row rides alone, engine starts per row</text>
+
+  <!-- the bus -->
+  <g transform="translate(560,215)">
+    <rect x="0" y="0" width="360" height="88" rx="14" fill="#1a5fb4"/>
+    <rect class="glass" x="16" y="14" width="60" height="34" rx="5"/>
+    <rect class="glass" x="88" y="14" width="60" height="34" rx="5"/>
+    <rect class="glass" x="160" y="14" width="60" height="34" rx="5"/>
+    <rect class="glass" x="232" y="14" width="60" height="34" rx="5"/>
+    <rect class="glass" x="304" y="14" width="40" height="60" rx="5"/>
+    <circle class="wheel" cx="70" cy="96" r="15"/>
+    <circle class="wheel" cx="290" cy="96" r="15"/>
+    <!-- little rows in windows -->
+    <g class="ink">
+      <circle cx="34" cy="31" r="7"/><circle cx="60" cy="31" r="7"/>
+      <circle cx="106" cy="31" r="7"/><circle cx="132" cy="31" r="7"/>
+      <circle cx="178" cy="31" r="7"/><circle cx="204" cy="31" r="7"/>
+      <circle cx="250" cy="31" r="7"/><circle cx="276" cy="31" r="7"/>
+    </g>
+    <rect class="sign" x="16" y="56" width="200" height="20" rx="4" opacity="0.9"/>
+    <text x="116" y="71" fill="#1a5fb4" font-size="14" font-weight="700" text-anchor="middle">INSERT … VALUES ×400</text>
+  </g>
+  <text x="560" y="350" fill="#17864b" font-size="24" font-weight="700">2,500 trips — 4.2 s</text>
+  <text class="mut" x="560" y="380" font-size="17">400 rows per statement, one fare each way</text>
+
+  <!-- destination -->
+  <g transform="translate(1010,255)">
+    <ellipse cx="0" cy="-26" rx="40" ry="13" fill="#1a5fb4"/>
+    <path d="M-40 -26 v52 c0 7 18 13 40 13 s40-6 40-13 v-52" fill="#1a5fb4" opacity="0.85"/>
+    <text class="mut" x="0" y="75" font-size="15" text-anchor="middle">SQL Server</text>
+  </g>
+
+  <text class="mut" x="72" y="500" font-size="20">Same destination. The fare is per statement — carpool your rows.</text>
+  <text class="foot" x="72" y="606" font-size="18">Java · SQL Server · professionaldev.dev</text>
+</svg>
