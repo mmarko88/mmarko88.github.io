@@ -2,7 +2,7 @@
 title: "Fastest MS SQL Inserts — Part 8: TVP, JDBC, Final Ranking"
 date: 2026-10-19
 toc: true
-draft: false
+draft: true
 usePageBundles: true
 description: "100,000 SQL Server inserts in 319 ms with INSERT…SELECT, 330 ms with Parallel Bulk API. Ranking of 110+ configurations and 50 takeaways from the series."
 featureImage: 'fast-insert-final-ranking.svg'

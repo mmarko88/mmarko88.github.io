@@ -1,7 +1,7 @@
 ---
 title: "Fastest MS SQL Inserts — Part 6: Parallel Threads"
 date: 2026-10-19
-draft: false
+draft: true
 usePageBundles: true
 description: "100,000 SQL Server inserts in 330 ms by splitting the data across 4 threads with the Bulk API. Thread count sweep, concurrent-reader impact, TABLOCK trade-off."
 featureImage: 'fast-insert-part6.svg' # Series-style 1200x630 hero: Parallel Bulk API at 8 threads hits 434 ms, 2.7x faster.

@@ -4,9 +4,9 @@ date: 2026-10-19
 draft: false
 usePageBundles: true
 description: "Persistable, StatelessSession and useBulkCopyForBatchInsert close 80% of the gap between Hibernate and raw JDBC. Measured on 100,000 SQL Server inserts."
-featureImage: 'fast-insert-part5.svg' # Series-style 1200x630 hero: Hibernate closes 80% of the gap to Bulk API.
-featureImageAlt: 'Bar chart showing four Hibernate configurations converging toward the Bulk API baseline — StatelessSession plus bulkCopy at 1,075 ms versus Bulk API at 492 ms, 3.8 times closer than default Hibernate persist.'
-shareImage: 'share-part5.png' # Branded 1200x630 PNG for social crawlers.
+featureImage: 'fast-insert-part5-hero.svg' # Breaker-panel card: three breakers ON (Persistable, StatelessSession, bulkCopy) — 1,075 ms.
+featureImageAlt: 'Breaker-panel card for Hibernate inserts: PERSISTABLE, STATELESS_SESSION and BULK_COPY_FLAG switched ON while ISOLATION, GC_TUNING and UNICODE_FLAG show "no effect" — output meter reads 1,075 ms, down from 27,794 ms.'
+shareImage: 'share-part5-v2.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server", "hibernate" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
