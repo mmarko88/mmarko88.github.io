@@ -5,12 +5,13 @@ draft: false
 usePageBundles: true
 description: "Persistable, StatelessSession and useBulkCopyForBatchInsert close 80% of the gap between Hibernate and raw JDBC. Measured on 100,000 SQL Server inserts."
 featureImage: 'fast-insert-part5-hero.svg' # Breaker-panel card: three breakers ON (Persistable, StatelessSession, bulkCopy) — 1,075 ms.
-featureImageAlt: 'Breaker-panel card for Hibernate inserts: PERSISTABLE, STATELESS_SESSION and BULK_COPY_FLAG switched ON while ISOLATION, GC_TUNING and UNICODE_FLAG show "no effect" — output meter reads 1,075 ms, down from 27,794 ms.'
+featureImageAlt: 'Breaker-panel card for Hibernate inserts: PERSISTABLE, STATELESS_SESSION and BULK_COPY_FLAG switched ON — output meter reads 1,075 ms, down from 27,794 ms.'
 shareImage: 'share-part5-v2.png' # Branded 1200x630 PNG for social crawlers.
 tags: [ "java", "ms sql server", "hibernate" ]
 categories: [ "java", "sql" ]
 series: [ "Fastest Way to Insert Data in MS SQL" ]
 seriesWeight: 5
+toc: true
 sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part5-hibernate-tuning'
 ---
 
@@ -24,6 +25,10 @@ further. But Hibernate still sits well behind — so how close can it actually g
 layer `useBulkCopyForBatchInsert=true` on top (another 2–2.5x). Combined with proper batch sizing,
 this is as fast as Hibernate gets.
 
+*Setup: 100,000 `Person` rows per test, 10 runs each (median of 10 runs). Same rig as
+[Part 2](/post/java/mssqlserver/fast_insert_part2/) — code in the
+[example repo](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/part5-hibernate-tuning).*
+
 ## The saveAll Problem: SELECT Before INSERT
 
 When you call `repository.saveAll(entities)`, Spring Data JPA checks each entity's ID. If the ID is
@@ -32,10 +37,11 @@ a `SELECT` before the `INSERT`. For 100,000 entities, that's 100,000 extra SELEC
 
 ### Fix: Implement Persistable
 
-The fix is simple: make your entity implement `Persistable<T>` and always return `true` from
-`isNew()`:
+The fix is simple: make your entity implement `Persistable<T>` and track `isNew()` yourself —
+`true` only until the entity is first persisted or loaded:
 
 ```java
+// imports omitted
 @Entity
 @Table(name = "person")
 public class PersistablePerson implements Persistable<Integer> {
@@ -67,14 +73,15 @@ saved or loaded from the database.
 
 ### Results
 
-| Strategy | 100k persons (avg ms) |
+| Strategy | 100k persons (median ms) |
 |----------|----------------------|
 | saveAll (original, Part 1) | 27,794 |
 | **saveAll + Persistable** | **3,426** |
-| persist in chunks (Part 1) | 4,048 |
 
-**Persistable makes saveAll 8x faster** — and now slightly faster than manual persist-in-chunks!
-The SELECT elimination is the single biggest win.
+**Persistable makes saveAll 8x faster.** The SELECT elimination is the single biggest win —
+`saveAll` now delegates straight to `persist()`.
+
+{{< quiz question="Why does saveAll() fire a SELECT before each INSERT?" options="Spring Data can't tell the entity is new — merge() SELECTs first|Hibernate validates the row before writing|saveAll prefetches rows for optimistic locking|The JDBC driver caches each row" correct="0" explanation="With a non-null assigned ID the entity isn't 'new', so saveAll delegates to merge() — which SELECTs to decide INSERT vs UPDATE. Persistable.isNew() = true routes to persist() instead." >}}
 
 ## StatelessSession: Bare-Metal Hibernate
 
@@ -85,6 +92,7 @@ Hibernate's `StatelessSession` is designed for bulk operations. It bypasses:
 - **Cascading** — related entities must be inserted explicitly
 
 ```java
+// imports omitted
 @Repository
 public class StatelessSessionInsertRepository {
     private final EntityManagerFactory entityManagerFactory;
@@ -108,7 +116,7 @@ public class StatelessSessionInsertRepository {
 
 ### Results
 
-| Strategy | 100k persons (avg ms) |
+| Strategy | 100k persons (median ms) |
 |----------|----------------------|
 | Hibernate persist (Part 1) | 4,048 |
 | **StatelessSession** | **2,650** |
@@ -117,6 +125,8 @@ public class StatelessSessionInsertRepository {
 
 **StatelessSession is 35% faster than regular Hibernate persist** and within striking distance of
 raw JDBC. The remaining gap (~10%) is Hibernate's SQL generation and parameter binding overhead.
+
+{{< quiz question="What does StatelessSession drop vs a regular Session?" options="First-level cache|Dirty checking at flush|Automatic cascading|JDBC batching" correct="0,1,2" multi="true" explanation="StatelessSession skips the L1 cache, dirty checking and cascading — that's where the 35% comes from. JDBC batching still works underneath." >}}
 
 ## The Killer Combo: StatelessSession + useBulkCopyForBatchInsert
 
@@ -135,26 +145,7 @@ batches to SQL Server's Bulk Copy protocol. It works with StatelessSession too:
 (492ms), while still using Hibernate's mapping metadata. For applications that need ORM convenience
 with near-JDBC performance, this is the sweet spot.
 
-## provider_disables_autocommit
-
-The `hibernate.connection.provider_disables_autocommit` setting tells Hibernate that the connection
-pool already disabled auto-commit, skipping the `setAutoCommit(false)` JDBC round-trip per
-transaction. To use it, you need both:
-
-```properties
-spring.jpa.properties.hibernate.connection.provider_disables_autocommit=true
-spring.datasource.hikari.auto-commit=false
-```
-
-| Strategy | Normal | +noAutoCommit | Speedup |
-|----------|--------|---------------|---------|
-| Hibernate persist | 4,048 | 4,094 | None |
-| Persistable saveAll | 3,426 | **2,956** | **14%** |
-
-**Verdict: negligible for persist, modest for saveAll.** The saved round-trip is only measurable
-when there are many small transactions (saveAll with frequent flushes) rather than one large batch
-(persist). Not worth the configuration complexity unless you have a very specific transactional
-pattern.
+{{< quiz question="Which Hibernate setup hits 1,075 ms on 100k inserts?" options="saveAll + Persistable|StatelessSession alone|StatelessSession + useBulkCopyForBatchInsert=true|StatelessSession + second-level cache" correct="2" explanation="The flag layers the bulk-copy path on StatelessSession's stripped-down persist path — 2.5x over StatelessSession alone, 2x off raw Bulk API." >}}
 
 ## Batch Size Sweet Spot
 
@@ -163,7 +154,7 @@ of 50) reveals the actual inflection points:
 
 ### Bulk API
 
-| Batch | Avg ms | | Batch | Avg ms |
+| Batch | Median ms | | Batch | Median ms |
 |-------|--------|---|-------|--------|
 | 50 | 4,565 | | 600 | **834** |
 | 100 | 3,119 | | 800 | 1,194 |
@@ -178,7 +169,7 @@ of 50) reveals the actual inflection points:
 
 ### JdbcTemplate
 
-| Batch | Avg ms | | Batch | Avg ms |
+| Batch | Median ms | | Batch | Median ms |
 |-------|--------|---|-------|--------|
 | 50 | 6,471 | | 600 | 2,989 |
 | 100 | 6,036 | | **700** | **2,847** |
@@ -188,13 +179,15 @@ of 50) reveals the actual inflection points:
 **JdbcTemplate:** optimal at 700, with minimal improvement past 500. Larger batches (1000+) don't
 help because the driver's TCP buffer and SQL Server's batch processing saturate around 500-800 rows.
 
+{{< quiz question="Safe default Bulk API batch size from the sweep?" options="100|500|1000|10000" correct="2" explanation="Returns diminish past ~500 with wide run-to-run noise — 1,000 is the safe default." >}}
+
 ## Multi-Value Sweet Spot
 
 [Part 3](/post/java/mssqlserver/fast_insert_part3/) showed that multi-value INSERT
 (`objectsPerInsert > 1`) is much faster than single-row inserts. But what's the optimal value?
 A fine-grained sweep reveals:
 
-| objectsPerInsert | Avg ms | vs single-row |
+| objectsPerInsert | Median ms | vs single-row |
 |-----------------|--------|---------------|
 | 1 | 3,984 | — |
 | 10 | 1,711 | 2.3x faster |
@@ -213,70 +206,7 @@ per-statement overhead without overwhelming the parser.
 Remember: SQL Server's maximum parameter count is 2,100. With 5 columns per row,
 `objectsPerInsert` cannot exceed 420 (2100/5 = 420).
 
-## Connection String: sendStringParametersAsUnicode
-
-Setting `sendStringParametersAsUnicode=false` in the JDBC URL tells the driver to send string
-parameters as VARCHAR instead of NVARCHAR. This can help when your table has VARCHAR columns
-(avoids implicit conversion), but **has no effect on NVARCHAR columns**:
-
-| Strategy | Unicode (default) | sendStringParametersAsUnicode=false |
-|----------|-------------------|-------------------------------------|
-| Bulk API | 691ms | 812ms (no improvement) |
-| JdbcTemplate | 3,699ms | 3,892ms (no improvement) |
-
-If your columns are NVARCHAR, skip this setting.
-
-## Transaction Patterns
-
-How you structure transactions matters more than how big they are:
-
-| Pattern | 100k rows (avg ms) | Notes |
-|---------|-------------------|-------|
-| One large transaction (commit at end) | 3,773 | Baseline |
-| Commit per batch (every 1000 rows) | 3,543 | Marginally faster |
-| Savepoints per batch | 3,949 | Slightly slower (overhead) |
-| Auto-commit per row (10k rows only) | 5,198 ms for **10k** rows (~52,000ms extrapolated) | **15x slower** |
-
-**Verdict:** auto-commit per row is catastrophic — each INSERT becomes its own transaction with
-its own log flush. Any explicit transaction (batched or whole-run) is dramatically faster. The
-difference between commit-per-batch and commit-at-end is noise.
-
-### Isolation Levels
-
-| Isolation | 100k rows (avg ms) |
-|-----------|-------------------|
-| READ_UNCOMMITTED | 3,189 |
-| READ_COMMITTED (default) | 3,037 |
-| SERIALIZABLE | 2,963 |
-
-**Isolation level has no measurable impact** on INSERT-only workloads. The isolation level
-primarily affects reads and locking behavior — there's nothing for an INSERT to "read dirtily"
-or "serialize against". Don't bother tuning isolation level for bulk-load performance.
-
-## GC and JVM Memory Tuning
-
-Does the Java garbage collector affect database insert throughput? We ran the same test with four
-GC/heap configurations:
-
-| GC | Heap | Bulk API (ms) | JdbcTemplate (ms) | Total GC pause |
-|----|------|---------------|-------------------|---------------|
-| G1 (default) | 512 MB | 687 | 3,194 | ~59-138 ms |
-| G1 | 4 GB | 762 | 3,095 | ~93-139 ms |
-| Parallel | 2 GB | 863 | 3,401 | ~21-59 ms |
-| ZGC | 4 GB | 867 | 3,291 | ~109-315 ms |
-
-**GC choice has essentially no impact** on insert performance for this workload. The reasons:
-
-1. **Short-lived objects fit in young generation** — `Person` instances die quickly after being
-   batched and sent to the driver. All GCs handle this well.
-2. **GC pauses are tiny** compared to database I/O (300ms of GC vs 30+ seconds of total time).
-3. **ZGC has slight overhead** — its concurrent collection isn't needed when heap pressure is low.
-
-**Takeaway:** stick with the default G1 and modest heap size (512 MB-1 GB is enough for 100k-row
-batches). Over-tuning the JVM for database workloads is a waste of time — the bottleneck is the
-network/disk, not Java.
-
-![Transaction & GC Tuning](transaction_gc.svg)
+{{< quiz question="Why can't objectsPerInsert exceed 420 for a 5-column row?" options="The driver's TCP buffer saturates|JDBC statements cap at 64 KB|Hibernate's batch counter overflows|SQL Server caps parameters at 2,100 (5 × 420)" correct="3" explanation="2,100 max bindings / 5 columns = 420. The parser slows down well before that anyway — the sweet spot is 100–200." >}}
 
 ## The one thing to remember
 
@@ -292,5 +222,7 @@ code change for a 10x result.
 
 {{< quiz question="Which Hibernate features help close the gap to raw JDBC?" options="StatelessSession|Implementing Persistable with isNew=true|useBulkCopyForBatchInsert=true|Second-level cache" correct="0,1,2" multi="true" explanation="StatelessSession, Persistable (isNew=true) and useBulkCopyForBatchInsert together close about 80% of the gap. The second-level cache is a read optimization and does not help inserts." >}}
 
+<!--
 Next: [Part 6 — Parallel Inserts](/post/java/mssqlserver/fast_insert_part6/) splits the data across
 multiple connections to see how far parallel threads can push it.
+-->
