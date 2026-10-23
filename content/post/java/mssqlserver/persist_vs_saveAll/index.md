@@ -302,3 +302,39 @@ and examine it closely to get the best results.
 {{< quiz question="What makes saveAll() 8x slower than persist() with batching?" options="A SELECT before each INSERT to decide insert vs update|It opens a new transaction per entity|It disables JDBC batching automatically|It flushes the Hibernate cache after every row" correct="0" explanation="saveAll() uses merge semantics: for each entity Hibernate issues a SELECT to decide INSERT vs UPDATE. Implementing Persistable with isNew=true removes those SELECTs and makes it about 8x faster." >}}
 
 {{< quiz question="What batch size works best for inserting 100,000 rows?" options="10|1,000|100,000 (one batch)|Batch size has no measurable effect" correct="1" explanation="A batch size around 1,000 is the sweet spot: large enough to cut round-trips, small enough to keep memory and statement size reasonable." >}}
+
+## Re-benchmarked (October 2026)
+
+The same benchmark re-run on the same machine (i5-4690K) three years later.
+Environment: CPU fixed at 3.5 GHz (performance governor, turbo disabled),
+benchmark JVM pinned to an isolated core (cpu3), SQL Server 2025 Developer on
+Ubuntu, Temurin JDK 21, median of 10 timed runs per scenario, 100,000 rows.
+
+| Method name    | Median duration ms | Batch size |
+|----------------|--------------------|------------|
+| PersistBatched | 5992               | 10         |
+| PersistBatched | 2748               | 100        |
+| PersistBatched | 2150               | 1000       |
+| PersistBatched | 2064               | 5000       |
+| Persist        | 13338              | 10         |
+| Persist        | 13228              | 100        |
+| Persist        | 13220              | 1000       |
+| Persist        | 13364              | 5000       |
+| SaveAllBatched | 15434              | 10         |
+| SaveAllBatched | 15322              | 100        |
+| SaveAllBatched | 15303              | 1000       |
+| SaveAllBatched | 15332              | 5000       |
+| SaveAll        | 26545              | 10         |
+| SaveAll        | 26576              | 100        |
+| SaveAll        | 26507              | 1000       |
+| SaveAll        | 26516              | 5000       |
+
+All results are uniformly ~20–28% slower than the original table, while the
+relative ranking between strategies is unchanged (batched persist is still
+~6x faster than unbatched persist, and saveAll shows no batch-size scaling).
+The absolute slowdown is attributed to environment drift rather than a
+regression: CPU vulnerability mitigations on a modern kernel (KPTI, MDS,
+retpolines) cost Haswell heavily on syscall-bound insert loops, and the
+database moved from an older SQL Server release to SQL Server 2025 on Linux.
+Batch size 5000 adds little over 1000 (+~4%), confirming the diminishing
+returns noted above.
