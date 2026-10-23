@@ -256,3 +256,55 @@ Thank you for your attention.
 ## Test yourself
 
 {{< quiz question="Which strategy was fastest for bulk inserts in the benchmark?" options="Hibernate persist with batching|JdbcTemplate batchUpdate|SQL Server Bulk Copy API|Plain PreparedStatement, one row at a time" correct="2" explanation="The SQL Server Bulk Copy API finished 100,000 inserts in 492 ms, about 6x faster than Hibernate persist." >}}
+
+## Re-benchmarked (October 2026)
+
+The same benchmark re-run on the same machine (i5-4690K) three years later.
+Environment: CPU fixed at 3.5 GHz (performance governor, turbo disabled),
+benchmark JVM pinned to an isolated core (cpu3), SQL Server 2025 Developer on
+Ubuntu, Temurin JDK 21, median of 10 timed runs per scenario, 100,000 rows.
+Note: batch sizes tested were 10, 100, 1,000, and 5,000 (the original table
+used 10,000 instead of 5,000).
+
+| Method name        | Median duration ms | Batch size |
+|--------------------|--------------------|------------|
+| Bulk Api           | 13006              | 10         |
+| Bulk Api           | 1770               | 100        |
+| Bulk Api           | 510                | 1000       |
+| Bulk Api           | 364                | 5000       |
+| Jdbc Template      | 3213               | 10         |
+| Jdbc Template      | 2130               | 100        |
+| Jdbc Template      | 1916               | 1000       |
+| Jdbc Template      | 1873               | 5000       |
+| Prepared Statement | 3191               | 10         |
+| Prepared Statement | 2138               | 100        |
+| Prepared Statement | 1906               | 1000       |
+| Prepared Statement | 1873               | 5000       |
+| Hibernate Persist  | 5992               | 10         |
+| Hibernate Persist  | 2748               | 100        |
+| Hibernate Persist  | 2150               | 1000       |
+| Hibernate Persist  | 2064               | 5000       |
+
+As in Part 1, all results are uniformly ~16–28% slower than the original
+table while the strategy rankings hold exactly: the Bulk Copy API remains
+both the fastest strategy at large batch sizes (364 ms at 5,000, roughly
+275k rows/s) and the slowest at batch size 10 (13 s) due to its per-batch
+setup cost. The absolute slowdown is attributed to environment drift —
+CPU vulnerability mitigations on a modern kernel (KPTI, MDS, retpolines)
+cost syscall-bound workloads heavily on Haswell, and the database moved
+from an older release to SQL Server 2025 on Linux.
+
+### Multi-value insert sweep (new)
+
+The re-run also swept `objectsPerInsert` (N value-tuples per INSERT
+statement — the topic of Part 3) for the two JDBC batch strategies:
+
+| objectsPerInsert | Prepared Statement (best ms) | Jdbc Template (best ms) |
+|------------------|------------------------------|-------------------------|
+| 1                | 1873 (bs 5000)               | 1873 (bs 5000)          |
+| 10               | 705 (bs 1000)                | 703 (bs 1000)           |
+| 100              | 544 (bs 100)                 | 552 (bs 100)            |
+| 400              | 448 (bs 10)                  | 450 (bs 100)            |
+
+Multi-value INSERT at 400 objects per statement reaches ~450 ms — within
+~23% of the Bulk Copy API (364 ms) using nothing but plain JDBC.
