@@ -85,14 +85,24 @@ E-banking application for major Swiss banks (TKB, BKB, AKB). Maintained version 
 Tech: Java 8, Spring Boot, React, JSF, Oracle DB, SVN→Git, Jenkins, Maven
 ```
 
-### 3.3 Badin Soft — Transactor HQ
+### 3.3 Tranxactor (merged junior + senior roles)
 **Title:** Senior Java Developer
-**Dates:** 2014 – 2017
+**Dates:** Mar 2013 – Aug 2017 · Niš, Serbia
 
 ```
-Three-layer fintech application (Oracle, Java Spring/MyBatis/Jersey API, Angular). Designed and developed secure, high-performance RESTful API services.
+Started as a junior developer and was quickly promoted to medior, then senior — on a three-layer fintech application (Oracle, Java Spring/MyBatis/Jersey API, Angular).
 
-Tech: Java, Spring Boot, MyBatis, Jersey, Oracle DB, Angular
+Early work:
+• GWT application for POS devices
+• Automated production-server status checks — cut checking time from 3 hours to 15 minutes
+• Batch process tracking system — visibility into daily operations, easier error detection (Java + Oracle PL/SQL)
+• Reporting module — user-defined reports delivered by email
+• Mentoring — helped onboard new team members
+
+Later work:
+• Designed and developed secure, high-performance RESTful API services
+
+Environment: Java, Spring, MyBatis, Jersey, Oracle DB/PL/SQL, Angular, GWT.
 ```
 
 ### 3.4 Freelance Developer
