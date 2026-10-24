@@ -16,6 +16,10 @@
 		[data-theme-palette] .st4{fill:#3a4a68;}
 		[data-theme-palette] .st5{fill:#6b7280;}
 	}
+	html[data-mode='dim'] [data-theme-palette] .st4{fill:#3a4a68;}
+	html[data-mode='dim'] [data-theme-palette] .st5{fill:#6b7280;}
+	html[data-mode='lit'] [data-theme-palette] .st4{fill:#3D3B3E;}
+	html[data-mode='lit'] [data-theme-palette] .st5{fill:#4F4D50;}
 </style>
 <g>
 	<path class="st0" d="M118.24,48.76c-0.81,1.59-2.85,2.69-4.42,1.86c-1.86-0.98-1.78-3.6-1.96-5.69c-0.18-2.13-0.96-4.28-2.53-5.75

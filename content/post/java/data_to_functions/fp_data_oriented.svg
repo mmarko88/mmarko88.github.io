@@ -55,6 +55,42 @@
         [data-theme-palette] path[fill="#ffffff"]{fill:#f5b93f}
         [data-theme-palette] g[fill="#ffffff"],[data-theme-palette] circle[fill="#ffffff"]{fill:#bfe6f5}
       }
+      html[data-mode='lit'] [data-theme-palette] stop[style*="stop-color:#1a1a2e"]{stop-color:#f7f9fc !important}
+      html[data-mode='lit'] [data-theme-palette] stop[style*="stop-color:#16213e"]{stop-color:#eaf1fb !important}
+      html[data-mode='lit'] [data-theme-palette] .title,html[data-mode='lit'] [data-theme-palette] .label{fill:#172033}
+      html[data-mode='lit'] [data-theme-palette] .tag{fill:#d6336c}
+      html[data-mode='lit'] [data-theme-palette] .station{fill:#173f6d}
+      html[data-mode='lit'] [data-theme-palette] text[fill="#fff"],html[data-mode='lit'] [data-theme-palette] text[fill="#ffffff"],html[data-mode='lit'] [data-theme-palette] tspan[fill="#fff"],html[data-mode='lit'] [data-theme-palette] tspan[fill="#ffffff"]{fill:#172033}
+      html[data-mode='lit'] [data-theme-palette] text.mono[fill="#9adfff"],html[data-mode='lit'] [data-theme-palette] tspan[fill="#9adfff"]{fill:#1a5fb4}
+      html[data-mode='lit'] [data-theme-palette] [stroke="#9adfff"]{stroke:#1a5fb4}
+      html[data-mode='lit'] [data-theme-palette] tspan[fill="#ff6b81"]{fill:#dc2626}
+      html[data-mode='lit'] [data-theme-palette] [stroke="#ffb3c1"]{stroke:#d6336c}
+      html[data-mode='lit'] [data-theme-palette] text[fill="#ff8fa3"]{fill:#d6336c}
+      html[data-mode='lit'] [data-theme-palette] tspan[fill="#7bed9f"],html[data-mode='lit'] [data-theme-palette] text.mono[fill="#7bed9f"]{fill:#16a34a}
+      html[data-mode='lit'] [data-theme-palette] [stroke="#7bed9f"]{stroke:#16a34a}
+      html[data-mode='lit'] [data-theme-palette] text.mono[fill="#3fd0c9"]{fill:#0f9488}
+      html[data-mode='lit'] [data-theme-palette] [stroke="#fff"],html[data-mode='lit'] [data-theme-palette] [stroke="#ffffff"]{stroke:#4b5565}
+      html[data-mode='lit'] [data-theme-palette] circle[fill="#ffffff"][opacity="0.06"],html[data-mode='lit'] [data-theme-palette] circle[fill="#ffffff"][opacity="0.12"]{fill:#172033}
+      html[data-mode='lit'] [data-theme-palette] path[fill="#ffffff"]{fill:#f5b93f}
+      html[data-mode='lit'] [data-theme-palette] g[fill="#ffffff"],html[data-mode='lit'] [data-theme-palette] circle[fill="#ffffff"]{fill:#bfe6f5}
+      html[data-mode='dim'] [data-theme-palette] stop[style*="stop-color:#1a1a2e"]{stop-color:#1a1a2e !important}
+      html[data-mode='dim'] [data-theme-palette] stop[style*="stop-color:#16213e"]{stop-color:#16213e !important}
+      html[data-mode='dim'] [data-theme-palette] .title,html[data-mode='dim'] [data-theme-palette] .label{fill:#ffffff}
+      html[data-mode='dim'] [data-theme-palette] .tag{fill:#ffb3c1}
+      html[data-mode='dim'] [data-theme-palette] .station{fill:#cfe0ff}
+      html[data-mode='dim'] [data-theme-palette] text[fill="#fff"],html[data-mode='dim'] [data-theme-palette] tspan[fill="#fff"]{fill:#fff}
+      html[data-mode='dim'] [data-theme-palette] text[fill="#ffffff"],html[data-mode='dim'] [data-theme-palette] tspan[fill="#ffffff"]{fill:#ffffff}
+      html[data-mode='dim'] [data-theme-palette] [stroke="#9adfff"]{stroke:#9adfff}
+      html[data-mode='dim'] [data-theme-palette] text.mono[fill="#9adfff"],html[data-mode='dim'] [data-theme-palette] tspan[fill="#9adfff"]{fill:#9adfff}
+      html[data-mode='dim'] [data-theme-palette] tspan[fill="#ff6b81"]{fill:#ff6b81}
+      html[data-mode='dim'] [data-theme-palette] [stroke="#ffb3c1"]{stroke:#ffb3c1}
+      html[data-mode='dim'] [data-theme-palette] text[fill="#ff8fa3"]{fill:#ff8fa3}
+      html[data-mode='dim'] [data-theme-palette] tspan[fill="#7bed9f"],html[data-mode='dim'] [data-theme-palette] text.mono[fill="#7bed9f"]{fill:#7bed9f}
+      html[data-mode='dim'] [data-theme-palette] [stroke="#7bed9f"]{stroke:#7bed9f}
+      html[data-mode='dim'] [data-theme-palette] text.mono[fill="#3fd0c9"]{fill:#3fd0c9}
+      html[data-mode='dim'] [data-theme-palette] [stroke="#fff"]{stroke:#fff}
+      html[data-mode='dim'] [data-theme-palette] [stroke="#ffffff"]{stroke:#ffffff}
+      html[data-mode='dim'] [data-theme-palette] circle[fill="#ffffff"],html[data-mode='dim'] [data-theme-palette] path[fill="#ffffff"],html[data-mode='dim'] [data-theme-palette] g[fill="#ffffff"]{fill:#ffffff}
     </style>
     <!-- intrinsic parts every car keeps: ignition key (start) + door keyhole (lockDoors) -->
     <g id="carIntrinsic">
