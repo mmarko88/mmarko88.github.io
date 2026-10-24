@@ -147,6 +147,7 @@ with near-JDBC performance, this is the sweet spot.
 
 {{< quiz question="Which Hibernate setup hits 1,075 ms on 100k inserts?" options="saveAll + Persistable|StatelessSession alone|StatelessSession + useBulkCopyForBatchInsert=true|StatelessSession + second-level cache" correct="2" explanation="The flag layers the bulk-copy path on StatelessSession's stripped-down persist path — 2.5x over StatelessSession alone, 2x off raw Bulk API." >}}
 
+<!--
 ## Batch Size Sweet Spot
 
 Parts 1-4 tested batch sizes of 10, 100, 1000, and 5000. A fine-grained sweep (50-2000 in steps
@@ -181,6 +182,7 @@ help because the driver's TCP buffer and SQL Server's batch processing saturate 
 
 {{< quiz question="Safe default Bulk API batch size from the sweep?" options="100|500|1000|10000" correct="2" explanation="Returns diminish past ~500 with wide run-to-run noise — 1,000 is the safe default." >}}
 
+-->
 ## Multi-Value Sweet Spot
 
 [Part 3](/post/java/mssqlserver/fast_insert_part3/) showed that multi-value INSERT
