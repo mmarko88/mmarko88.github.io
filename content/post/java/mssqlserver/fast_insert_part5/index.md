@@ -75,8 +75,8 @@ saved or loaded from the database.
 
 | Strategy | 100k persons (median ms) |
 |----------|----------------------|
-| saveAll (original, Part 1) | 27,794 |
-| **saveAll + Persistable** | **3,426** |
+| saveAll (original, Part 1) | 26,545 |
+| **saveAll + Persistable** | **2,240** |
 
 **Persistable makes saveAll 8x faster.** The SELECT elimination is the single biggest win —
 `saveAll` now delegates straight to `persist()`.
@@ -118,10 +118,10 @@ public class StatelessSessionInsertRepository {
 
 | Strategy | 100k persons (median ms) |
 |----------|----------------------|
-| Hibernate persist (Part 1) | 4,048 |
-| **StatelessSession** | **2,650** |
-| JDBC PreparedStatement (Part 2) | 2,423 |
-| JdbcTemplate (Part 2) | 2,985 |
+| Hibernate persist (Part 1) | 2,064 |
+| **StatelessSession** | **1,942** |
+| JDBC PreparedStatement (Part 2) | 1,873 |
+| JdbcTemplate (Part 2) | 1,873 |
 
 **StatelessSession is 35% faster than regular Hibernate persist** and within striking distance of
 raw JDBC. The remaining gap (~10%) is Hibernate's SQL generation and parameter binding overhead.
