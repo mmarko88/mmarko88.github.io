@@ -2,6 +2,7 @@
 
 Profile: https://www.linkedin.com/in/mare-milenkovic/
 Source of truth: `content/about.md` — keep numbers in sync with CV.
+Applied to LinkedIn on 2026-10-24 — sections below reflect what is live (internal app details removed per review).
 
 ---
 
@@ -30,11 +31,9 @@ Currently leading a dev team on Investment Cafe (BlackRock, formerly eFront) —
 
 Recent work:
 • Led the Spring Boot 3 migration — 148 commits, 2,483 files: javax→Jakarta, Hibernate 5→6, OpenAPI 3
-• Built the REST API layer from scratch — FundInvestor, FundFamily, DocumentTypes services
-• Designed and implemented the MFA/TOTP authentication system, full lifecycle
 • Built the deployment pipeline — Azure Pipelines + Terraform + AWS, blue-green deployments
 • Security hardening — 58 commits: SQL injection, SSRF, path traversal, AES/GCM encryption
-• Performance work that shipped — contact import bottleneck, materialized view redesign, document search
+• Performance work that shipped — materialized view redesign, query and batch tuning
 
 On the side:
 • Building an agentic development framework on top of Devin — context budgets, specialist checkpoints, an eval harness that treats prompt changes like code changes
@@ -55,24 +54,17 @@ Open to conversations about backend performance, JVM internals, and agentic deve
 ## 3. Experience
 
 ### 3.1 Wiser Technologies (formerly Badin Soft)
-**Title:** Senior Java Developer (Team Lead)
-**Dates:** Jan 2018 – Present · Nis, Serbia
+**Title:** Senior Java Developer & Team Lead
+**Dates:** Sep 2018 – Present · Nis, Serbia
 
 ```
 Senior developer and team lead on Investment Cafe at BlackRock (formerly eFront) — a multi-tenant document management and investor communication system serving BlackRock's alternative investments clients globally.
 
 • Led a development team — coordinating work and mentoring team members
-• Built the REST API layer from scratch: FundInvestor, FundFamily, DocumentTypes
-• Designed the MFA/TOTP authentication system, full lifecycle
-• Cloud Store POC for cloud-native S3 storage
 • Led Spring Boot 3 migration: 148 commits, 2,483 files — javax→Jakarta, Hibernate 5→6, OpenAPI 3
-• Built IC Full Deployment Pipeline: Azure Pipelines + Terraform + AWS EBS, blue-green deployments
-• TVAS security hardening: 58 commits — SQL injection, SSRF, path traversal, AES/GCM encryption
-• Performance: contact import bottleneck, materialized view redesign, document search
-• Drove Flash → Spring Boot/React migration under tight deadlines
-• Excel import/export module, end-to-end
-• Mailing system: automated D5 emails, email archive with BCC, PII masking
-• Contributed across 6 product areas: CPS Integration Services, Asset Servicer Portal, CRM Platform, Insight Core, Invest
+• Built the deployment pipeline: Azure Pipelines + Terraform + AWS, blue-green deployments
+• Security hardening: 58 commits — SQL injection, SSRF, path traversal, AES/GCM encryption
+• Performance work that shipped: materialized view redesign, query and batch tuning
 
 Tech: Java 17, Spring Boot 3, Hibernate 6, Jakarta EE, MS SQL Server, Liquibase, OAuth2, Docker, Terraform, AWS, TomEE 10, OpenAPI 3, Azure Pipelines, React
 ```
@@ -86,7 +78,11 @@ Tech: Java 17, Spring Boot 3, Hibernate 6, Jakarta EE, MS SQL Server, Liquibase,
 ```
 E-banking application for major Swiss banks (TKB, BKB, AKB). Maintained version 2.0 across 3 major releases.
 
-Tech: Java, Spring, Oracle DB, Git, Bitbucket
+• Led the support team for TKB bank
+• Led the EBICS implementation for the bank — electronic payment traffic with corporate clients
+• Part of the support effort during the JSF → Spring Boot + React migration
+
+Tech: Java 8, Spring Boot, React, JSF, Oracle DB, SVN→Git, Jenkins, Maven
 ```
 
 ### 3.3 Badin Soft — Transactor HQ
@@ -141,7 +137,8 @@ Hibernate · REST APIs · SQL · Jakarta EE · Azure Pipelines · Terraform · D
 
 ## 7. Profile Settings Checklist
 
-- **Profile photo:** use `assets/images/author.jpg` (or a fresh headshot — same photo as the site builds recognition)
+- **Profile photo:** use `static/images/marko_milenkovic.jpg` (the current about-page photo — same photo as the site builds recognition)
+- **Gotcha:** adding a new role can silently overwrite the headline with "<title> at <company>" — re-check the headline after adding positions
 - **Banner image:** upload `linkedin-banner/linkedin-banner.png` ("Benchmarks, not vibes" — adaptive source at `static/images/benchmarks-banner.svg`, also shown on the about page)
 - **Location:** Nis, Serbia · **Industry:** Software Development
 - **Website button:** add "professionaldev.dev" as the profile link (shows under the headline in Creator mode)
