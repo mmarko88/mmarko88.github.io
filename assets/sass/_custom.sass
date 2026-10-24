@@ -399,10 +399,27 @@ a.nav_item[href*="#subscribe"]:hover
 // dark theme: navy #002538 -> GitHub-dark #0d1117 (page bg, footer, surfaces)
 html[data-mode="dim"]
   --bg: #0d1117
+  color-scheme: dark
 
+html[data-mode="lit"]
+  color-scheme: light
+
+// propagate the site/OS scheme into embedded SVG media queries (hero images)
 @media (prefers-color-scheme: dark)
   html:not([data-mode="lit"])
     --bg: #0d1117
+    color-scheme: dark
+
+@media (prefers-color-scheme: light)
+  html:not([data-mode="dim"])
+    color-scheme: light
+
+// inline hero SVG: same sizing as <img> heroes
+.post_featured svg
+  display: block
+  width: 100%
+  height: auto
+  border-radius: inherit
 
 // CTA card background: white in light mode, subtle card in dark mode
 .post_cta

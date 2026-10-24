@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="308" font-family="Segoe UI, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="308" font-family="Segoe UI, Arial, sans-serif" data-theme-palette=""><!-- cascade:theme-palette --><style>@media (prefers-color-scheme: dark){[data-theme-palette] text[fill="#333"],[data-theme-palette] tspan[fill="#333"]{fill:#e8e8ea}[data-theme-palette] rect[fill="white"],[data-theme-palette] circle[fill="white"],[data-theme-palette] ellipse[fill="white"],[data-theme-palette] path[fill="white"],[data-theme-palette] polygon[fill="white"],[data-theme-palette] polyline[fill="white"],[data-theme-palette] line[fill="white"]{fill:#222e45}[data-theme-palette] rect[fill="#333"],[data-theme-palette] circle[fill="#333"],[data-theme-palette] ellipse[fill="#333"],[data-theme-palette] path[fill="#333"],[data-theme-palette] polygon[fill="#333"],[data-theme-palette] polyline[fill="#333"],[data-theme-palette] line[fill="#333"]{fill:#2a2f3d}[data-theme-palette] text:not([fill]),[data-theme-palette] tspan:not([fill]){fill:#e8e8ea}}</style>
 <rect width="900" height="308" fill="white"/>
-<text x="450" y="30" text-anchor="middle" font-size="16" font-weight="bold">SNAPSHOT Isolation & Partition SWITCH with Indexes</text>
+<text x="450" y="30" text-anchor="middle" font-size="16" font-weight="bold">SNAPSHOT Isolation &amp; Partition SWITCH with Indexes</text>
 <text x="272" y="69" text-anchor="end" font-size="12">SWITCH, 0 indexes</text>
 <rect x="280" y="50" width="250" height="28" fill="#4CAF50" rx="3"/>
 <text x="535" y="69" font-size="12" fill="#333">2952 ms</text>
