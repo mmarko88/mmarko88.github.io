@@ -1,6 +1,6 @@
 # LinkedIn Profile — Copy-Paste Draft
 
-Profile: https://www.linkedin.com/in/marko-milenkovic/
+Profile: https://www.linkedin.com/in/mare-milenkovic/
 Source of truth: `content/about.md` — keep numbers in sync with CV.
 
 ---
