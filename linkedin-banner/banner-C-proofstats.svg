@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="396" viewBox="0 0 1584 396" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="1584" height="396" fill="#172033"/>
+  <rect width="1584" height="12" fill="#1a5fb4"/>
+
+  <text x="792" y="180" text-anchor="middle" fill="#ffffff" font-size="88" font-weight="700">Benchmarks, <tspan fill="#17864b">not vibes.</tspan></text>
+
+  <text x="792" y="244" text-anchor="middle" font-size="23" font-family="Consolas, Menlo, monospace"><tspan fill="#17864b">10+ yrs</tspan><tspan fill="#9aa8bf"> Java backend · </tspan><tspan fill="#17864b">8-part</tspan><tspan fill="#9aa8bf"> benchmark series · </tspan><tspan fill="#17864b">11-part</tspan><tspan fill="#9aa8bf"> agentic series</tspan></text>
+
+  <text x="792" y="316" text-anchor="middle" fill="#9aa8bf" font-size="20">Marko Milenkovic · Senior Java Developer &amp; Team Lead · professionaldev.dev</text>
+</svg>

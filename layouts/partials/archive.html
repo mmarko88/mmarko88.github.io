@@ -15,6 +15,9 @@
 <div class="home_centered wrap content">
   <div>
     {{- if $home }}
+    <div class="home_banner">
+      <img src="{{ "images/benchmarks-banner-home.svg" | relURL }}" alt="Benchmarks, not vibes — 27,794 ms down to 1,075 ms" width="1584" height="396">
+    </div>
     {{ partial "home-hero" . }}
     {{- /* pinned "Now" card — like a pinned post on social profiles */ -}}
     {{- with site.GetPage "now" }}
