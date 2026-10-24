@@ -156,3 +156,47 @@ Thank you for your attention.
 ## Test yourself
 
 {{< quiz question="How many values per multi-value INSERT statement is the sweet spot?" options="10|200|2,100|As many as the 2,100-parameter limit allows" correct="1" explanation="Around 200 rows per statement gave the best multi-value INSERT performance; pushing JDBC Template batch size above about 100 made it worse." >}}
+
+## Re-benchmarked (October 2026)
+
+The same benchmark re-run on the same machine (i5-4690K) three years later,
+at the original 1,000,000-row scale. Environment: CPU fixed at 3.5 GHz
+(turbo disabled), benchmark JVM pinned to an isolated core (cpu3),
+SQL Server 2025 Developer on Ubuntu, Temurin JDK 21, median of 10 timed
+runs per scenario. Batch sizes tested: 10, 100, 1,000, 5,000 (the original
+table used 10,000 instead of 5,000).
+
+**JdbcTemplate multi-value insert:**
+
+| People per insert | Batch size | Median duration (ms) | vs original |
+|-------------------|------------|----------------------|-------------|
+| 400               | 100        | 4076                 | -2%         |
+| 400               | 10         | 4272                 | 0%          |
+| 400               | 1000       | 4404                 | +1%         |
+| 400               | 5000       | 5537                 | +18%*       |
+| 100               | 100        | 5282                 | -1%         |
+| 100               | 1000       | 5253                 | -2%         |
+| 100               | 10         | 5608                 | 0%          |
+| 100               | 5000       | 5662                 | -4%*        |
+| 10                | 100        | 7042                 | +8%         |
+| 10                | 1000       | 6862                 | +8%         |
+| 10                | 5000       | 6856                 | +9%*        |
+| 10                | 10         | 8882                 | +11%        |
+
+*bs 5,000 compared against original bs 10,000.
+
+**PreparedStatement multi-value insert** (not in the original table) tracks
+JdbcTemplate within ~1–3% across the board; best result 4082 ms at
+400 per insert / bs 100.
+
+Key takeaways from the re-run:
+
+- At 400/100 people per insert, today's numbers are within **±3% of the
+  original** — the workload is server-statement bound, so client-side
+  environment drift is invisible.
+- At 10 people per insert the same machine is **8–11% slower** — many small
+  statements mean constant kernel round-trips, where CPU vulnerability
+  mitigations (KPTI, MDS, retpolines) tax Haswell hardest.
+- bs=100 remains the sweet spot at 400 per insert; oversizing the batch
+  hurts in both datasets (original degrades at 10,000, new at 5,000).
+- `objectsPerInsert` still dominates `batchSize` as a factor.
