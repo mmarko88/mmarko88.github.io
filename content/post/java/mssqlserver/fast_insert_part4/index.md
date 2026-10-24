@@ -114,3 +114,38 @@ benefits and drawbacks it may bring to your application.
 {{< quiz question="Which connection-string flag gives batched inserts a 2-2.5x speedup?" options="sendStringParametersAsUnicode=false|useBulkCopyForBatchInsert=true|rewriteBatchedStatements=true|cachePrepStmts=true" correct="1" explanation="useBulkCopyForBatchInsert=true routes batched INSERTs through the Bulk Copy path, giving a 2-2.5x speedup to Hibernate, JdbcTemplate and plain JDBC." >}}
 
 {{< quiz question="Is useBulkCopyForBatchInsert compatible with multi-value INSERT?" options="Yes, they stack for even more speed|No, they are incompatible|Only on SQL Server 2022+|Only when batch size is under 100" correct="1" explanation="The flag and multi-value INSERT are mutually exclusive: enabling the flag has no effect on multi-value statements." >}}
+
+## Re-benchmarked (October 2026)
+
+Re-run on the same machine (i5-4690K) at the original 1,000,000-row scale.
+Environment: CPU fixed at 3.5 GHz, JVM pinned to an isolated core (cpu3),
+SQL Server 2025 on Ubuntu, Temurin JDK 21, median of 10 runs.
+Batch sizes: 10, 100, 1,000, 5,000 (original used 100–20,000).
+
+**With useBulkCopyForBatchInsert=true:**
+
+| Method | bs=10 | bs=100 | bs=1000 | bs=5000 |
+|--------|-------|--------|---------|---------|
+| Jdbc Template    | 197,494 | 36,823 | 6,868 | 5,232 |
+| Prepared Statement | 195,980 | 36,480 | 7,190 | 5,192 |
+| Hibernate Persist | 237,206 | 42,759 | 9,122 | 7,066 |
+
+Original comparison points hold almost exactly: JdbcTemplate bs=100 was
+39,273 ms (now 36,823, −6%) and bs=1,000 was 7,361 ms (now 6,868, −7%);
+Hibernate persist is still ~2 s slower than JDBC at every batch size.
+Bulk-copy throughput is engine-bound, so three years of client-side
+environment drift (kernel mitigations, driver versions) is invisible here.
+
+New findings:
+
+- **bs=10 is catastrophic**: ~3.3–4 minutes — the flag converts every
+  10-row batch into a separate bulk-copy operation (~100k bulk ops per
+  run). The small-batch penalty is far worse than the bs=100 case
+  the original table showed.
+- **bs=5,000 beats the original bs=10,000/20,000 numbers** (5,232 vs 5,897
+  for JdbcTemplate) — batch size 5,000 is already past the knee.
+- **Silent row loss with multi-value INSERT**: enabling the flag while
+  using multi-value INSERT statements (objectsPerInsert > 1) causes the
+  driver to insert only 1 row per statement with no error — 100,000
+  expected, 250 landed. The flag and multi-value inserts must not be
+  combined; the test suite now guards against it.
