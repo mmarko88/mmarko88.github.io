@@ -2,7 +2,7 @@
 sidebar = false
 singleColumn = true
 title = "About Me"
-description = "Marko Milenkovic — Senior Java Developer & Tech Lead writing about backend performance, SQL Server, JUnit and JVM internals."
+description = "Marko Milenkovic — Senior Java Developer & Team Lead writing about backend performance, SQL Server, JUnit and JVM internals."
 date = "2022-07-10"
 aliases = ["about-us", "contact", "now"]
 author = "Marko Milenkovic"
@@ -16,7 +16,7 @@ src = "../images/marko_milenkovic.jpg"
 
 ## What I Do
 
-I'm **Marko Milenkovic**, a Senior Java Developer, Team & Tech Lead with 10+ years of professional experience in backend development and 15+ years in software development. Based in Nis, Serbia.
+I'm **Marko Milenkovic**, a Senior Java Developer & Team Lead with 10+ years of professional experience in backend development and 15+ years in software development. Based in Nis, Serbia.
 
 Specialist in REST API design, platform migrations, CI/CD engineering, and application security across enterprise fintech products involving large-scale data processing. Focused on sharing knowledge and helping Java developers optimize their work — writing clean, secure, and performant code.
 
@@ -84,7 +84,7 @@ and an eval harness that treats prompt changes like code changes.
 
 ### Employment History
 
-#### Senior Java Developer & Tech Lead — Investment Cafe
+#### Senior Java Developer & Team Lead — Investment Cafe
 **Badin Soft (2018–2022) → Wiser Technologies (2022–Present)**
 *2018 — Present*
 
