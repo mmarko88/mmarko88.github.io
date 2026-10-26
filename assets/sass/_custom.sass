@@ -2,13 +2,18 @@
   height: 50px
 
 
+.roundedEdges
+  // decorative portrait — opt out of theme image-scalable zoom
+  pointer-events: none
+
 .roundedEdges img
   border-radius: 50%
   display: block
   margin-left: auto
   margin-right: auto
   width: 25%
-  height: 25%
+  aspect-ratio: 1
+  object-fit: cover
 
 li ::marker
   content: ''
