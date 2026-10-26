@@ -10,7 +10,7 @@ author = "Marko Milenkovic"
 src = "../images/marko_milenkovic.jpg"
 +++
 
-{{< figure src="../images/benchmarks-banner.svg" alt="Benchmarks, not vibes — 27,794 ms down to 1,075 ms" >}}
+<p class="brand-tagline">Benchmarks, <span>not vibes.</span></p>
 
 {{< figure src="../images/marko_milenkovic.jpg" width="200" class="roundedEdges" >}}
 
