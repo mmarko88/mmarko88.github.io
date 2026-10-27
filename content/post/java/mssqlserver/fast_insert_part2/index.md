@@ -308,3 +308,29 @@ statement — the topic of Part 3) for the two JDBC batch strategies:
 
 Multi-value INSERT at 400 objects per statement reaches ~450 ms — within
 ~23% of the Bulk Copy API (364 ms) using nothing but plain JDBC.
+
+### Batch size: updated conclusions
+
+One more verification run on the same rig (median of 10, 100k rows; CPU
+unlocked this time, so absolute ms differ slightly from the table above —
+the shape is identical) pins down the optimal batch size per strategy:
+
+| Batch size | Prepared Statement | Jdbc Template | Bulk Copy API |
+|-----------:|-------------------:|--------------:|--------------:|
+| 10         |              3,556 |         3,482 |        12,728 |
+| 100        |              2,324 |         2,302 |         2,078 |
+| 1,000      |              1,994 |         1,976 |           666 |
+| 5,000      |              1,920 |         1,883 |           438 |
+
+- **Plain JDBC flattens around ~1,000.** PreparedStatement and JdbcTemplate
+  gain ≤4% going from 1,000 to 5,000 — anything in the 1,000–5,000 range is
+  fine. Small batches hurt both: ~80% slower at batch 10.
+- **The Bulk Copy API wants the biggest batch it can get.** It is the
+  slowest strategy below ~500 (per-batch setup dominates — 12.7 s at batch
+  10) and the fastest by far at ≥1,000. A finer sweep puts the optimum
+  around 1,900–5,000 rows per batch (~410–440 ms); beyond that there is
+  nothing left to gain.
+- **Same rule applies to `useBulkCopyForBatchInsert` (Part 4).** Each
+  `executeBatch()` becomes one bulk-copy stream, so the flag is a
+  *regression* below ~1,000 rows per batch, not a win — Part 5's batch-size
+  table shows the same cliff inside Hibernate.

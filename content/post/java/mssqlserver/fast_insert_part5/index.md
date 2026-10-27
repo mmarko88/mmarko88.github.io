@@ -162,6 +162,36 @@ with near-JDBC performance, this is the sweet spot.
 
 {{< quiz question="Which Hibernate setup hits 1,075 ms on 100k inserts?" options="saveAll + Persistable|plain StatelessSession|StatelessSession + bulkCopy flag|StatelessSession + L2 cache" correct="2" explanation="The flag layers the bulk-copy path on StatelessSession's stripped-down persist path — 2.5x over StatelessSession alone, 2x off raw Bulk API." >}}
 
+## What batch size should you use?
+
+The knob that matters is `hibernate.jdbc.batch_size` — that's what controls the JDBC
+batch the driver actually sends. We swept it for every strategy above (100k inserts,
+median of 10). *This sweep ran with the CPU unlocked, so absolute ms are lower than
+the locked-3.5 GHz tables above — compare within the table.*
+
+| `jdbc.batch_size` | persist | saveAll+Persistable | StatelessSession | persist + bulkCopy | Stateless + bulkCopy |
+|------------------:|--------:|--------------------:|-----------------:|-------------------:|---------------------:|
+| 100               |   2,718 |               2,812 |            2,336 |              4,748 |                3,780 |
+| 500               |   2,331 |               2,486 |            2,141 |                  — |                2,342 |
+| 1,000             |   2,262 |               2,448 |            2,068 |              1,716 |                1,340 |
+| 5,000             |   2,294 |               2,312 |            2,024 |              1,875 |                  732 |
+| 10,000            |   2,293 |               2,294 |            2,014 |              1,462 |              **683** |
+| 50,000            |       — |               2,564 |            2,152 |              1,740 |                  850 |
+
+Two takeaways:
+
+- **Without the flag, batch size barely matters.** All plain-Hibernate paths sit at
+  ~2.0–2.8 s across the whole range — JDBC round-trips aren't their bottleneck.
+- **With `useBulkCopyForBatchInsert`, batch size *is* the tuning knob.** Each
+  `executeBatch()` becomes one bulk-copy stream, so small batches mean thousands of
+  tiny streams. StatelessSession + bulkCopy bottoms out at **~10,000** (683 ms) — it
+  degrades sharply below ~1,000 and gains nothing by going to 50,000.
+
+One gotcha: don't leave `batch_size` unset with the flag on. Hibernate verifies the
+affected-row count of each insert, and the driver's bulk-copy rewrite reports `-1`,
+which fails the insert outright (`ObjectOptimisticLockingFailure`). Set it to the
+5,000–10,000 range and you're at the optimum.
+
 ## The one thing to remember
 
 > **StatelessSession + `useBulkCopyForBatchInsert=true` = 1,075 ms** for 100k inserts — 2x slower
