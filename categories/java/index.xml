@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Java on Professional developer</title><link>https://www.professionaldev.dev/categories/java/</link><description>Recent content in Java on Professional developer</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 19 Oct 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://www.professionaldev.dev/categories/java/index.xml" rel="self" type="application/rss+xml"/><item><title>Fastest MS SQL Inserts — Part 5: Hibernate Tuning</title><link>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part5/</link><pubDate>Mon, 19 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part5/</guid><description>
 &lt;p&gt;In &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/persist_vs_saveall/"&gt;Part 1&lt;/a&gt; we watched Spring Data's &lt;code&gt;saveAll()&lt;/code&gt; take
-7x longer than batched &lt;code&gt;persist()&lt;/code&gt; because every entity triggers a SELECT before its INSERT. In
+~12x longer than batched &lt;code&gt;persist()&lt;/code&gt; because every entity triggers a SELECT before its INSERT. In
 &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/"&gt;Part 2&lt;/a&gt; we switched to raw JDBC and cut the time
 further. But Hibernate still sits well behind — so how close can it actually get to the bare metal?&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Three settings close 80% of the gap:&lt;/strong&gt; implement &lt;code&gt;Persistable&lt;/code&gt; to kill the pre-INSERT SELECTs
-(8x faster saveAll), use &lt;code&gt;StatelessSession&lt;/code&gt; to drop the first-level cache (35% faster persist), and
-layer &lt;code&gt;useBulkCopyForBatchInsert=true&lt;/code&gt; on top (another 2–2.5x). Combined with proper batch sizing,
+&lt;p&gt;&lt;strong&gt;Three settings close ~80% of the gap to the raw Bulk Copy API:&lt;/strong&gt; implement &lt;code&gt;Persistable&lt;/code&gt; to kill
+the pre-INSERT SELECTs (~12x faster saveAll), use &lt;code&gt;StatelessSession&lt;/code&gt; to drop the first-level cache
+(near raw-JDBC speed), and layer &lt;code&gt;useBulkCopyForBatchInsert=true&lt;/code&gt; on top (another ~2–2.5x). Combined with proper batch sizing,
 this is as fast as Hibernate gets.&lt;/p&gt;</description></item><item><title>Data-Oriented Programming in Java: Move Data to Functions</title><link>https://www.professionaldev.dev/post/java/data_to_functions/</link><pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate><guid>https://www.professionaldev.dev/post/java/data_to_functions/</guid><description>
 &lt;p&gt;Your &lt;code&gt;Car&lt;/code&gt; class has twelve methods now. Washing, waxing, polishing, billing — everything that ever needed the car's fields got bolted onto it. Nobody remembers which ones mutate state, and testing &lt;code&gt;scrub&lt;/code&gt; means constructing half the object graph first.&lt;/p&gt;
 &lt;p&gt;It's the equivalent of welding the car wash onto the car: the object hauls its machinery everywhere it goes.&lt;/p&gt;
