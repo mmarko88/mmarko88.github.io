@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="396" viewBox="0 0 1584 396" font-family="Segoe UI, Arial, sans-serif">
-  <rect width="1584" height="396" fill="#172033"/>
-  <rect width="1584" height="12" fill="#1a5fb4"/>
-
-  <!-- v1: enlarged slogan, accent-blue URL -->
-  <text x="985" y="175" text-anchor="middle" fill="#ffffff" font-size="106" font-weight="700">Benchmarks, <tspan fill="#17864b">not vibes.</tspan></text>
-  <text x="985" y="260" text-anchor="middle" fill="#6ba3e8" font-size="30" font-family="Consolas, Menlo, monospace">professionaldev.dev</text>
-</svg>

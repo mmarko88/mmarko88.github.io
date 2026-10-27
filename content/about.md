@@ -10,8 +10,6 @@ author = "Marko Milenkovic"
 src = "../images/marko_milenkovic.jpg"
 +++
 
-<p class="brand-tagline">Benchmarks, <span>not vibes.</span></p>
-
 {{< figure src="../images/marko_milenkovic.jpg" width="200" class="roundedEdges" >}}
 
 ## What I Do
@@ -85,7 +83,7 @@ and an eval harness that treats prompt changes like code changes.
 ### Employment History
 
 #### Senior Java Developer & Team Lead — Investment Cafe
-**Badin Soft (2018–2022) → Wiser Technologies (2022–Present)**
+**Badin Soft (2018–2024) → Wiser Technologies (2024–Present)**
 *2018 — Present*
 
 Team lead and core maintainer of the **Investment Cafe** platform at **BlackRock** (formerly eFront) — a multi-tenant document management and investor communication system serving BlackRock's alternative investments clients globally.

@@ -69,7 +69,7 @@ Senior developer and team lead on Investment Cafe at BlackRock (formerly eFront)
 Tech: Java 17, Spring Boot 3, Hibernate 6, Jakarta EE, MS SQL Server, Liquibase, OAuth2, Docker, Terraform, AWS, TomEE 10, OpenAPI 3, Azure Pipelines, React
 ```
 
-> If Badin Soft and Wiser Technologies show as separate companies on LinkedIn, create two entries split at 2022 with the same title, or leave as one entry — the work was continuous.
+> If Badin Soft and Wiser Technologies show as separate companies on LinkedIn, create two entries split at 2024 (Wiser acquired Badin Soft in October 2024) with the same title, or leave as one entry — the work was continuous.
 
 ### 3.2 Badin Soft — CREALOGIX E-Banking
 **Title:** Senior Java Developer & Tech Lead
