@@ -3,7 +3,7 @@
 ~12x longer than batched &lt;code&gt;persist()&lt;/code&gt; because every entity triggers a SELECT before its INSERT. In
 &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/"&gt;Part 2&lt;/a&gt; we switched to raw JDBC and cut the time
 further. But Hibernate still sits well behind — so how close can it actually get to the bare metal?&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Three settings close ~80% of the gap to the raw Bulk Copy API:&lt;/strong&gt; implement &lt;code&gt;Persistable&lt;/code&gt; to kill
-the pre-INSERT SELECTs (~12x faster saveAll), use &lt;code&gt;StatelessSession&lt;/code&gt; to drop the first-level cache
-(near raw-JDBC speed), and layer &lt;code&gt;useBulkCopyForBatchInsert=true&lt;/code&gt; on top (another ~2–2.5x). Combined with proper batch sizing,
+&lt;p&gt;&lt;strong&gt;Three settings close ~80% of the gap to the &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part2/"&gt;raw Bulk Copy API&lt;/a&gt;:&lt;/strong&gt; implement &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part5/#fix-implement-persistable"&gt;&lt;code&gt;Persistable&lt;/code&gt;&lt;/a&gt; to kill
+the pre-INSERT SELECTs (~12x faster saveAll), use &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part5/#statelesssession-bare-metal-hibernate"&gt;&lt;code&gt;StatelessSession&lt;/code&gt;&lt;/a&gt; to drop the first-level cache
+(near raw-JDBC speed), and layer &lt;a href="https://www.professionaldev.dev/post/java/mssqlserver/fast_insert_part4/"&gt;&lt;code&gt;useBulkCopyForBatchInsert=true&lt;/code&gt;&lt;/a&gt; on top (another ~2–2.5x). Combined with proper batch sizing,
 this is as fast as Hibernate gets.&lt;/p&gt;</description></item></channel></rss>
