@@ -1,4 +1,5 @@
 ---
+name: write-post
 description: Draft a blog post conforming to ARTICLE_WRITING_STANDARDS.md
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: cover-image
 description: Design a branded cover image (featureImage hero + share.png) for a post
 ---
 

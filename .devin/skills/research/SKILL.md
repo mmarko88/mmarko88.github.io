@@ -1,4 +1,5 @@
 ---
+name: research
 description: Research a question online and produce a cited report
 ---
 

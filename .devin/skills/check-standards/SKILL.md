@@ -1,4 +1,5 @@
 ---
+name: check-standards
 description: Check a blog post against ARTICLE_WRITING_STANDARDS.md
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: quiz
 description: Generate quiz questions for a post from its content
 ---
 
