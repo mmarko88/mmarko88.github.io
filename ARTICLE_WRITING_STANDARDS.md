@@ -72,6 +72,7 @@ The reader decides whether to stay in the first two sentences. Open a "curiosity
 - `description` in front matter: 140–160 chars, unique per post, contains the keyword + a benefit. Google rewrites it often — write it anyway for when it's shown.
 - URL slug: readable, keyword-rich, no dates.
 - Internal links: every post links to ≥1 related post. Link where the reader would actually want it, not a "read more" dump at the end.
+- Method/technique references are hyperlinks: when the post names a method, strategy, or flag covered elsewhere — another post or an earlier section — link the name itself on first mention per section (`` [`merge()`](/post/...) ``, `` [`useBulkCopyForBatchInsert=true`](/post/...) ``). Same-post references link the heading anchor (`#section-slug`). Don't link the definition site itself, code samples, or every repeat mention — first mention per section is enough.
 - `shareImage`: PNG/JPG only — social crawlers ignore SVG/WebP on some platforms.
 
 ## Code blocks

@@ -10,16 +10,15 @@
 <div class="post-chart" role="img" aria-label="{{ $aria }}" data-config='{{ .Inner }}'>
   <canvas></canvas>
 </div>
-{{- if not (.Page.Store.Get "chartLoaded") -}}
-{{- .Page.Store.Set "chartLoaded" true -}}
 <script type="module">
-  import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4/+esm';
+  import { Chart, registerables } from 'https://cdn.jsdelivr.net/npm/chart.js@4/+esm';
+  Chart.register(...registerables);
   Chart.defaults.color = getComputedStyle(document.body).color;
   Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
-  document.querySelectorAll('.post-chart[data-config]').forEach(el => {
+  document.querySelectorAll('.post-chart[data-config]:not([data-init])').forEach(el => {
+    el.dataset.init = '';
     const cfg = JSON.parse(el.dataset.config);
     cfg.options = Object.assign({ maintainAspectRatio: false }, cfg.options);
     new Chart(el.querySelector('canvas'), cfg);
   });
 </script>
-{{- end -}}
