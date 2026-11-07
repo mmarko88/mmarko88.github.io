@@ -1,0 +1,8 @@
+{
+  "name": "stats-api",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@google-analytics/data": "^7.3.0"
+  }
+}

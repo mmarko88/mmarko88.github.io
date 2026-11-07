@@ -7,3 +7,7 @@ target/
 dependency-reduced-pom.xml
 # macOS
 .DS_Store
+
+# stats-api local env + vercel link metadata
+.env*
+.vercel/

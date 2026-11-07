@@ -1,0 +1,9 @@
+{{- /* Overrides the theme's search index — also skips noindex pages
+     (e.g. the private stats page), not just the search page itself. */ -}}
+{{- $.Store.Add "index" slice -}}
+{{- range .Site.Pages -}}
+  {{- if and (ne .Type "search") (not .Params.noindex) -}}
+    {{- $.Store.Add "index" (dict "title" .Title "body" .Plain "link" .Permalink "section" .Section "tags" .Params.tags) -}}
+  {{- end -}}
+{{- end -}}
+{{- jsonify (uniq ($.Store.Get "index")) -}}

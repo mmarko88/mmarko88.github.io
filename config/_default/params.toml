@@ -105,6 +105,11 @@ comments = true
 # Nothing renders until walineServerURL is set.
 walineServerURL = "https://mmarko88githubio-waline.vercel.app"
 
+# Private stats page (/stats-x8k2q/) — Vercel function proxying GA4 pageviews
+# behind STATS_PASSWORD. Deploy stats-api/ then update this URL.
+# See stats-api/README.md.
+statsApiURL = "https://mmarko88githubio-stats.vercel.app/api/ga"
+
 # Maximum number of recent posts.
 # numberOfRecentPosts = 8
 

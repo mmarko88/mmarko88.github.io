@@ -1,0 +1,116 @@
+{{- define "main" }}
+<div class="wrap content">
+  <article class="post_content">
+    <h1 class="post_title">{{ .Title | markdownify }}</h1>
+    <div class="post_body">
+      {{ .Content }}
+
+      {{ with site.Params.statsApiURL }}
+      <form id="stats-gate" class="stats_gate">
+        <label for="stats-pass">Password</label>
+        <input id="stats-pass" name="password" type="password" autocomplete="current-password" required>
+        <select id="stats-days" name="days" aria-label="Time range">
+          <option value="30" selected>30 days</option>
+          <option value="90">90 days</option>
+          <option value="365">365 days</option>
+        </select>
+        <button type="submit">Load stats</button>
+        <span id="stats-err" role="alert" hidden></span>
+      </form>
+
+      <div id="stats-out" hidden>
+        <p>
+          <strong id="stats-total"></strong> pageviews ·
+          <span id="stats-range"></span> ·
+          fetched <span id="stats-generated"></span>
+        </p>
+        <div class="post-chart" style="height: 280px"><canvas id="stats-chart"></canvas></div>
+        <table id="stats-table">
+          <thead>
+            <tr><th>#</th><th>Page</th><th>Views</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <script type="module">
+        const API = {{ . | jsonify | safeJS }};
+        const gate = document.getElementById('stats-gate');
+        const out = document.getElementById('stats-out');
+        const err = document.getElementById('stats-err');
+        const passInput = document.getElementById('stats-pass');
+        let chart;
+
+        passInput.value = sessionStorage.getItem('statsKey') || '';
+        if (passInput.value) load();
+        gate.addEventListener('submit', (e) => { e.preventDefault(); load(); });
+
+        async function load() {
+          err.hidden = true;
+          const password = passInput.value;
+          const days = Number(document.getElementById('stats-days').value);
+          try {
+            const res = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ password, days }),
+            });
+            if (res.status === 401) {
+              sessionStorage.removeItem('statsKey');
+              err.textContent = 'Wrong password.'; err.hidden = false; return;
+            }
+            if (!res.ok) { err.textContent = `Request failed (${res.status}).`; err.hidden = false; return; }
+            sessionStorage.setItem('statsKey', password);
+            out.hidden = false;
+            render(await res.json());
+          } catch (e) {
+            err.textContent = `Could not reach stats API (${e.message}).`;
+            err.hidden = false;
+          }
+        }
+
+        async function render(data) {
+          document.getElementById('stats-total').textContent = data.totalPageViews.toLocaleString();
+          document.getElementById('stats-range').textContent = `last ${data.days} days`;
+          document.getElementById('stats-generated').textContent = new Date(data.generatedAt).toLocaleString();
+
+          const Chart = (await import('https://cdn.jsdelivr.net/npm/chart.js@4/+esm')).default;
+          Chart.defaults.color = getComputedStyle(document.body).color;
+          Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
+          const fmt = (d) => `${d.slice(4, 6)}/${d.slice(6, 8)}`;
+          if (chart) chart.destroy();
+          chart = new Chart(document.getElementById('stats-chart'), {
+            type: 'line',
+            data: {
+              labels: data.daily.map((r) => fmt(r.date)),
+              datasets: [{
+                label: 'Pageviews',
+                data: data.daily.map((r) => r.views),
+                fill: false,
+                tension: 0.2,
+                pointRadius: 2,
+              }],
+            },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } } },
+          });
+
+          const tb = document.querySelector('#stats-table tbody');
+          tb.innerHTML = '';
+          data.topPages.forEach((p, i) => {
+            const tr = tb.insertRow();
+            tr.insertCell().textContent = i + 1;
+            const a = document.createElement('a');
+            a.href = p.path;
+            a.textContent = p.title || p.path;
+            tr.insertCell().appendChild(a);
+            tr.insertCell().textContent = p.views;
+          });
+        }
+      </script>
+      {{ else }}
+      <p><em>statsApiURL is not configured — set it in config/_default/params.toml after deploying stats-api/.</em></p>
+      {{ end }}
+    </div>
+  </article>
+</div>
+{{ end }}
