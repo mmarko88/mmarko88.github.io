@@ -19,19 +19,55 @@
       </form>
 
       <div id="stats-out" hidden>
-        <p>
-          <strong id="stats-total"></strong> pageviews ·
-          <span id="stats-range"></span> ·
-          fetched <span id="stats-generated"></span>
-        </p>
+        <div id="stats-cards"></div>
+        <p class="stats_fetched">last <span id="stats-range"></span> · fetched <span id="stats-generated"></span></p>
+
+        <h3>Daily traffic</h3>
         <div class="post-chart" style="height: 280px"><canvas id="stats-chart"></canvas></div>
+
+        <h3>Top pages</h3>
         <table id="stats-table">
           <thead>
-            <tr><th>#</th><th>Page</th><th>Views</th></tr>
+            <tr><th>#</th><th>Page</th><th>Views</th><th>Visitors</th></tr>
           </thead>
           <tbody></tbody>
         </table>
+
+        <div class="stats_grid">
+          <section>
+            <h3>Top sources</h3>
+            <table id="stats-sources">
+              <thead><tr><th>Source</th><th>Sessions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </section>
+          <section>
+            <h3>Top countries</h3>
+            <table id="stats-countries">
+              <thead><tr><th>Country</th><th>Visitors</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </section>
+          <section>
+            <h3>Devices</h3>
+            <div class="post-chart" style="height: 220px"><canvas id="stats-devices"></canvas></div>
+          </section>
+          <section>
+            <h3>New vs returning</h3>
+            <div class="post-chart" style="height: 220px"><canvas id="stats-loyalty"></canvas></div>
+          </section>
+        </div>
       </div>
+
+      <style>
+        #stats-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .75rem; margin: 1rem 0 .25rem; }
+        .stats_card { border: 1px solid rgba(128,128,128,.25); border-radius: 8px; padding: .6rem .8rem; }
+        .stats_card .v { font-size: 1.4rem; font-weight: 700; }
+        .stats_card .k { font-size: .8rem; opacity: .7; }
+        .stats_fetched { opacity: .65; font-size: .85rem; margin-top: 0; }
+        .stats_grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .stats_grid section { min-width: 0; }
+      </style>
 
       <script type="module">
         const API = {{ . | jsonify | safeJS }};
@@ -39,7 +75,11 @@
         const out = document.getElementById('stats-out');
         const err = document.getElementById('stats-err');
         const passInput = document.getElementById('stats-pass');
-        let chart;
+        const PALETTE = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1'];
+        const num = (v) => Number(v).toLocaleString();
+        const pct = (v) => (v <= 1 ? v * 100 : v).toFixed(1) + '%';
+        const dur = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+        const charts = [];
 
         passInput.value = sessionStorage.getItem('statsKey') || '';
         if (passInput.value) load();
@@ -70,41 +110,75 @@
         }
 
         async function render(data) {
-          document.getElementById('stats-total').textContent = data.totalPageViews.toLocaleString();
-          document.getElementById('stats-range').textContent = `last ${data.days} days`;
+          document.getElementById('stats-range').textContent = `${data.days} days`;
           document.getElementById('stats-generated').textContent = new Date(data.generatedAt).toLocaleString();
+
+          const t = data.totals;
+          const cards = [
+            ['Pageviews', num(t.pageViews)],
+            ['Visitors', num(t.users)],
+            ['Sessions', num(t.sessions)],
+            ['New visitors', num(t.newUsers)],
+            ['Avg. session', dur(t.avgSessionDuration)],
+            ['Engagement', pct(t.engagementRate)],
+            ['Bounce rate', pct(t.bounceRate)],
+          ];
+          document.getElementById('stats-cards').innerHTML = cards
+            .map(([k, v]) => `<div class="stats_card"><div class="v">${v}</div><div class="k">${k}</div></div>`)
+            .join('');
 
           const Chart = (await import('https://cdn.jsdelivr.net/npm/chart.js@4/+esm')).default;
           Chart.defaults.color = getComputedStyle(document.body).color;
           Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
+          charts.forEach((c) => c.destroy());
+          charts.length = 0;
+
           const fmt = (d) => `${d.slice(4, 6)}/${d.slice(6, 8)}`;
-          if (chart) chart.destroy();
-          chart = new Chart(document.getElementById('stats-chart'), {
+          const line = (label, values, i) => ({
+            label, data: values, fill: false, tension: 0.2, pointRadius: 2,
+            borderColor: PALETTE[i], backgroundColor: PALETTE[i],
+          });
+          charts.push(new Chart(document.getElementById('stats-chart'), {
             type: 'line',
             data: {
               labels: data.daily.map((r) => fmt(r.date)),
-              datasets: [{
-                label: 'Pageviews',
-                data: data.daily.map((r) => r.views),
-                fill: false,
-                tension: 0.2,
-                pointRadius: 2,
-              }],
+              datasets: [
+                line('Pageviews', data.daily.map((r) => r.views), 0),
+                line('Sessions', data.daily.map((r) => r.sessions), 1),
+                line('Visitors', data.daily.map((r) => r.users), 2),
+              ],
             },
-            options: { maintainAspectRatio: false, plugins: { legend: { display: false } } },
-          });
+            options: { maintainAspectRatio: false },
+          }));
 
-          const tb = document.querySelector('#stats-table tbody');
-          tb.innerHTML = '';
-          data.topPages.forEach((p, i) => {
-            const tr = tb.insertRow();
-            tr.insertCell().textContent = i + 1;
+          const fill = (sel, rows) => {
+            const tb = document.querySelector(`${sel} tbody`);
+            tb.innerHTML = '';
+            rows.forEach((cells) => {
+              const tr = tb.insertRow();
+              cells.forEach((c) => {
+                const td = tr.insertCell();
+                if (c instanceof Node) td.appendChild(c); else td.textContent = c;
+              });
+            });
+          };
+
+          fill('#stats-table', data.topPages.map((p, i) => {
             const a = document.createElement('a');
             a.href = p.path;
             a.textContent = p.title || p.path;
-            tr.insertCell().appendChild(a);
-            tr.insertCell().textContent = p.views;
-          });
+            return [i + 1, a, num(p.views), num(p.users)];
+          }));
+          fill('#stats-sources', data.sources.map((s) => [s.source, num(s.sessions)]));
+          fill('#stats-countries', data.countries.map((c) => [c.country, num(c.users)]));
+
+          const doughnut = (id, labels, values) => charts.push(new Chart(document.getElementById(id), {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data: values, backgroundColor: PALETTE }] },
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } },
+          }));
+          doughnut('stats-devices', data.devices.map((d) => d.device), data.devices.map((d) => d.sessions));
+          doughnut('stats-loyalty', data.loyalty.map((l) => l.type), data.loyalty.map((l) => l.users));
         }
       </script>
       {{ else }}

@@ -5,7 +5,16 @@
 //
 // POST /api/ga   Content-Type: application/json
 //   { "password": "...", "days": 30 }
-// -> 200 { generatedAt, days, totalPageViews, daily: [{date, views}], topPages: [{title, path, views}] }
+// -> 200 {
+//      generatedAt, days,
+//      totals:   { pageViews, sessions, users, newUsers, avgSessionDuration, bounceRate, engagementRate },
+//      daily:    [{ date, views, sessions, users }],
+//      topPages: [{ title, path, views, users }],
+//      sources:  [{ source, sessions }],
+//      countries:[{ country, users }],
+//      devices:  [{ device, sessions }],
+//      loyalty:  [{ type, users }]        // new vs returning
+//    }
 // -> 401 wrong/missing password, 429 rate limited, 502 GA upstream error
 const crypto = require('node:crypto');
 const { GoogleAuth } = require('google-auth-library');
@@ -57,11 +66,14 @@ function gaClient() {
   return _client;
 }
 
+// Rows -> [{ dim: [..], metrics: [numbers] }] preserving requested order.
 const toRows = (report) =>
   (report.rows || []).map((row) => ({
     dim: row.dimensionValues.map((v) => v.value),
-    views: Number(row.metricValues[0].value),
+    metrics: row.metricValues.map((v) => Number(v.value)),
   }));
+
+const metric = (report, i) => Number(report.rows?.[0]?.metricValues?.[i]?.value || 0);
 
 module.exports = async (req, res) => {
   const origin = req.headers.origin;
@@ -90,32 +102,87 @@ module.exports = async (req, res) => {
   const range = Math.min(Math.max(parseInt(days, 10) || 30, 7), 365);
   const property = `properties/${process.env.GA_PROPERTY_ID}`;
   const dateRanges = [{ startDate: `${range}daysAgo`, endDate: 'today' }];
+  const byMetric = (name) => [{ metric: { metricName: name }, desc: true }];
 
   try {
     const client = gaClient();
-    const [daily] = await client.runReport({
-      property,
-      dateRanges,
-      dimensions: [{ name: 'date' }],
-      metrics: [{ name: 'screenPageViews' }],
-      orderBys: [{ dimension: { dimensionName: 'date' } }],
-    });
-    const [pages] = await client.runReport({
-      property,
-      dateRanges,
-      dimensions: [{ name: 'pageTitle' }, { name: 'pagePath' }],
-      metrics: [{ name: 'screenPageViews' }],
-      orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
-      limit: 25,
-    });
+    const [totalsRes, dailyRes, pagesRes, sourcesRes, countriesRes, devicesRes, loyaltyRes] =
+      await Promise.all([
+        client.runReport({
+          property, dateRanges,
+          metrics: [
+            { name: 'screenPageViews' }, { name: 'sessions' }, { name: 'activeUsers' },
+            { name: 'newUsers' }, { name: 'averageSessionDuration' },
+            { name: 'bounceRate' }, { name: 'engagementRate' },
+          ],
+        }),
+        client.runReport({
+          property, dateRanges,
+          dimensions: [{ name: 'date' }],
+          metrics: [{ name: 'screenPageViews' }, { name: 'sessions' }, { name: 'activeUsers' }],
+          orderBys: [{ dimension: { dimensionName: 'date' } }],
+        }),
+        client.runReport({
+          property, dateRanges,
+          dimensions: [{ name: 'pageTitle' }, { name: 'pagePath' }],
+          metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+          orderBys: byMetric('screenPageViews'),
+          limit: 25,
+        }),
+        client.runReport({
+          property, dateRanges,
+          dimensions: [{ name: 'sessionSource' }],
+          metrics: [{ name: 'sessions' }],
+          orderBys: byMetric('sessions'),
+          limit: 12,
+        }),
+        client.runReport({
+          property, dateRanges,
+          dimensions: [{ name: 'country' }],
+          metrics: [{ name: 'activeUsers' }],
+          orderBys: byMetric('activeUsers'),
+          limit: 15,
+        }),
+        client.runReport({
+          property, dateRanges,
+          dimensions: [{ name: 'deviceCategory' }],
+          metrics: [{ name: 'sessions' }],
+          orderBys: byMetric('sessions'),
+        }),
+        client.runReport({
+          property, dateRanges,
+          dimensions: [{ name: 'newVsReturning' }],
+          metrics: [{ name: 'activeUsers' }],
+          orderBys: byMetric('activeUsers'),
+        }),
+      ]);
 
-    const dailyRows = toRows(daily);
+    const [totals, daily, pages, sources, countries, devices, loyalty] =
+      [totalsRes, dailyRes, pagesRes, sourcesRes, countriesRes, devicesRes, loyaltyRes]
+        .map((r) => r[0]);
+
     return res.status(200).json({
       generatedAt: new Date().toISOString(),
       days: range,
-      totalPageViews: dailyRows.reduce((s, r) => s + r.views, 0),
-      daily: dailyRows.map((r) => ({ date: r.dim[0], views: r.views })),
-      topPages: toRows(pages).map((r) => ({ title: r.dim[0], path: r.dim[1], views: r.views })),
+      totals: {
+        pageViews: metric(totals, 0),
+        sessions: metric(totals, 1),
+        users: metric(totals, 2),
+        newUsers: metric(totals, 3),
+        avgSessionDuration: metric(totals, 4),
+        bounceRate: metric(totals, 5),
+        engagementRate: metric(totals, 6),
+      },
+      daily: toRows(daily).map((r) => ({
+        date: r.dim[0], views: r.metrics[0], sessions: r.metrics[1], users: r.metrics[2],
+      })),
+      topPages: toRows(pages).map((r) => ({
+        title: r.dim[0], path: r.dim[1], views: r.metrics[0], users: r.metrics[1],
+      })),
+      sources: toRows(sources).map((r) => ({ source: r.dim[0], sessions: r.metrics[0] })),
+      countries: toRows(countries).map((r) => ({ country: r.dim[0], users: r.metrics[0] })),
+      devices: toRows(devices).map((r) => ({ device: r.dim[0], sessions: r.metrics[0] })),
+      loyalty: toRows(loyalty).map((r) => ({ type: r.dim[0], users: r.metrics[0] })),
     });
   } catch (err) {
     console.error('GA runReport failed:', err.message);
