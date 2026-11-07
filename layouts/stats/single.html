@@ -23,7 +23,9 @@
         <p class="stats_fetched">last <span id="stats-range"></span> · fetched <span id="stats-generated"></span></p>
 
         <h3>Daily traffic</h3>
+        <p class="stats_fetched">scroll or drag to zoom · double-click to reset · click legend items to toggle</p>
         <div class="post-chart" style="height: 280px"><canvas id="stats-chart"></canvas></div>
+        <button id="stats-zoom-reset" type="button">Reset zoom</button>
 
         <h3>Top pages</h3>
         <table id="stats-table">
@@ -128,9 +130,16 @@
             .map(([k, v]) => `<div class="stats_card"><div class="v">${v}</div><div class="k">${k}</div></div>`)
             .join('');
 
-          const mod = await import('https://cdn.jsdelivr.net/npm/chart.js@4/auto/+esm');
-          const Chart = mod.default ?? mod.Chart;
-          if (mod.registerables && Chart.register) Chart.register(...mod.registerables);
+          const mod = await import('https://cdn.jsdelivr.net/npm/chart.js@4/+esm');
+          const { Chart, registerables } = mod;
+          Chart.register(...registerables);
+          try {
+            await import('https://cdn.jsdelivr.net/npm/hammerjs@2/+esm'); // enables pan/pinch/drag-zoom
+          } catch { /* wheel zoom still works without it */ }
+          try {
+            const zoom = (await import('https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2/+esm')).default;
+            if (zoom) Chart.register(zoom);
+          } catch { /* charts work without zoom */ }
           Chart.defaults.color = getComputedStyle(document.body).color;
           Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
           charts.forEach((c) => c.destroy());
@@ -151,12 +160,37 @@
                 line('Visitors', data.daily.map((r) => r.users ?? 0), 2),
               ],
             },
-            options: { maintainAspectRatio: false },
+            options: {
+              maintainAspectRatio: false,
+              interaction: { mode: 'index', intersect: false },
+              plugins: {
+                zoom: {
+                  pan: { enabled: true, mode: 'x' },
+                  zoom: {
+                    wheel: { enabled: true },
+                    pinch: { enabled: true },
+                    drag: { enabled: true, backgroundColor: 'rgba(78,121,167,.15)', borderColor: PALETTE[0], borderWidth: 1 },
+                    mode: 'x',
+                  },
+                },
+              },
+            },
           }));
+          const dailyChart = charts[0];
+          document.getElementById('stats-zoom-reset').onclick = () => dailyChart?.resetZoom?.();
+          dailyChart?.canvas.addEventListener('dblclick', () => dailyChart.resetZoom?.());
 
           const fill = (sel, rows) => {
             const tb = document.querySelector(`${sel} tbody`);
             tb.innerHTML = '';
+            if (!rows.length) {
+              const tr = tb.insertRow();
+              const td = tr.insertCell();
+              td.colSpan = 4;
+              td.textContent = 'no data for this range';
+              td.style.opacity = '.6';
+              return;
+            }
             rows.forEach((cells) => {
               const tr = tb.insertRow();
               cells.forEach((c) => {
