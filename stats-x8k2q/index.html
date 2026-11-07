@@ -14,8 +14,8 @@
         const passInput = document.getElementById('stats-pass');
         const PALETTE = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1'];
         const num = (v) => Number(v ?? 0).toLocaleString();
-        const pct = (v) => (v <= 1 ? v * 100 : v).toFixed(1) + '%';
-        const dur = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+        const pct = (v) => { const n = Number(v) || 0; return (n <= 1 ? n * 100 : n).toFixed(1) + '%'; };
+        const dur = (s) => { const n = Number(s) || 0; return `${Math.floor(n / 60)}:${String(Math.round(n % 60)).padStart(2, '0')}`; };
         const charts = [];
 
         passInput.value = sessionStorage.getItem('statsKey') || '';
@@ -48,7 +48,8 @@
 
         async function render(data) {
           document.getElementById('stats-range').textContent = `${data.days} days`;
-          document.getElementById('stats-generated').textContent = new Date(data.generatedAt).toLocaleString();
+          document.getElementById('stats-generated').textContent =
+            `${new Date(data.generatedAt).toLocaleString()} · API v${data.version ?? 1}`;
 
           const t = data.totals ?? { pageViews: data.totalPageViews ?? 0 };
           const cards = [
