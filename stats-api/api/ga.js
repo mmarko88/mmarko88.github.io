@@ -76,6 +76,7 @@ const toRows = (report) =>
 const metric = (report, i) => Number(report.rows?.[0]?.metricValues?.[i]?.value || 0);
 
 module.exports = async (req, res) => {
+  res.setHeader('X-Stats-API-Version', '2'); // deployed-version probe: curl -I
   const origin = req.headers.origin;
   if (ALLOWED_ORIGINS.has(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
