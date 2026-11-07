@@ -1,7 +1,7 @@
 # stats-api — private GA4 stats endpoint
 
 Serverless function backing the unlisted stats page at
-`https://www.professionaldev.dev/stats-x8k2q/`.
+`https://www.professionaldev.dev/mmarko88stats/`.
 
 The site is fully static (GitHub Pages), so the password check can't live in
 the browser — it lives here. The page POSTs a password; this function verifies
@@ -66,6 +66,6 @@ curl -X POST https://<your-app>.vercel.app/api/ga \
   `GA_PRIVATE_KEY`.
 - CORS is locked to `professionaldev.dev` (+ `localhost:1313` for `hugo server`).
 - Per-IP rate limit: 20 req/min (best effort — resets on cold start).
-- The page slug `stats-x8k2q` is "unlisted, not secret": noindex + excluded
+- The page slug `mmarko88stats` is "unlisted, not secret": noindex + excluded
   from sitemap/search, but anyone with the URL sees the login form. The GA
   data itself is what stays protected.

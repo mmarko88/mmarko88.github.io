@@ -1,4 +1,4 @@
-// Private GA4 stats endpoint for the /stats-x8k2q/ page on professionaldev.dev.
+// Private GA4 stats endpoint for the /mmarko88stats/ page on professionaldev.dev.
 // Holds the service-account creds + STATS_PASSWORD server-side — the static
 // GitHub Pages site can't keep secrets, so the password check lives here:
 // no valid password -> no GA data leaves this function.
