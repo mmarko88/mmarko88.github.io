@@ -8,6 +8,7 @@
 // -> 200 { generatedAt, days, totalPageViews, daily: [{date, views}], topPages: [{title, path, views}] }
 // -> 401 wrong/missing password, 429 rate limited, 502 GA upstream error
 const crypto = require('node:crypto');
+const { GoogleAuth } = require('google-auth-library');
 const { BetaAnalyticsDataClient } = require('@google-analytics/data');
 
 const ALLOWED_ORIGINS = new Set([
@@ -44,11 +45,13 @@ let _client;
 function gaClient() {
   if (!_client) {
     _client = new BetaAnalyticsDataClient({
-      credentials: {
-        client_email: process.env.GA_CLIENT_EMAIL,
-        // Vercel env vars store the key's newlines as a literal \n sequence.
-        private_key: (process.env.GA_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
-      },
+      auth: new GoogleAuth({
+        credentials: {
+          client_email: process.env.GA_CLIENT_EMAIL,
+          // Vercel env vars store the key's newlines as a literal \n sequence.
+          private_key: (process.env.GA_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+        },
+      }),
     });
   }
   return _client;

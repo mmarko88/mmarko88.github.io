@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@google-analytics/data": "^7.3.0"
+    "@google-analytics/data": "^7.3.0",
+    "google-auth-library": "^11.3.3"
   }
 }
