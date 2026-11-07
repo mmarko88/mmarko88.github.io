@@ -4,17 +4,8 @@
 // no valid password -> no GA data leaves this function.
 //
 // POST /api/ga   Content-Type: application/json
-//   { "password": "...", "days": 30 }
-// -> 200 {
-//      generatedAt, days,
-//      totals:   { pageViews, sessions, users, newUsers, avgSessionDuration, bounceRate, engagementRate },
-//      daily:    [{ date, views, sessions, users }],
-//      topPages: [{ title, path, views, users }],
-//      sources:  [{ source, sessions }],
-//      countries:[{ country, users }],
-//      devices:  [{ device, sessions }],
-//      loyalty:  [{ type, users }]        // new vs returning
-//    }
+//   { "password": "...", "days": 30 }              -> global dashboard payload
+//   { "password": "...", "days": 30, "page": "/post/x/" }  -> per-post payload
 // -> 401 wrong/missing password, 429 rate limited, 502 GA upstream error
 const crypto = require('node:crypto');
 const { GoogleAuth } = require('google-auth-library');
@@ -31,6 +22,14 @@ const ALLOWED_ORIGINS = new Set([
 const WINDOW_MS = 60_000;
 const MAX_REQS = 20;
 const hits = new Map();
+
+// Tiny per-warm-instance payload cache — spares GA quota + makes reloads instant.
+const CACHE_TTL = 300_000; // 5 min
+const payloadCache = new Map();
+function cached(key) {
+  const e = payloadCache.get(key);
+  return e && e.at > Date.now() - CACHE_TTL ? e.data : null;
+}
 
 function rateLimited(ip) {
   const now = Date.now();
@@ -75,8 +74,12 @@ const toRows = (report) =>
 
 const metric = (report, i) => Number(report.rows?.[0]?.metricValues?.[i]?.value || 0);
 
+const exact = (fieldName, value) => ({
+  filter: { fieldName, stringFilter: { value, matchType: 'EXACT' } },
+});
+
 module.exports = async (req, res) => {
-  res.setHeader('X-Stats-API-Version', '2'); // deployed-version probe: curl -I
+  res.setHeader('X-Stats-API-Version', '3'); // deployed-version probe: curl -i
   const origin = req.headers.origin;
   if (ALLOWED_ORIGINS.has(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
@@ -105,121 +108,195 @@ module.exports = async (req, res) => {
   const dateRanges = [{ startDate: `${range}daysAgo`, endDate: 'today' }];
   const byMetric = (name) => [{ metric: { metricName: name }, desc: true }];
 
+  const cacheKey = typeof page === 'string' && page.startsWith('/')
+    ? `p:${range}:${page.slice(0, 200)}`
+    : `g:${range}`;
+  const hit = cached(cacheKey);
+  if (hit) return res.status(200).json(hit);
+
   try {
     const client = gaClient();
 
-    // Per-post mode: { page: "/post/foo/" } -> stats scoped to a single pagePath.
+    // ---- Per-post mode --------------------------------------------------
     if (typeof page === 'string' && page.startsWith('/')) {
       const pagePath = page.slice(0, 200);
-      const exact = (fieldName) => ({
-        filter: { fieldName, stringFilter: { value: pagePath, matchType: 'EXACT' } },
-      });
-      const [pTotalsRes, pDailyRes, pSourcesRes] = await Promise.all([
+      const onPage = exact('pagePath', pagePath);
+      const [tRes, dRes, sRes, cRes, devRes] = await Promise.all([
         client.runReport({
-          property, dateRanges, dimensionFilter: exact('pagePath'),
-          metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }, { name: 'userEngagementDuration' }],
+          property, dateRanges, dimensionFilter: onPage,
+          metrics: [
+            { name: 'screenPageViews' }, { name: 'activeUsers' },
+            { name: 'userEngagementDuration' }, { name: 'newUsers' },
+          ],
         }),
         client.runReport({
-          property, dateRanges, dimensionFilter: exact('pagePath'),
+          property, dateRanges, dimensionFilter: onPage,
           dimensions: [{ name: 'date' }],
           metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
           orderBys: [{ dimension: { dimensionName: 'date' } }],
         }),
         // sources of sessions that LANDED on this post (sessions are landing-scoped)
         client.runReport({
-          property, dateRanges, dimensionFilter: exact('landingPage'),
+          property, dateRanges, dimensionFilter: exact('landingPage', pagePath),
           dimensions: [{ name: 'sessionSource' }],
           metrics: [{ name: 'sessions' }],
           orderBys: byMetric('sessions'),
           limit: 10,
         }),
-      ]);
-      const [pTotals, pDaily, pSources] = [pTotalsRes[0], pDailyRes[0], pSourcesRes[0]];
-      const users = metric(pTotals, 1);
-      return res.status(200).json({
-        version: 2,
-        generatedAt: new Date().toISOString(),
-        days: range,
-        page: pagePath,
-        totals: {
-          views: metric(pTotals, 0),
-          users,
-          avgEngagementTime: users ? metric(pTotals, 2) / users : 0,
-        },
-        daily: toRows(pDaily).map((r) => ({ date: r.dim[0], views: r.metrics[0], users: r.metrics[1] })),
-        sources: toRows(pSources).map((r) => ({ source: r.dim[0], sessions: r.metrics[0] })),
-      });
-    }
-    const [totalsRes, dailyRes, pagesRes, sourcesRes, countriesRes, devicesRes, loyaltyRes] =
-      await Promise.all([
         client.runReport({
-          property, dateRanges,
-          metrics: [
-            { name: 'screenPageViews' }, { name: 'sessions' }, { name: 'activeUsers' },
-            { name: 'newUsers' }, { name: 'averageSessionDuration' },
-            { name: 'bounceRate' }, { name: 'engagementRate' },
-          ],
-        }),
-        client.runReport({
-          property, dateRanges,
-          dimensions: [{ name: 'date' }],
-          metrics: [{ name: 'screenPageViews' }, { name: 'sessions' }, { name: 'activeUsers' }],
-          orderBys: [{ dimension: { dimensionName: 'date' } }],
-        }),
-        client.runReport({
-          property, dateRanges,
-          dimensions: [{ name: 'pageTitle' }, { name: 'pagePath' }],
-          metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
-          orderBys: byMetric('screenPageViews'),
-          limit: 25,
-        }),
-        client.runReport({
-          property, dateRanges,
-          dimensions: [{ name: 'sessionSource' }],
-          metrics: [{ name: 'sessions' }],
-          orderBys: byMetric('sessions'),
-          limit: 12,
-        }),
-        client.runReport({
-          property, dateRanges,
+          property, dateRanges, dimensionFilter: onPage,
           dimensions: [{ name: 'country' }],
           metrics: [{ name: 'activeUsers' }],
           orderBys: byMetric('activeUsers'),
-          limit: 15,
+          limit: 8,
         }),
         client.runReport({
-          property, dateRanges,
+          property, dateRanges, dimensionFilter: onPage,
           dimensions: [{ name: 'deviceCategory' }],
           metrics: [{ name: 'sessions' }],
           orderBys: byMetric('sessions'),
         }),
-        client.runReport({
-          property, dateRanges,
-          dimensions: [{ name: 'newVsReturning' }],
-          metrics: [{ name: 'activeUsers' }],
-          orderBys: byMetric('activeUsers'),
-        }),
       ]);
+      const [pt, pd, ps, pc, pdev] = [tRes[0], dRes[0], sRes[0], cRes[0], devRes[0]];
+      const users = metric(pt, 1);
+      const body = {
+        version: 3,
+        generatedAt: new Date().toISOString(),
+        days: range,
+        page: pagePath,
+        totals: {
+          views: metric(pt, 0),
+          users,
+          newUsers: metric(pt, 3),
+          avgEngagementTime: users ? metric(pt, 2) / users : 0,
+        },
+        daily: toRows(pd).map((r) => ({ date: r.dim[0], views: r.metrics[0], users: r.metrics[1] })),
+        sources: toRows(ps).map((r) => ({ source: r.dim[0], sessions: r.metrics[0] })),
+        countries: toRows(pc).map((r) => ({ country: r.dim[0], users: r.metrics[0] })),
+        devices: toRows(pdev).map((r) => ({ device: r.dim[0], sessions: r.metrics[0] })),
+      };
+      payloadCache.set(cacheKey, { at: Date.now(), data: body });
+      return res.status(200).json(body);
+    }
 
-    const [totals, daily, pages, sources, countries, devices, loyalty] =
-      [totalsRes, dailyRes, pagesRes, sourcesRes, countriesRes, devicesRes, loyaltyRes]
-        .map((r) => r[0]);
+    // ---- Global dashboard ------------------------------------------------
+    const totalsMetrics = [
+      { name: 'screenPageViews' }, { name: 'sessions' }, { name: 'activeUsers' },
+      { name: 'newUsers' }, { name: 'averageSessionDuration' },
+      { name: 'bounceRate' }, { name: 'engagementRate' },
+      { name: 'sessionsPerUser' }, { name: 'screenPageViewsPerSession' },
+    ];
+    const [
+      totalsRes, prevTotalsRes, dailyRes, pagesRes, sourcesRes,
+      countriesRes, devicesRes, loyaltyRes,
+      heatRes, techRes, screensRes, acqRes,
+    ] = await Promise.all([
+      client.runReport({ property, dateRanges, metrics: totalsMetrics }),
+      // previous period, same length: (2*range)daysAgo .. (range+1)daysAgo
+      client.runReport({
+        property,
+        dateRanges: [{ startDate: `${range * 2}daysAgo`, endDate: `${range + 1}daysAgo` }],
+        metrics: totalsMetrics,
+      }),
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'screenPageViews' }, { name: 'sessions' }, { name: 'activeUsers' }],
+        orderBys: [{ dimension: { dimensionName: 'date' } }],
+      }),
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'pageTitle' }, { name: 'pagePath' }],
+        metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+        orderBys: byMetric('screenPageViews'),
+        limit: 25,
+      }),
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'sessionSource' }],
+        metrics: [{ name: 'sessions' }],
+        orderBys: byMetric('sessions'),
+        limit: 12,
+      }),
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'country' }],
+        metrics: [{ name: 'activeUsers' }],
+        orderBys: byMetric('activeUsers'),
+        limit: 15,
+      }),
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'deviceCategory' }],
+        metrics: [{ name: 'sessions' }],
+        orderBys: byMetric('sessions'),
+      }),
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'newVsReturning' }],
+        metrics: [{ name: 'activeUsers' }],
+        orderBys: byMetric('activeUsers'),
+      }),
+      // day-of-week x hour heatmap (sessions)
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'dayOfWeek' }, { name: 'hour' }],
+        metrics: [{ name: 'sessions' }],
+      }),
+      // OS + browser pairs
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'operatingSystem' }, { name: 'browser' }],
+        metrics: [{ name: 'sessions' }],
+        orderBys: byMetric('sessions'),
+        limit: 10,
+      }),
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'screenResolution' }],
+        metrics: [{ name: 'sessions' }],
+        orderBys: byMetric('sessions'),
+        limit: 8,
+      }),
+      // acquisition: where NEW readers first came from
+      client.runReport({
+        property, dateRanges,
+        dimensions: [{ name: 'firstUserSource' }],
+        metrics: [{ name: 'newUsers' }],
+        orderBys: byMetric('newUsers'),
+        limit: 10,
+      }),
+    ]);
 
-    return res.status(200).json({
-      version: 2,
+    const [
+      totals, prevTotals, daily, pages, sources, countries, devices, loyalty,
+      heat, tech, screens, acq,
+    ] = [
+      totalsRes, prevTotalsRes, dailyRes, pagesRes, sourcesRes,
+      countriesRes, devicesRes, loyaltyRes,
+      heatRes, techRes, screensRes, acqRes,
+    ].map((r) => r[0]);
+
+    const pack = (r) => ({
+      pageViews: metric(r, 0),
+      sessions: metric(r, 1),
+      users: metric(r, 2),
+      newUsers: metric(r, 3),
+      avgSessionDuration: metric(r, 4),
+      bounceRate: metric(r, 5),
+      engagementRate: metric(r, 6),
+      sessionsPerUser: metric(r, 7),
+      pageViewsPerSession: metric(r, 8),
+    });
+
+    const body = {
+      version: 3,
       generatedAt: new Date().toISOString(),
       days: range,
       // v1 field kept for backward compatibility with older cached pages
       totalPageViews: metric(totals, 0),
-      totals: {
-        pageViews: metric(totals, 0),
-        sessions: metric(totals, 1),
-        users: metric(totals, 2),
-        newUsers: metric(totals, 3),
-        avgSessionDuration: metric(totals, 4),
-        bounceRate: metric(totals, 5),
-        engagementRate: metric(totals, 6),
-      },
+      totals: pack(totals),
+      prevTotals: pack(prevTotals),
       daily: toRows(daily).map((r) => ({
         date: r.dim[0], views: r.metrics[0], sessions: r.metrics[1], users: r.metrics[2],
       })),
@@ -230,7 +307,13 @@ module.exports = async (req, res) => {
       countries: toRows(countries).map((r) => ({ country: r.dim[0], users: r.metrics[0] })),
       devices: toRows(devices).map((r) => ({ device: r.dim[0], sessions: r.metrics[0] })),
       loyalty: toRows(loyalty).map((r) => ({ type: r.dim[0], users: r.metrics[0] })),
-    });
+      heatmap: toRows(heat).map((r) => ({ dow: Number(r.dim[0]), hour: Number(r.dim[1]), sessions: r.metrics[0] })),
+      tech: toRows(tech).map((r) => ({ os: r.dim[0], browser: r.dim[1], sessions: r.metrics[0] })),
+      screens: toRows(screens).map((r) => ({ res: r.dim[0], sessions: r.metrics[0] })),
+      acquisition: toRows(acq).map((r) => ({ source: r.dim[0], newUsers: r.metrics[0] })),
+    };
+    payloadCache.set(cacheKey, { at: Date.now(), data: body });
+    return res.status(200).json(body);
   } catch (err) {
     console.error('GA runReport failed:', err.message);
     return res.status(502).json({ error: 'ga_upstream_error' });

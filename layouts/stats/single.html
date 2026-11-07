@@ -29,6 +29,7 @@
 
         <h3>Top pages</h3>
         <p class="stats_fetched">click a row for per-post stats</p>
+        <button id="stats-csv" type="button">Export CSV</button>
         <div class="stats_scroll">
         <table id="stats-table">
           <thead>
@@ -42,14 +43,39 @@
           <h3><a id="stats-post-link" href="#" target="_blank" rel="noopener"></a></h3>
           <div id="stats-post-cards"></div>
           <div class="post-chart" style="height: 220px"><canvas id="stats-post-chart"></canvas></div>
-          <h4>Sources (sessions that landed here)</h4>
-          <div class="stats_scroll">
-          <table id="stats-post-sources">
-            <thead><tr><th>Source</th><th>Sessions</th></tr></thead>
-            <tbody></tbody>
-          </table>
+          <div class="stats_grid">
+            <section>
+              <h4>Sources (sessions that landed here)</h4>
+              <div class="stats_scroll">
+              <table id="stats-post-sources">
+                <thead><tr><th>Source</th><th>Sessions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+              </div>
+            </section>
+            <section>
+              <h4>Countries</h4>
+              <div class="stats_scroll">
+              <table id="stats-post-countries">
+                <thead><tr><th>Country</th><th>Visitors</th></tr></thead>
+                <tbody></tbody>
+              </table>
+              </div>
+            </section>
+            <section>
+              <h4>Devices</h4>
+              <div class="stats_scroll">
+              <table id="stats-post-devices">
+                <thead><tr><th>Device</th><th>Sessions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+              </div>
+            </section>
           </div>
         </section>
+
+        <h3>When visitors arrive <span class="stats_fetched">(day × hour, sessions)</span></h3>
+        <div id="stats-heat" class="stats_scroll"></div>
 
         <div class="stats_grid">
           <section>
@@ -60,9 +86,30 @@
             </table>
           </section>
           <section>
+            <h3>New readers via</h3>
+            <table id="stats-acq">
+              <thead><tr><th>First source</th><th>New visitors</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </section>
+          <section>
             <h3>Top countries</h3>
             <table id="stats-countries">
               <thead><tr><th>Country</th><th>Visitors</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </section>
+          <section>
+            <h3>Browser + OS</h3>
+            <table id="stats-tech">
+              <thead><tr><th>OS / browser</th><th>Sessions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </section>
+          <section>
+            <h3>Screen resolutions</h3>
+            <table id="stats-screens">
+              <thead><tr><th>Resolution</th><th>Sessions</th></tr></thead>
               <tbody></tbody>
             </table>
           </section>
@@ -90,6 +137,12 @@
         .stats_gate input { flex: 1 1 12rem; min-width: 0; }
         #stats-table tbody tr { cursor: pointer; }
         #stats-table tbody tr:hover td { background: rgba(128,128,128,.12); }
+        .stats_card .d { font-size: .75rem; font-weight: 600; }
+        .stats_card .d.up { color: #59a14f; }
+        .stats_card .d.down { color: #e15759; }
+        .stats_heat_table { border-collapse: collapse; }
+        .stats_heat_table th, .stats_heat_table td { font-size: .65rem; padding: 2px 3px; text-align: center; min-width: 1.6rem; }
+        #stats-csv { margin-left: .75rem; }
         @media (max-width: 640px) {
           .stats_gate { flex-direction: column; align-items: stretch; }
           #stats-cards, #stats-post-cards { grid-template-columns: repeat(2, 1fr); }
@@ -134,7 +187,37 @@
             });
           });
         };
-        const card = (k, v) => `<div class="stats_card"><div class="v">${v}</div><div class="k">${k}</div></div>`;
+        const card = (k, v, d) => `<div class="stats_card"><div class="v">${v}</div><div class="k">${k}</div>${d ?? ''}</div>`;
+        const delta = (cur, prev) => {
+          if (!prev) return '';
+          const ch = ((cur - prev) / prev) * 100;
+          return `<div class="d ${ch >= 0 ? 'up' : 'down'}">${ch >= 0 ? '▲ +' : '▼ '}${ch.toFixed(0)}%</div>`;
+        };
+        let lastData;
+        function renderHeat(rows) {
+          const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
+          let max = 1;
+          rows.forEach((r) => { grid[r.dow][r.hour] = r.sessions; if (r.sessions > max) max = r.sessions; });
+          let html = '<table class="stats_heat_table"><thead><tr><th></th>' +
+            Array.from({ length: 24 }, (_, h) => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+          grid.forEach((row, d) => {
+            html += `<tr><th>${days[d]}</th>` +
+              row.map((v) => `<td title="${v} sessions" style="background:rgba(78,121,167,${(v / max * 0.85).toFixed(2)})">${v || ''}</td>`).join('') +
+              '</tr>';
+          });
+          document.getElementById('stats-heat').innerHTML = html + '</tbody></table>';
+        }
+        document.getElementById('stats-csv').onclick = () => {
+          if (!lastData?.topPages?.length) return;
+          const rows = [['rank', 'title', 'path', 'views', 'visitors'],
+            ...lastData.topPages.map((p, i) => [i + 1, p.title ?? '', p.path, p.views, p.users ?? 0])];
+          const csv = rows.map((r) => r.map((c) => `"${String(c).replaceAll('"', '""')}"`).join(',')).join('\n');
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+          a.download = 'top-pages.csv';
+          a.click();
+        };
         const charts = [];
         let Chart;
         let postChart;
@@ -209,16 +292,20 @@
             `${new Date(data.generatedAt).toLocaleString()} · API v${data.version ?? 1}`;
 
           const t = data.totals ?? { pageViews: data.totalPageViews ?? 0 };
+          const p = data.prevTotals;
           const cards = [
-            ['Pageviews', num(t.pageViews)],
-            ['Visitors', num(t.users)],
-            ['Sessions', num(t.sessions)],
-            ['New visitors', num(t.newUsers)],
-            ['Avg. session', dur(t.avgSessionDuration)],
+            ['Pageviews', num(t.pageViews), delta(t.pageViews, p?.pageViews)],
+            ['Visitors', num(t.users), delta(t.users, p?.users)],
+            ['Sessions', num(t.sessions), delta(t.sessions, p?.sessions)],
+            ['New visitors', num(t.newUsers), delta(t.newUsers, p?.newUsers)],
+            ['Pages / session', (t.pageViewsPerSession ?? 0).toFixed(1)],
+            ['Sessions / user', (t.sessionsPerUser ?? 0).toFixed(2)],
+            ['Avg. session', dur(t.avgSessionDuration), delta(t.avgSessionDuration, p?.avgSessionDuration)],
             ['Engagement', pct(t.engagementRate)],
             ['Bounce rate', pct(t.bounceRate)],
           ];
-          document.getElementById('stats-cards').innerHTML = cards.map(([k, v]) => card(k, v)).join('');
+          document.getElementById('stats-cards').innerHTML = cards.map(([k, v, d]) => card(k, v, d)).join('');
+          lastData = data;
 
           await ensureChart();
           charts.forEach((c) => c.destroy());
@@ -267,6 +354,10 @@
           });
           fill('#stats-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)]));
           fill('#stats-countries', (data.countries ?? []).map((c) => [c.country, num(c.users)]));
+          fill('#stats-tech', (data.tech ?? []).map((x) => [`${x.os} · ${x.browser}`, num(x.sessions)]));
+          fill('#stats-screens', (data.screens ?? []).map((x) => [x.res, num(x.sessions)]));
+          fill('#stats-acq', (data.acquisition ?? []).map((x) => [x.source, num(x.newUsers)]));
+          renderHeat(data.heatmap ?? []);
 
           const doughnut = (id, labels, values) => charts.push(new Chart(document.getElementById(id), {
             type: 'doughnut',
@@ -286,11 +377,12 @@
           document.getElementById('stats-post-cards').innerHTML = [
             ['Views', num(t.views)],
             ['Visitors', num(t.users)],
+            ['New visitors', num(t.newUsers)],
             ['Avg. engagement', dur(t.avgEngagementTime)],
           ].map(([k, v]) => card(k, v)).join('');
 
           if (postChart) postChart.destroy();
-          if (!Chart) { fill('#stats-post-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)])); postSec.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+          if (!Chart) { fillPostTables(data); postSec.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
           postChart = new Chart(document.getElementById('stats-post-chart'), {
             type: 'line',
             data: {
@@ -302,8 +394,14 @@
             },
             options: { maintainAspectRatio: false },
           });
-          fill('#stats-post-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)]));
+          fillPostTables(data);
           postSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function fillPostTables(data) {
+          fill('#stats-post-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)]));
+          fill('#stats-post-countries', (data.countries ?? []).map((c) => [c.country, num(c.users)]));
+          fill('#stats-post-devices', (data.devices ?? []).map((d) => [d.device, num(d.sessions)]));
         }
       </script>
       {{ else }}
