@@ -162,8 +162,11 @@ module.exports = async (req, res) => {
         .map((r) => r[0]);
 
     return res.status(200).json({
+      version: 2,
       generatedAt: new Date().toISOString(),
       days: range,
+      // v1 field kept for backward compatibility with older cached pages
+      totalPageViews: metric(totals, 0),
       totals: {
         pageViews: metric(totals, 0),
         sessions: metric(totals, 1),

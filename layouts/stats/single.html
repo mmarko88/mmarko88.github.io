@@ -76,7 +76,7 @@
         const err = document.getElementById('stats-err');
         const passInput = document.getElementById('stats-pass');
         const PALETTE = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1'];
-        const num = (v) => Number(v).toLocaleString();
+        const num = (v) => Number(v ?? 0).toLocaleString();
         const pct = (v) => (v <= 1 ? v * 100 : v).toFixed(1) + '%';
         const dur = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
         const charts = [];
@@ -113,7 +113,7 @@
           document.getElementById('stats-range').textContent = `${data.days} days`;
           document.getElementById('stats-generated').textContent = new Date(data.generatedAt).toLocaleString();
 
-          const t = data.totals;
+          const t = data.totals ?? { pageViews: data.totalPageViews ?? 0 };
           const cards = [
             ['Pageviews', num(t.pageViews)],
             ['Visitors', num(t.users)],
@@ -146,8 +146,8 @@
               labels: data.daily.map((r) => fmt(r.date)),
               datasets: [
                 line('Pageviews', data.daily.map((r) => r.views), 0),
-                line('Sessions', data.daily.map((r) => r.sessions), 1),
-                line('Visitors', data.daily.map((r) => r.users), 2),
+                line('Sessions', data.daily.map((r) => r.sessions ?? 0), 1),
+                line('Visitors', data.daily.map((r) => r.users ?? 0), 2),
               ],
             },
             options: { maintainAspectRatio: false },
@@ -171,16 +171,16 @@
             a.textContent = p.title || p.path;
             return [i + 1, a, num(p.views), num(p.users)];
           }));
-          fill('#stats-sources', data.sources.map((s) => [s.source, num(s.sessions)]));
-          fill('#stats-countries', data.countries.map((c) => [c.country, num(c.users)]));
+          fill('#stats-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)]));
+          fill('#stats-countries', (data.countries ?? []).map((c) => [c.country, num(c.users)]));
 
           const doughnut = (id, labels, values) => charts.push(new Chart(document.getElementById(id), {
             type: 'doughnut',
             data: { labels, datasets: [{ data: values, backgroundColor: PALETTE }] },
             options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } },
           }));
-          doughnut('stats-devices', data.devices.map((d) => d.device), data.devices.map((d) => d.sessions));
-          doughnut('stats-loyalty', data.loyalty.map((l) => l.type), data.loyalty.map((l) => l.users));
+          doughnut('stats-devices', (data.devices ?? []).map((d) => d.device), (data.devices ?? []).map((d) => d.sessions));
+          doughnut('stats-loyalty', (data.loyalty ?? []).map((l) => l.type), (data.loyalty ?? []).map((l) => l.users));
         }
       </script>
       {{ else }}
