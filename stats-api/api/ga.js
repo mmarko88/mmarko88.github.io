@@ -97,7 +97,7 @@ module.exports = async (req, res) => {
     'unknown';
   if (rateLimited(ip)) return res.status(429).json({ error: 'rate_limited' });
 
-  const { password, days } = req.body || {};
+  const { password, days, page } = req.body || {};
   if (!passwordOk(password)) return res.status(401).json({ error: 'unauthorized' });
 
   const range = Math.min(Math.max(parseInt(days, 10) || 30, 7), 365);
@@ -107,6 +107,49 @@ module.exports = async (req, res) => {
 
   try {
     const client = gaClient();
+
+    // Per-post mode: { page: "/post/foo/" } -> stats scoped to a single pagePath.
+    if (typeof page === 'string' && page.startsWith('/')) {
+      const pagePath = page.slice(0, 200);
+      const exact = (fieldName) => ({
+        filter: { fieldName, stringFilter: { value: pagePath, matchType: 'EXACT' } },
+      });
+      const [pTotalsRes, pDailyRes, pSourcesRes] = await Promise.all([
+        client.runReport({
+          property, dateRanges, dimensionFilter: exact('pagePath'),
+          metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }, { name: 'userEngagementDuration' }],
+        }),
+        client.runReport({
+          property, dateRanges, dimensionFilter: exact('pagePath'),
+          dimensions: [{ name: 'date' }],
+          metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+          orderBys: [{ dimension: { dimensionName: 'date' } }],
+        }),
+        // sources of sessions that LANDED on this post (sessions are landing-scoped)
+        client.runReport({
+          property, dateRanges, dimensionFilter: exact('landingPage'),
+          dimensions: [{ name: 'sessionSource' }],
+          metrics: [{ name: 'sessions' }],
+          orderBys: byMetric('sessions'),
+          limit: 10,
+        }),
+      ]);
+      const [pTotals, pDaily, pSources] = [pTotalsRes[0], pDailyRes[0], pSourcesRes[0]];
+      const users = metric(pTotals, 1);
+      return res.status(200).json({
+        version: 2,
+        generatedAt: new Date().toISOString(),
+        days: range,
+        page: pagePath,
+        totals: {
+          views: metric(pTotals, 0),
+          users,
+          avgEngagementTime: users ? metric(pTotals, 2) / users : 0,
+        },
+        daily: toRows(pDaily).map((r) => ({ date: r.dim[0], views: r.metrics[0], users: r.metrics[1] })),
+        sources: toRows(pSources).map((r) => ({ source: r.dim[0], sessions: r.metrics[0] })),
+      });
+    }
     const [totalsRes, dailyRes, pagesRes, sourcesRes, countriesRes, devicesRes, loyaltyRes] =
       await Promise.all([
         client.runReport({

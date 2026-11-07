@@ -28,12 +28,28 @@
         <button id="stats-zoom-reset" type="button">Reset zoom</button>
 
         <h3>Top pages</h3>
+        <p class="stats_fetched">click a row for per-post stats</p>
+        <div class="stats_scroll">
         <table id="stats-table">
           <thead>
             <tr><th>#</th><th>Page</th><th>Views</th><th>Visitors</th></tr>
           </thead>
           <tbody></tbody>
         </table>
+        </div>
+
+        <section id="stats-post" hidden>
+          <h3><a id="stats-post-link" href="#" target="_blank" rel="noopener"></a></h3>
+          <div id="stats-post-cards"></div>
+          <div class="post-chart" style="height: 220px"><canvas id="stats-post-chart"></canvas></div>
+          <h4>Sources (sessions that landed here)</h4>
+          <div class="stats_scroll">
+          <table id="stats-post-sources">
+            <thead><tr><th>Source</th><th>Sessions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          </div>
+        </section>
 
         <div class="stats_grid">
           <section>
@@ -62,13 +78,25 @@
       </div>
 
       <style>
-        #stats-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .75rem; margin: 1rem 0 .25rem; }
+        #stats-cards, #stats-post-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .75rem; margin: 1rem 0 .25rem; }
         .stats_card { border: 1px solid rgba(128,128,128,.25); border-radius: 8px; padding: .6rem .8rem; }
         .stats_card .v { font-size: 1.4rem; font-weight: 700; }
         .stats_card .k { font-size: .8rem; opacity: .7; }
         .stats_fetched { opacity: .65; font-size: .85rem; margin-top: 0; }
         .stats_grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
         .stats_grid section { min-width: 0; }
+        .stats_scroll { overflow-x: auto; }
+        .stats_gate { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+        .stats_gate input { flex: 1 1 12rem; min-width: 0; }
+        #stats-table tbody tr { cursor: pointer; }
+        #stats-table tbody tr:hover td { background: rgba(128,128,128,.12); }
+        @media (max-width: 640px) {
+          .stats_gate { flex-direction: column; align-items: stretch; }
+          #stats-cards, #stats-post-cards { grid-template-columns: repeat(2, 1fr); }
+          .stats_grid { grid-template-columns: 1fr; }
+          .post-chart { height: 200px !important; }
+          #stats-table, #stats-sources, #stats-countries, #stats-post-sources { font-size: .85rem; }
+        }
       </style>
 
       <script type="module">
@@ -77,38 +105,102 @@
         const out = document.getElementById('stats-out');
         const err = document.getElementById('stats-err');
         const passInput = document.getElementById('stats-pass');
+        const postSec = document.getElementById('stats-post');
         const PALETTE = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1'];
         const num = (v) => Number(v ?? 0).toLocaleString();
         const pct = (v) => { const n = Number(v) || 0; return (n <= 1 ? n * 100 : n).toFixed(1) + '%'; };
         const dur = (s) => { const n = Number(s) || 0; return `${Math.floor(n / 60)}:${String(Math.round(n % 60)).padStart(2, '0')}`; };
+        const fmt = (d) => `${d.slice(4, 6)}/${d.slice(6, 8)}`;
+        const line = (label, values, i) => ({
+          label, data: values, fill: false, tension: 0.2, pointRadius: 2,
+          borderColor: PALETTE[i], backgroundColor: PALETTE[i],
+        });
+        const fill = (sel, rows) => {
+          const tb = document.querySelector(`${sel} tbody`);
+          tb.innerHTML = '';
+          if (!rows.length) {
+            const tr = tb.insertRow();
+            const td = tr.insertCell();
+            td.colSpan = 4;
+            td.textContent = 'no data for this range';
+            td.style.opacity = '.6';
+            return;
+          }
+          rows.forEach((cells) => {
+            const tr = tb.insertRow();
+            cells.forEach((c) => {
+              const td = tr.insertCell();
+              if (c instanceof Node) td.appendChild(c); else td.textContent = c;
+            });
+          });
+        };
+        const card = (k, v) => `<div class="stats_card"><div class="v">${v}</div><div class="k">${k}</div></div>`;
         const charts = [];
+        let Chart;
+        let postChart;
 
         passInput.value = sessionStorage.getItem('statsKey') || '';
         if (passInput.value) load();
         gate.addEventListener('submit', (e) => { e.preventDefault(); load(); });
+
+        async function request(body) {
+          const res = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          if (res.status === 401) {
+            sessionStorage.removeItem('statsKey');
+            err.textContent = 'Wrong password.'; err.hidden = false; return null;
+          }
+          if (!res.ok) { err.textContent = `Request failed (${res.status}).`; err.hidden = false; return null; }
+          return res.json();
+        }
 
         async function load() {
           err.hidden = true;
           const password = passInput.value;
           const days = Number(document.getElementById('stats-days').value);
           try {
-            const res = await fetch(API, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ password, days }),
-            });
-            if (res.status === 401) {
-              sessionStorage.removeItem('statsKey');
-              err.textContent = 'Wrong password.'; err.hidden = false; return;
-            }
-            if (!res.ok) { err.textContent = `Request failed (${res.status}).`; err.hidden = false; return; }
+            const data = await request({ password, days });
+            if (!data) return;
             sessionStorage.setItem('statsKey', password);
             out.hidden = false;
-            render(await res.json());
+            postSec.hidden = true;
+            render(data);
           } catch (e) {
             err.textContent = `Could not reach stats API (${e.message}).`;
             err.hidden = false;
           }
+        }
+
+        async function loadPost(path, title) {
+          err.hidden = true;
+          const password = sessionStorage.getItem('statsKey') || passInput.value;
+          const days = Number(document.getElementById('stats-days').value);
+          try {
+            const data = await request({ password, days, page: path });
+            if (data) renderPost(data, title);
+          } catch (e) {
+            err.textContent = `Could not reach stats API (${e.message}).`;
+            err.hidden = false;
+          }
+        }
+
+        async function ensureChart() {
+          if (Chart) return;
+          const mod = await import('https://cdn.jsdelivr.net/npm/chart.js@4/+esm');
+          Chart = mod.Chart;
+          Chart.register(...mod.registerables);
+          try {
+            await import('https://cdn.jsdelivr.net/npm/hammerjs@2/+esm'); // enables pan/pinch/drag-zoom
+          } catch { /* wheel zoom still works without it */ }
+          try {
+            const zoom = (await import('https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2/+esm')).default;
+            if (zoom) Chart.register(zoom);
+          } catch { /* charts work without zoom */ }
+          Chart.defaults.color = getComputedStyle(document.body).color;
+          Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
         }
 
         async function render(data) {
@@ -126,30 +218,12 @@
             ['Engagement', pct(t.engagementRate)],
             ['Bounce rate', pct(t.bounceRate)],
           ];
-          document.getElementById('stats-cards').innerHTML = cards
-            .map(([k, v]) => `<div class="stats_card"><div class="v">${v}</div><div class="k">${k}</div></div>`)
-            .join('');
+          document.getElementById('stats-cards').innerHTML = cards.map(([k, v]) => card(k, v)).join('');
 
-          const mod = await import('https://cdn.jsdelivr.net/npm/chart.js@4/+esm');
-          const { Chart, registerables } = mod;
-          Chart.register(...registerables);
-          try {
-            await import('https://cdn.jsdelivr.net/npm/hammerjs@2/+esm'); // enables pan/pinch/drag-zoom
-          } catch { /* wheel zoom still works without it */ }
-          try {
-            const zoom = (await import('https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2/+esm')).default;
-            if (zoom) Chart.register(zoom);
-          } catch { /* charts work without zoom */ }
-          Chart.defaults.color = getComputedStyle(document.body).color;
-          Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
+          await ensureChart();
           charts.forEach((c) => c.destroy());
           charts.length = 0;
 
-          const fmt = (d) => `${d.slice(4, 6)}/${d.slice(6, 8)}`;
-          const line = (label, values, i) => ({
-            label, data: values, fill: false, tension: 0.2, pointRadius: 2,
-            borderColor: PALETTE[i], backgroundColor: PALETTE[i],
-          });
           charts.push(new Chart(document.getElementById('stats-chart'), {
             type: 'line',
             data: {
@@ -180,32 +254,17 @@
           document.getElementById('stats-zoom-reset').onclick = () => dailyChart?.resetZoom?.();
           dailyChart?.canvas.addEventListener('dblclick', () => dailyChart.resetZoom?.());
 
-          const fill = (sel, rows) => {
-            const tb = document.querySelector(`${sel} tbody`);
-            tb.innerHTML = '';
-            if (!rows.length) {
-              const tr = tb.insertRow();
-              const td = tr.insertCell();
-              td.colSpan = 4;
-              td.textContent = 'no data for this range';
-              td.style.opacity = '.6';
-              return;
-            }
-            rows.forEach((cells) => {
-              const tr = tb.insertRow();
-              cells.forEach((c) => {
-                const td = tr.insertCell();
-                if (c instanceof Node) td.appendChild(c); else td.textContent = c;
-              });
-            });
-          };
-
           fill('#stats-table', data.topPages.map((p, i) => {
             const a = document.createElement('a');
             a.href = p.path;
             a.textContent = p.title || p.path;
+            a.addEventListener('click', (e) => e.stopPropagation()); // link opens post; row click drills down
             return [i + 1, a, num(p.views), num(p.users)];
           }));
+          const pageTb = document.querySelector('#stats-table tbody');
+          (data.topPages ?? []).forEach((p, i) => {
+            pageTb.children[i]?.addEventListener('click', () => loadPost(p.path, p.title));
+          });
           fill('#stats-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)]));
           fill('#stats-countries', (data.countries ?? []).map((c) => [c.country, num(c.users)]));
 
@@ -216,6 +275,35 @@
           }));
           doughnut('stats-devices', (data.devices ?? []).map((d) => d.device), (data.devices ?? []).map((d) => d.sessions));
           doughnut('stats-loyalty', (data.loyalty ?? []).map((l) => l.type), (data.loyalty ?? []).map((l) => l.users));
+        }
+
+        function renderPost(data, title) {
+          postSec.hidden = false;
+          const a = document.getElementById('stats-post-link');
+          a.href = data.page;
+          a.textContent = title || data.page;
+          const t = data.totals ?? {};
+          document.getElementById('stats-post-cards').innerHTML = [
+            ['Views', num(t.views)],
+            ['Visitors', num(t.users)],
+            ['Avg. engagement', dur(t.avgEngagementTime)],
+          ].map(([k, v]) => card(k, v)).join('');
+
+          if (postChart) postChart.destroy();
+          if (!Chart) { fill('#stats-post-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)])); postSec.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+          postChart = new Chart(document.getElementById('stats-post-chart'), {
+            type: 'line',
+            data: {
+              labels: (data.daily ?? []).map((r) => fmt(r.date)),
+              datasets: [
+                line('Views', (data.daily ?? []).map((r) => r.views), 0),
+                line('Visitors', (data.daily ?? []).map((r) => r.users ?? 0), 1),
+              ],
+            },
+            options: { maintainAspectRatio: false },
+          });
+          fill('#stats-post-sources', (data.sources ?? []).map((s) => [s.source, num(s.sessions)]));
+          postSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       </script>
       {{ else }}
