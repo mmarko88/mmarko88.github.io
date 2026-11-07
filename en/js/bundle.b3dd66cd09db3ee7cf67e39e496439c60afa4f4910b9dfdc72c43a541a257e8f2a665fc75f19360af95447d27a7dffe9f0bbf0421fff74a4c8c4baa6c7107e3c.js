@@ -9,7 +9,7 @@ const pageHasLoaded = 'DOMContentLoaded';
 const imageAltClass = 'img_alt';
 
 
-const defaultSiteLanguage = '<no value>';
+const defaultSiteLanguage = 'en';
 const baseURL = 'https://www.professionaldev.dev/';
 const searchFieldClass = '.search_field';
 const searchClass = '.search';
