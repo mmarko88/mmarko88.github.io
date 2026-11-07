@@ -174,6 +174,9 @@ median of 10, CPU locked at 3.5 GHz — comparable with the tables above).
 
 | `jdbc.batch_size` | persist | saveAll+Persistable | StatelessSession | persist + bulkCopy | Stateless + bulkCopy |
 |------------------:|--------:|--------------------:|-----------------:|-------------------:|---------------------:|
+| 1                 |  13,752 |           **fails** |        **fails** |             13,931 |              **fails** |
+| 10                |   3,408 |               3,542 |            3,236 |             19,894 |               19,615 |
+| 50                |   2,554 |               2,705 |            2,402 |              6,001 |                5,823 |
 | 100               |   2,308 |               2,418 |            2,106 |              3,578 |                3,266 |
 | 500               |   2,130 |               2,234 |            1,960 |              1,499 |                1,280 |
 | 1,000             |   2,070 |               2,198 |            1,896 |              1,074 |                  844 |
@@ -181,19 +184,24 @@ median of 10, CPU locked at 3.5 GHz — comparable with the tables above).
 | 10,000            |   2,055 |               2,140 |            1,846 |              1,096 |              **633** |
 | 50,000            |   2,060 |               2,302 |            1,882 |              1,080 |                  844 |
 
-Two takeaways:
+Three takeaways:
 
-- **Without the flag, batch size barely matters.** All plain-Hibernate paths sit at
-  ~1.8–2.4 s across the whole range — JDBC round-trips aren't their bottleneck.
+- **`batch_size=1` is broken, not unbatched.** StatelessSession, saveAll+Persistable
+  and Stateless+bulkCopy all die with `ObjectOptimisticLockingFailure` — Hibernate
+  verifies each row count, the driver reports `-1`, insert fails. (persist and
+  persist+bulkCopy happen not to check, so they "work" at ~14 s.)
+- **Without the flag, batch size barely matters** once you're at ~500+. The plain
+  paths sit at ~1.8–2.4 s — JDBC round-trips aren't their bottleneck until batches
+  get tiny (3.2–3.5 s at 10, ~13.8 s at 1).
 - **With `useBulkCopyForBatchInsert`, batch size *is* the tuning knob.** Each
-  `executeBatch()` becomes one bulk-copy stream, so small batches mean thousands of
-  tiny streams. [StatelessSession + bulkCopy](#the-killer-combo-statelesssession--usebulkcopyforbatchinsert) bottoms out at **~10,000** (633 ms) — it
-  degrades sharply below ~1,000 and actually regresses at 50,000.
+  `executeBatch()` becomes one bulk-copy stream — and the worst setting isn't the
+  smallest one. `batch_size=10` is the cliff edge: 10,000 tiny bulk-copy streams,
+  ~20 s — *slower than `batch_size=1`*, which skips batching (and bulk copy)
+  entirely. [StatelessSession + bulkCopy](#the-killer-combo-statelesssession--usebulkcopyforbatchinsert) bottoms out at **~10,000** (633 ms), degrades sharply below ~1,000, and regresses at 50,000.
 
-One gotcha: don't leave `batch_size` unset with the flag on. Hibernate verifies the
-affected-row count of each insert, and the driver's bulk-copy rewrite reports `-1`,
-which fails the insert outright (`ObjectOptimisticLockingFailure`). Set it to at
-least 1,000 — 5,000–10,000 is the optimum.
+One gotcha remains: don't leave `batch_size` unset or at 1 with the flag on —
+same `-1` row count, same failure. Set it to at least 1,000 — 5,000–10,000 is the
+optimum.
 
 ## The one thing to remember
 
