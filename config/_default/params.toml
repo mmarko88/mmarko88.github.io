@@ -1,6 +1,10 @@
 # enable search
 enableSearch = true
 
+# default site language — used by search.js to locate index.json.
+# Without it the theme fetches /en/index.json (which doesn't exist) -> 404.
+defaultContentLanguage = "en"
+
 # socials
 twitter = "@mare_milenkovic"
 largeTwitterCard = true # set to true if you want to show a large twitter card image. The default is a small twitter card image

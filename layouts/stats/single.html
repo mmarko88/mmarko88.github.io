@@ -127,7 +127,9 @@
             .map(([k, v]) => `<div class="stats_card"><div class="v">${v}</div><div class="k">${k}</div></div>`)
             .join('');
 
-          const Chart = (await import('https://cdn.jsdelivr.net/npm/chart.js@4/+esm')).default;
+          const mod = await import('https://cdn.jsdelivr.net/npm/chart.js@4/auto/+esm');
+          const Chart = mod.default ?? mod.Chart;
+          if (mod.registerables && Chart.register) Chart.register(...mod.registerables);
           Chart.defaults.color = getComputedStyle(document.body).color;
           Chart.defaults.borderColor = 'rgba(128,128,128,.25)';
           charts.forEach((c) => c.destroy());
