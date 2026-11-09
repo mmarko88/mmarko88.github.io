@@ -30,7 +30,7 @@ SLIDES = [
         "saveAll() calls merge() — SELECT before every INSERT",
         "100k entities = 100,000 extra SELECTs",
         "Implement Persistable<T>, return isNew() = true",
-        "26,545 ms -> 2,140 ms (~12x faster)",
+        "26,545 ms → 2,140 ms (~12x faster)",
     ]},
     {"kind": "content", "headline": "2. StatelessSession = bare metal", "lines": [
         "Drops L1 cache, dirty checking, cascading",
@@ -40,7 +40,7 @@ SLIDES = [
     {"kind": "content", "headline": "3. Turn on the bulkCopy flag", "lines": [
         "URL flag: useBulkCopyForBatchInsert=true",
         "Batches become one Bulk Copy stream each",
-        "StatelessSession: 1,850 -> 646 ms (2.9x)",
+        "StatelessSession: 1,850 ms → 646 ms (2.9x)",
         "Only ~30% off raw Bulk API (499 ms)",
     ]},
     {"kind": "content", "headline": "Then tune jdbc.batch_size", "lines": [
@@ -50,7 +50,7 @@ SLIDES = [
     ]},
     {"kind": "cta",
      "headline": "Full benchmarks + code",
-     "sub": "mmarko88.github.io — link in comments\ngithub.com/mmarko88/blog-examples"},
+     "sub": "professionaldev.dev — link in comments\ngithub.com/mmarko88/blog-examples"},
 ]
 
 # Tuned so no rendered line exceeds SIZE - 2*MARGIN (920 px) in DejaVu:
