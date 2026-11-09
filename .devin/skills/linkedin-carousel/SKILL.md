@@ -9,24 +9,24 @@ Generate a set of PNG slides for a LinkedIn multi-image post (carousel). You are
 
 ## What to produce
 
-- Square 1080×1080 PNGs (LinkedIn multi-image posts accept multiple images; square fills the feed best).
+- **Portrait 1080×1350 PNGs + a combined `carousel.pdf`.** Upload guidance: PDF document posts render as native swipeable carousels and each swipe counts as dwell time (LinkedIn's top signal). Portrait 4:5 fills the mobile viewport — square is second-best, landscape worst.
 - 4–8 slides default (respect the user's count if given):
-  1. **Title/hook slide** — post title or strongest claim, big type. This must stop the scroll on its own.
-  2–N-1. **One idea per slide** — a headline line + 2–4 short supporting lines or a mini code snippet. Never dump paragraphs; if a slide is crowded, split it.
-  - **CTA slide** — short call to action ("Full write-up — link in comments" / handle / repo). 
-- Consistent design across slides: same background, accent color bar, footer with slide number (e.g. "2/6").
+  1. **Hook slide** — a giant proof number or bold claim (e.g. struck-out baseline vs green result). This must stop the scroll on its own. Add a "swipe →" cue.
+  2–N-1. **One idea + ONE visual anchor per slide** — prefer a bar chart, big number, or mini diagram over bullet lists. Benchmarks/data posts → real bars (red baseline, green result, accent reference). Never dump paragraphs.
+  - **CTA slide** — site domain (from site config, never guessed), repo, "link in comments".
+- Consistent system across slides: same background, eyebrow tag, accent bar, footer with progress dots + domain.
 
 ## Design rules
 
-- Dark or light minimal background, ONE accent color. High contrast text.
-- Large readable text (headline ≥ 60px, body ≥ 36px at 1080px).
-- Generous margins (~80px). Left-align text.
-- No logos/watermarks unless the user provides them.
-- Extract real content from the post — headlines and takeaways, not filler. Proof points (numbers) make the best slide headlines.
+- Dark minimal bg, ONE accent + semantic green/red for verdicts (`#34d399`/`#f87171`). High contrast.
+- Large readable text (headline ≥ 60px, body ≥ 36px); ≥80px margins; left-align.
+- Numbers are the graphic — make the best stat huge. Chart bars: sqrt-scale wide ranges so small values stay visible; dim-bar value labels use muted color for readability.
+- Extract real content from the post — proof points make the best slide headlines.
+- Structure as an information gradient: each slide delivers more than the last; resolution + CTA at the end.
 
 ## How to generate
 
-Use `generate_carousel.py` in this skill directory as the template — adapt its `SLIDES` list with content extracted from the post, run it, and iterate if text overflows. It uses Python + Pillow (available on this machine; fonts under `/usr/share/fonts/truetype/`).
+Use `generate_carousel.py` in this skill directory as the template — it ships `hook_slide` / `stat_slide` / `cta_slide` builders plus `hbar`/`scale_bars` chart helpers. Adapt the builders with real post content (set `DOMAIN` from site config `baseurl`), run it, and iterate if text overflows. Python + Pillow only; fonts under `/usr/share/fonts/truetype/`.
 
 Save the adapted script and output PNGs to an `out/` directory next to the post (or `./linkedin-carousel-out/` if unclear), named `slide-1.png` … `slide-N.png` in swipe order.
 
