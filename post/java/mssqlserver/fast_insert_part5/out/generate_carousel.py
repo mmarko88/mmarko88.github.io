@@ -1,62 +1,28 @@
 #!/usr/bin/env python3
-"""LinkedIn carousel slide generator (1080x1080 PNGs).
+"""LinkedIn carousel — Fastest Inserts Part 5 (1080x1350 portrait, PDF-ready).
 
-Adapted for "Fastest MS SQL Inserts — Part 5: Hibernate Tuning".
-Run:  python3 generate_carousel.py
+Data-viz driven redesign: every data slide anchors on a bar chart.
+Run: python3 generate_carousel.py  ->  slide-N.png + carousel.pdf in ./out
 """
 
 import os
+import math
 import textwrap
 from PIL import Image, ImageDraw, ImageFont
 
-# --- Config ---
-SIZE = 1080
+W, H = 1080, 1350
 MARGIN = 80
-BG = "#0f172a"          # dark slate
-FG = "#f8fafc"          # near-white
-MUTED = "#94a3b8"       # muted gray
-ACCENT = "#38bdf8"      # sky blue
+BG = "#0f172a"
+FG = "#f8fafc"
+MUTED = "#94a3b8"
+ACCENT = "#38bdf8"
+GOOD = "#34d399"      # green — winning numbers
+BAD = "#f87171"       # red — baseline/cliff numbers
+BAR_DIM = "#334155"   # neutral bar fill
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 FONT_REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-
-# --- Slide content ---
-SLIDES = [
-    {"kind": "title",
-     "headline": "Hibernate inserts: 26.5 s to 646 ms",
-     "sub": "3 settings close ~90% of the gap to raw Bulk Copy — measured on 100,000 SQL Server inserts"},
-    {"kind": "content", "headline": "1. Kill the pre-INSERT SELECTs", "lines": [
-        "saveAll() calls merge() — SELECT before every INSERT",
-        "100k entities = 100,000 extra SELECTs",
-        "Implement Persistable<T>, return isNew() = true",
-        "26,545 ms → 2,140 ms (~12x faster)",
-    ]},
-    {"kind": "content", "headline": "2. StatelessSession = bare metal", "lines": [
-        "Drops L1 cache, dirty checking, cascading",
-        "No entity tracking — constant memory",
-        "1,850 ms — within ~1% of raw JDBC (1,873)",
-    ]},
-    {"kind": "content", "headline": "3. Turn on the bulkCopy flag", "lines": [
-        "URL flag: useBulkCopyForBatchInsert=true",
-        "Batches become one Bulk Copy stream each",
-        "StatelessSession: 1,850 ms → 646 ms (2.9x)",
-        "Only ~30% off raw Bulk API (499 ms)",
-    ]},
-    {"kind": "content", "headline": "Then tune jdbc.batch_size", "lines": [
-        "batch_size=1 fails: driver reports -1 row count",
-        "batch_size=10 is the cliff: ~20 s — worse than 1",
-        "Sweet spot 5,000-10,000 — best: 633 ms",
-    ]},
-    {"kind": "cta",
-     "headline": "Full benchmarks + code",
-     "sub": "professionaldev.dev — link in comments\ngithub.com/mmarko88/blog-examples"},
-]
-
-# Tuned so no rendered line exceeds SIZE - 2*MARGIN (920 px) in DejaVu:
-# bold 84px ~18 chars, bold 64px ~24 chars, reg 40px ~40 chars, reg 44px ~34 chars.
-CHARS_PER_LINE = {"title": 18, "headline": 24, "body": 38, "sub": 32}
-MAX_TEXT_W = SIZE - 2 * MARGIN
 
 
 def font(path, size):
@@ -70,85 +36,188 @@ def wrap(text, width):
     return textwrap.wrap(text, width=width) or [""]
 
 
-def draw_slide(slide, index, total):
-    img = Image.new("RGB", (SIZE, SIZE), BG)
-    d = ImageDraw.Draw(img)
-
-    # accent bar top-left
+def eyebrow(d, text):
     d.rectangle([MARGIN, MARGIN, MARGIN + 96, MARGIN + 12], fill=ACCENT)
+    d.text((MARGIN + 116, MARGIN - 6), text, font=font(FONT_BOLD, 26), fill=MUTED)
 
-    y = MARGIN + 140
-    kind = slide["kind"]
 
-    if kind in ("title", "cta"):
-        f_head = font(FONT_BOLD, 84)
-        for line in wrap(slide["headline"], CHARS_PER_LINE["title"]):
-            d.text((MARGIN, y), line, font=f_head, fill=FG)
-            y += 100
-        if slide.get("sub"):
-            y += 30
-            f_sub = font(FONT_REG, 44)
-            for para in slide["sub"].split("\n"):
-                for line in wrap(para, CHARS_PER_LINE["sub"]):
-                    d.text((MARGIN, y), line, font=f_sub, fill=MUTED)
-                    y += 56
-                y += 12
-    else:
-        f_head = font(FONT_BOLD, 64)
-        for line in wrap(slide["headline"], CHARS_PER_LINE["headline"]):
-            d.text((MARGIN, y), line, font=f_head, fill=ACCENT)
-            y += 78
-        y += 40
-        f_body = font(FONT_REG, 40)
-        for item in slide.get("lines", []):
-            wrapped = wrap(item, CHARS_PER_LINE["body"])
-            for i, line in enumerate(wrapped):
-                prefix = "→ " if i == 0 else "   "
-                d.text((MARGIN, y), prefix + line, font=f_body, fill=FG)
-                y += 56
-            y += 16
+def footer(d, i, total):
+    # progress dots + domain
+    y = H - MARGIN - 10
+    for k in range(total):
+        x = MARGIN + k * 34
+        fill = ACCENT if k == i else BAR_DIM
+        d.ellipse([x, y, x + 14, y + 14], fill=fill)
+    t = "professionaldev.dev"
+    d.text((W - MARGIN - d.textlength(t, font=font(FONT_REG, 30)), y - 10),
+           t, font=font(FONT_REG, 30), fill=MUTED)
 
-    # footer: slide number
-    d.text((SIZE - MARGIN - 60, SIZE - MARGIN), f"{index + 1}/{total}",
-           font=font(FONT_REG, 32), fill=MUTED)
 
+def hbar(d, x, y, label, value_text, frac, color, label_w=250, bar_h=52):
+    """One horizontal bar: label | bar | value. frac in [0,1] of bar area width."""
+    f_label = font(FONT_BOLD, 34)
+    f_val = font(FONT_BOLD, 34)
+    bar_x = x + label_w
+    bar_max = W - MARGIN - bar_x - 170
+    d.text((x, y + 6), label, font=f_label, fill=FG)
+    d.rounded_rectangle([bar_x, y, bar_x + max(frac, 0.02) * bar_max, y + bar_h],
+                        radius=10, fill=color)
+    val_color = MUTED if color == BAR_DIM else color
+    d.text((bar_x + frac * bar_max + 18, y + 6), value_text, font=f_val, fill=val_color)
+    return y + bar_h + 34
+
+
+def scale_bars(values):
+    """sqrt scale so a 30x range stays readable."""
+    mx = max(values)
+    return [math.sqrt(v / mx) for v in values]
+
+
+def new_slide():
+    img = Image.new("RGB", (W, H), BG)
+    return img, ImageDraw.Draw(img)
+
+
+# ---------- Slide 1: hook ----------
+def slide1():
+    img, d = new_slide()
+    eyebrow(d, "FASTEST MS SQL INSERTS · PART 5")
+
+    y = 260
+    d.text((MARGIN, y), "Hibernate inserts:", font=font(FONT_BOLD, 72), fill=FG)
+    y += 150
+    # struck-out baseline
+    base = "26,545 ms"
+    f_base = font(FONT_BOLD, 110)
+    d.text((MARGIN, y), base, font=f_base, fill=MUTED)
+    lw = d.textlength(base, font=f_base)
+    d.line([MARGIN, y + 62, MARGIN + lw, y + 62], fill=BAD, width=10)
+    y += 190
+    d.text((MARGIN, y), "646 ms", font=font(FONT_BOLD, 210), fill=GOOD)
+    y += 250
+    d.text((MARGIN, y), "3 settings close ~90% of the gap", font=font(FONT_REG, 44), fill=MUTED)
+    y += 58
+    d.text((MARGIN, y), "to raw Bulk Copy — 100k inserts,", font=font(FONT_REG, 44), fill=MUTED)
+    y += 58
+    d.text((MARGIN, y), "median of 10 runs", font=font(FONT_REG, 44), fill=MUTED)
+
+    d.text((W - MARGIN - 240, H - MARGIN - 120), "swipe →", font=font(FONT_BOLD, 40), fill=ACCENT)
+    footer(d, 0, 6)
     return img
 
 
-def check_widths():
-    """Warn about any rendered line wider than the text area."""
-    probe = ImageDraw.Draw(Image.new("RGB", (8, 8)))
-    fonts = {"title": font(FONT_BOLD, 84), "headline": font(FONT_BOLD, 64),
-             "body": font(FONT_REG, 40), "sub": font(FONT_REG, 44)}
-    ok = True
-    for i, s in enumerate(SLIDES, 1):
-        checks = []
-        if s["kind"] in ("title", "cta"):
-            checks += [("title", l) for l in wrap(s["headline"], CHARS_PER_LINE["title"])]
-            for para in s.get("sub", "").split("\n"):
-                checks += [("sub", l) for l in wrap(para, CHARS_PER_LINE["sub"])]
-        else:
-            checks += [("headline", l) for l in wrap(s["headline"], CHARS_PER_LINE["headline"])]
-            for item in s.get("lines", []):
-                for j, l in enumerate(wrap(item, CHARS_PER_LINE["body"])):
-                    checks.append(("body", ("→ " if j == 0 else "   ") + l))
-        for kind, line in checks:
-            w = probe.textlength(line, font=fonts[kind])
-            if w > MAX_TEXT_W:
-                ok = False
-                print(f"OVERFLOW slide {i} [{kind}] {w:.0f}px: {line!r}")
-    if ok:
-        print("width check: all lines fit")
+# ---------- Slides 2-4: fix + bar comparison ----------
+def stat_slide(i, headline, lines, bars, callout):
+    img, d = new_slide()
+    eyebrow(d, "HIBERNATE TUNING")
+
+    y = 200
+    for ln in wrap(headline, 24):
+        d.text((MARGIN, y), ln, font=font(FONT_BOLD, 62), fill=ACCENT)
+        y += 76
+    y += 20
+    for ln in lines:
+        for wln in wrap(ln, 46):
+            d.text((MARGIN, y), wln, font=font(FONT_REG, 36), fill=FG)
+            y += 50
+        y += 8
+    y += 50
+
+    fracs = scale_bars([b[2] for b in bars])
+    for (label, val_text, _, color), fr in zip(bars, fracs):
+        y = hbar(d, MARGIN, y, label, val_text, fr, color)
+    y += 30
+    for ln in wrap(callout, 40):
+        d.text((MARGIN, y), ln, font=font(FONT_BOLD, 44), fill=GOOD)
+        y += 56
+    footer(d, i, 6)
+    return img
+
+
+# ---------- Slide 5: batch-size cliff chart ----------
+def slide5():
+    img, d = new_slide()
+    eyebrow(d, "HIBERNATE TUNING")
+
+    y = 200
+    for ln in wrap("Then tune jdbc.batch_size", 24):
+        d.text((MARGIN, y), ln, font=font(FONT_BOLD, 62), fill=ACCENT)
+        y += 76
+    y += 10
+    d.text((MARGIN, y), "StatelessSession + bulkCopy, 100k inserts:",
+           font=font(FONT_REG, 36), fill=FG)
+    y += 90
+
+    # sweep data: batch_size -> ms (1 = fails)
+    data = [("10", "19,615", 19615, BAD), ("100", "3,266", 3266, BAR_DIM),
+            ("500", "1,280", 1280, BAR_DIM), ("1,000", "844", 844, BAR_DIM),
+            ("5,000", "638", 638, BAR_DIM), ("10,000", "633", 633, GOOD),
+            ("50,000", "844", 844, BAR_DIM)]
+    fracs = scale_bars([v for _, _, v, _ in data])
+    for (label, vt, _, color), fr in zip(data, fracs):
+        y = hbar(d, MARGIN, y, label, vt, fr, color, label_w=170)
+    y += 10
+    for ln in wrap("batch_size=1 fails outright — and 10 is the cliff: ~20 s, worse than not batching at all. Optimum: 5,000–10,000.", 46):
+        d.text((MARGIN, y), ln, font=font(FONT_REG, 36), fill=FG)
+        y += 50
+    footer(d, 4, 6)
+    return img
+
+
+# ---------- Slide 6: CTA ----------
+def slide6():
+    img, d = new_slide()
+    eyebrow(d, "FASTEST MS SQL INSERTS · PART 5")
+
+    y = 300
+    for ln in wrap("Full benchmarks + runnable code", 20):
+        d.text((MARGIN, y), ln, font=font(FONT_BOLD, 84), fill=FG)
+        y += 100
+    y += 60
+    d.text((MARGIN, y), "professionaldev.dev", font=font(FONT_BOLD, 60), fill=ACCENT)
+    y += 86
+    d.text((MARGIN, y), "github.com/mmarko88/blog-examples", font=font(FONT_REG, 40), fill=MUTED)
+    y += 140
+    for ln in wrap("Batch-size sweep, Persistable source, StatelessSession repo — link in comments.", 44):
+        d.text((MARGIN, y), ln, font=font(FONT_REG, 38), fill=MUTED)
+        y += 52
+    footer(d, 5, 6)
+    return img
 
 
 def main():
+    slides = [
+        slide1(),
+        stat_slide(1, "1. Kill the pre-INSERT SELECTs",
+                   ["saveAll() calls merge() — a SELECT", "before every INSERT (100k extra)"],
+                   [("saveAll()", "26,545 ms", 26545, BAD),
+                    ("+ Persistable", "2,140 ms", 2140, GOOD)],
+                   "isNew() = true → ~12x faster. 10 lines of code."),
+        stat_slide(2, "2. StatelessSession = bare metal",
+                   ["Drops L1 cache, dirty checking, cascading —", "constant memory, no entity tracking"],
+                   [("persist()", "2,064 ms", 2064, BAR_DIM),
+                    ("Stateless", "1,850 ms", 1850, GOOD),
+                    ("raw JDBC", "1,873 ms", 1873, BAR_DIM)],
+                   "Within ~1% of raw JDBC."),
+        stat_slide(3, "3. Turn on the bulkCopy flag",
+                   ["useBulkCopyForBatchInsert=true —", "each executeBatch() = one Bulk Copy stream"],
+                   [("Stateless", "1,850 ms", 1850, BAR_DIM),
+                    ("+ bulkCopy", "646 ms", 646, GOOD),
+                    ("Bulk API", "499 ms", 499, ACCENT)],
+                   "2.9x — only ~30% off the raw Bulk API."),
+        slide5(),
+        slide6(),
+    ]
     os.makedirs(OUT_DIR, exist_ok=True)
-    check_widths()
-    for i, slide in enumerate(SLIDES):
-        img = draw_slide(slide, i, len(SLIDES))
-        path = os.path.join(OUT_DIR, f"slide-{i + 1}.png")
-        img.save(path)
-        print(f"wrote {path}")
+    paths = []
+    for i, img in enumerate(slides, 1):
+        p = os.path.join(OUT_DIR, f"slide-{i}.png")
+        img.save(p)
+        paths.append(p)
+        print(f"wrote {p}")
+    pdf = os.path.join(OUT_DIR, "carousel.pdf")
+    slides[0].save(pdf, save_all=True, append_images=slides[1:], resolution=300)
+    print(f"wrote {pdf}")
 
 
 if __name__ == "__main__":
