@@ -122,12 +122,13 @@ public class StatelessSessionInsertRepository {
 
 | Strategy | 100k persons (median ms) |
 |----------|----------------------|
+| [saveAll](/post/java/mssqlserver/persist_vs_saveall/) (original, Part 1) | 26,545 |
+| saveAll + [Persistable](#fix-implement-persistable) | 2,140 |
 | **StatelessSession** | **1,850** |
-| [JDBC PreparedStatement](/post/java/mssqlserver/fast_insert_part2/) (Part 2) | 1,873 |
-| [JdbcTemplate](/post/java/mssqlserver/fast_insert_part2/) (Part 2) | 1,873 |
 
-**StatelessSession lands within ~1% of raw JDBC** (1,850 vs 1,873) — ~14% faster than the fixed
-`saveAll` (2,140 ms) on the same rig. The small residual is Hibernate's SQL generation and parameter binding.
+**StatelessSession adds another ~14% on top of the Persistable fix** (1,850 vs 2,140 ms) — ~14x
+faster than the `saveAll` we started with. No first-level cache, no dirty checking: the per-entity
+bookkeeping `Persistable` couldn't remove is gone.
 
 {{< quiz question="What does StatelessSession drop vs a regular Session?" options="First-level cache|Dirty checking at flush|Automatic cascading|JDBC batching" correct="0,1,2" multi="true" explanation="StatelessSession skips the L1 cache, dirty checking and cascading — that's most of the overhead a regular Session carries. JDBC batching still works underneath." >}}
 
@@ -204,6 +205,12 @@ Three takeaways:
 One gotcha remains: don't leave `batch_size` unset or at 1 with the flag on —
 same `-1` row count, same failure. Set it to at least 1,000 — 5,000–10,000 is the
 optimum.
+
+**How does all this stack against raw JDBC?** StatelessSession lands within ~1% of the Part 2
+baselines — 1,850 ms next to 1,873 ms for both [plain `PreparedStatement` and
+`JdbcTemplate`](/post/java/mssqlserver/fast_insert_part2/); the small residual is Hibernate's SQL
+generation and parameter binding. With the bulkCopy flag it actually pulls ahead of both — 646 ms vs
+712 and 786 — ORM convenience at better-than-JDBC speed.
 
 ## The one thing to remember
 
