@@ -2,5 +2,10 @@
   "name": "mmarko88githubio-stats",
   "github": {
     "silent": true
+  },
+  "git": {
+    "deploymentEnabled": {
+      "gh-pages": false
+    }
   }
 }
