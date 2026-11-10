@@ -175,15 +175,18 @@ median of 10, CPU locked at 3.5 GHz).
 
 | `jdbc.batch_size` | saveAll+Persistable | StatelessSession | saveAll+Persistable + bulkCopy | Stateless + bulkCopy |
 |------------------:|--------------------:|-----------------:|-------------------------------:|---------------------:|
-| 1                 |           **fails** |        **fails** |                         13,931 |              **fails** |
+| 1                 |              fails |           fails |                         13,931 |                 fails |
 | 10                |               3,542 |            3,236 |                         19,894 |               19,615 |
 | 50                |               2,705 |            2,402 |                          6,001 |                5,823 |
 | 100               |               2,418 |            2,106 |                          3,578 |                3,266 |
 | 500               |               2,234 |            1,960 |                          1,499 |                1,280 |
-| 1,000             |               2,198 |            1,896 |                          1,074 |                  844 |
-| 5,000             |               2,146 |            1,846 |                          1,078 |                  638 |
-| 10,000            |               2,140 |            1,846 |                          1,096 |              **633** |
+| 1,000             |           **2,198** |        **1,896** |                      **1,074** |                  844 |
+| 5,000             |               2,146 |            1,846 |                          1,078 |              **638** |
+| 10,000            |               2,140 |            1,846 |                          1,096 |                  633 |
 | 50,000            |               2,302 |            1,882 |                          1,080 |                  844 |
+
+**Bold** = diminishing-returns knee — the last batch size that still buys a significant
+win before gains flatten or regress.
 
 Three takeaways:
 
