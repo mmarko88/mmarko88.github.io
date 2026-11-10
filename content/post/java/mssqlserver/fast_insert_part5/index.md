@@ -206,11 +206,36 @@ One gotcha remains: don't leave `batch_size` unset or at 1 with the flag on —
 same `-1` row count, same failure. Set it to at least 1,000 — 5,000–10,000 is the
 optimum.
 
-**How does all this stack against raw JDBC?** StatelessSession lands within ~1% of the Part 2
-baselines — 1,850 ms next to 1,873 ms for both [plain `PreparedStatement` and
-`JdbcTemplate`](/post/java/mssqlserver/fast_insert_part2/); the small residual is Hibernate's SQL
-generation and parameter binding. With the bulkCopy flag it actually pulls ahead of both — 646 ms vs
-712 and 786 — ORM convenience at better-than-JDBC speed.
+## How do these times compare to earlier posts?
+
+Same rig, same 100k scale — the unflagged numbers sit within ~2% of
+[Part 2's October re-benchmark](/post/java/mssqlserver/fast_insert_part2/):
+
+| Strategy (100k rows, large batch) | Part 2 (2023) | Part 2 re-run | Part 5 |
+|-----------------------------------|---------------|---------------|--------|
+| JdbcTemplate                      | 1,509         | 1,873         | 1,852  |
+| PreparedStatement                 | 1,520         | 1,873         | 1,840  |
+| Hibernate persist                 | 1,732         | 2,064         | 2,140* |
+| StatelessSession                  | —             | —             | **1,850** |
+| Bulk Copy API                     | 314           | 364           | 499    |
+
+\* measured as `saveAll + Persistable` — the same code path. Batch sizes are each post's
+large-batch optimum (~5,000–10,000); the Bulk API itself wobbles 360–500 ms across runs.
+
+- **Rankings held for three years — absolute times didn't.** The JDBC and Hibernate paths run
+  ~20–25% slower than the 2023 originals, the environment drift Part 2's re-benchmark attributes
+  to kernel mitigations and SQL Server 2025 on Linux.
+- **What actually moved is Hibernate.** StatelessSession erases the ~10% ORM tax `persist()`
+  carried in every earlier table (2,140 → 1,850), landing within ~1% of raw JDBC (1,873); the small
+  residual is Hibernate's SQL generation and parameter binding. Add the flag and it beats every
+  unflagged strategy, JDBC included — 646 vs 712 and 786.
+- **The flag speedup agrees with [Part 4](/post/java/mssqlserver/fast_insert_part4/).** That post
+  measured at 1M rows — scaled per-100k, JdbcTemplate came to ~520–590 ms vs 712 ms here; per-batch
+  setup amortizes better at the larger scale, and the ratio is the same ~2–3x in both.
+- **One strategy from [Part 3](/post/java/mssqlserver/fast_insert_part3/) still beats the ORM path:**
+  multi-value INSERT hit ~450 ms at 400 objects per statement in Part 2's re-run sweep — under
+  StatelessSession + bulkCopy's 646, using nothing but plain JDBC. It costs you hand-written SQL;
+  StatelessSession keeps the ORM mapping.
 
 ## The one thing to remember
 
