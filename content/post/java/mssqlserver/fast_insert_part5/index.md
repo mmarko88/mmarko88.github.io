@@ -172,20 +172,30 @@ The knob that matters is `hibernate.jdbc.batch_size` — that's what controls th
 batch the driver actually sends. We swept it for every strategy above (100k inserts,
 median of 10, CPU locked at 3.5 GHz).
 
-| `jdbc.batch_size` | saveAll+Persistable | StatelessSession | saveAll+Persistable + bulkCopy | Stateless + bulkCopy |
-|------------------:|--------------------:|-----------------:|-------------------------------:|---------------------:|
-| 1                 |              14,400 |           14,240 |                         13,834 |                13,725 |
-| 10                |               3,542 |            3,236 |                         19,894 |               19,615 |
-| 50                |               2,705 |            2,402 |                          6,001 |                5,823 |
-| 100               |               2,418 |            2,106 |                          3,578 |                3,266 |
-| 500               |               2,234 |            1,960 |                          1,499 |                1,280 |
-| 1,000             |           **2,198** |        **1,896** |                      **1,074** |                  844 |
-| 5,000             |               2,146 |            1,846 |                          1,078 |              **638** |
-| 10,000            |               2,140 |            1,846 |                          1,096 |                  633 |
-| 50,000            |               2,302 |            1,882 |                          1,080 |                  844 |
+```chart {aria="Line chart: insert time vs hibernate.jdbc.batch_size for four strategies. Unflagged paths flatten near 1,000; bulkCopy paths keep dropping to 5,000–10,000."}
+{
+  "type": "line",
+  "data": {
+    "labels": ["1", "10", "50", "100", "500", "1,000", "5,000", "10,000", "50,000"],
+    "datasets": [
+      { "label": "saveAll+Persistable", "data": [14400, 3542, 2705, 2418, 2234, 2198, 2146, 2140, 2302], "borderColor": "#a6adbb" },
+      { "label": "StatelessSession", "data": [14240, 3236, 2402, 2106, 1960, 1896, 1846, 1846, 1882], "borderColor": "#6b7a94" },
+      { "label": "saveAll+Persistable + bulkCopy", "data": [13834, 19894, 6001, 3578, 1499, 1074, 1078, 1096, 1080], "borderColor": "#62a0ea" },
+      { "label": "Stateless + bulkCopy", "data": [13725, 19615, 5823, 3266, 1280, 844, 638, 633, 844], "borderColor": "#1a5fb4" }
+    ]
+  },
+  "options": {
+    "scales": {
+      "x": { "title": { "display": true, "text": "hibernate.jdbc.batch_size" } },
+      "y": { "type": "logarithmic", "title": { "display": true, "text": "median ms (log scale)" } }
+    },
+    "plugins": { "title": { "display": true, "text": "100k inserts — time vs hibernate.jdbc.batch_size (median of 10)" } }
+  }
+}
+```
 
-**Bold** = diminishing-returns knee — the last batch size that still buys a significant
-win before gains flatten or regress.
+The knees: ~**1,000** for the unflagged paths and saveAll+Persistable + bulkCopy,
+~**5,000** for Stateless + bulkCopy — beyond that, gains flatten or regress.
 
 Two takeaways:
 
