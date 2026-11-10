@@ -220,19 +220,18 @@ Batch sizes are each post's large-batch optimum (~5,000–10,000); the Bulk API 
 wobbles 360–500 ms across runs.
 
 - **Rankings held for three years — absolute times didn't.** The JDBC and Hibernate paths run
-  ~20–25% slower than the 2023 originals, the environment drift Part 2's re-benchmark attributes
-  to kernel mitigations and SQL Server 2025 on Linux.
-- **What actually moved is Hibernate.** StatelessSession erases the ~10% ORM tax `persist()`
-  carried in every earlier table (2,140 → 1,850), landing within ~1% of raw JDBC (1,873); the small
-  residual is Hibernate's SQL generation and parameter binding. Add the flag and it beats every
-  unflagged strategy, JDBC included — 646 vs 712 and 786.
-- **The flag speedup agrees with [Part 4](/post/java/mssqlserver/fast_insert_part4/).** That post
-  measured at 1M rows — scaled per-100k, JdbcTemplate came to ~520–590 ms vs 712 ms here; per-batch
-  setup amortizes better at the larger scale, and the ratio is the same ~2–3x in both.
-- **One strategy from [Part 3](/post/java/mssqlserver/fast_insert_part3/) still beats the ORM path:**
-  multi-value INSERT hit ~450 ms at 400 objects per statement in Part 2's re-run sweep — under
-  StatelessSession + bulkCopy's 646, using nothing but plain JDBC. It costs you hand-written SQL;
-  StatelessSession keeps the ORM mapping.
+  ~20–25% slower than the 2023 originals — environment drift (kernel mitigations, SQL Server 2025
+  on Linux), documented in Part 2's re-benchmark.
+- **StatelessSession really is bare-metal Hibernate.** ~1% off JdbcTemplate means the
+  entity-tracking tax is gone — what's left is SQL generation and parameter binding.
+- **`saveAll + Persistable` is `persist()`.** A ~4% gap on identical code is pure run-to-run
+  noise — the delegation does exactly what it promises and nothing more.
+- **Raw Bulk API still wins — but barely for Hibernate.** StatelessSession + flag comes within
+  ~30% (646 vs 499); the regular session path lands ~2.2x off (1,078). The flag's ~2–3x speedup
+  also matches [Part 4](/post/java/mssqlserver/fast_insert_part4/), measured there at 1M rows.
+- **[Part 3](/post/java/mssqlserver/fast_insert_part3/)'s multi-value INSERT still beats the ORM
+  path** — ~450 ms at 400 objects per statement, under 646 and using nothing but plain JDBC.
+  It costs you hand-written SQL; StatelessSession keeps the ORM mapping.
 
 ## The one thing to remember
 
