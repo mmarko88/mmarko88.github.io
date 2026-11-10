@@ -207,13 +207,13 @@ optimum.
 
 ## How do these times compare to earlier posts?
 
-Same rig, same 100k scale — the unflagged numbers sit within ~2% of
+Same rig, same 100k scale — the unflagged numbers sit within a few percent of
 [Part 2's October re-benchmark](/post/java/mssqlserver/fast_insert_part2/):
 
 | Strategy (100k rows, large batch) | Part 2 re-run | Part 5 |
 |-----------------------------------|---------------|--------|
-| JdbcTemplate                      | 1,873         | 1,852  |
-| PreparedStatement                 | 1,873         | 1,840  |
+| JdbcTemplate                      | 1,873         | —      |
+| PreparedStatement                 | 1,873         | —      |
 | Hibernate persist                 | 2,064         | 2,140* |
 | StatelessSession                  | —             | **1,850** |
 | Bulk Copy API                     | 364           | 499    |
