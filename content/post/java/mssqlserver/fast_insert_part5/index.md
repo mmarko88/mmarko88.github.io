@@ -144,7 +144,7 @@ batches to SQL Server's [Bulk Copy protocol](/post/java/mssqlserver/fast_insert_
 | saveAll + [Persistable](#fix-implement-persistable) | 2,140 | 1,078 | 2.0x |
 | [StatelessSession](#statelesssession-bare-metal-hibernate) | 1,850 | **646** | **2.9x** |
 
-```chart
+```chart {aria="Bar chart: 100k inserts, bulkCopy flag off vs on. saveAll+Persistable 2,140 to 1,078 ms; StatelessSession 1,850 to 646 ms."}
 {
   "type": "bar",
   "data": {
@@ -194,8 +194,15 @@ median of 10, CPU locked at 3.5 GHz).
 }
 ```
 
-The knees: ~**1,000** for the unflagged paths and saveAll+Persistable + bulkCopy,
-~**5,000** for Stateless + bulkCopy — beyond that, gains flatten or regress.
+The knees — the last batch size that still buys a significant win before gains
+flatten or regress:
+
+| Strategy | Optimal `batch_size` | Median ms |
+|----------|---------------------:|----------:|
+| saveAll+Persistable | 1,000 | 2,198 |
+| StatelessSession | 1,000 | 1,896 |
+| saveAll+Persistable + bulkCopy | 1,000 | 1,074 |
+| Stateless + bulkCopy | 5,000 | 638 |
 
 Two takeaways:
 
