@@ -4,7 +4,7 @@
 </a><a href=https://www.linkedin.com/in/mare-milenkovic/# rel="me noopener" target=_blank><svg class="icon"><title>linkedin</title><use xlink:href="#linkedin"/></svg>
 </a><a href=https://www.professionaldev.dev/index.xml rel="me noopener" target=_blank><svg class="icon"><title>rss</title><use xlink:href="#rss"/></svg></a><div class=color_mode><input type=checkbox class=color_choice id=mode></div></div></div></nav></header><main id=main-content><div class="wrap content"><article class=post_content><h1 class=post_title>Fastest MS SQL Inserts — Part 5: Hibernate Tuning</h1><div class=post_meta><span><svg class="icon"><title>calendar</title><use xlink:href="#calendar"/></svg>
 </span><span class=post_date>Oct 19, 2026
-</span><span class=post_time>· 6 min read</span><span>&nbsp;· <a href=https://www.professionaldev.dev/tags/java/ title=java class="post_tag button button_translucent">java
+</span><span class=post_time>· 7 min read</span><span>&nbsp;· <a href=https://www.professionaldev.dev/tags/java/ title=java class="post_tag button button_translucent">java
 </a><a href=https://www.professionaldev.dev/tags/ms-sql-server/ title="ms sql server" class="post_tag button button_translucent">ms sql server
 </a><a href=https://www.professionaldev.dev/tags/hibernate/ title=hibernate class="post_tag button button_translucent">hibernate
 </a></span><span class=page_only>&nbsp;·
@@ -77,8 +77,9 @@ separately in the comparisons below.</p><div class=quiz-card id=quiz-7a0eac661ed
 </span></span></span><span class=line><span class=ln>18</span><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
 </span></span></span><span class=line><span class=ln>19</span><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
 </span></span></span><span class=line><span class=ln>20</span><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h3 id=results-1>Results</h3><table><thead><tr><th>Strategy</th><th>100k persons (median ms)</th></tr></thead><tbody><tr><td><strong>StatelessSession</strong></td><td><strong>1,850</strong></td></tr><tr><td><a href=/post/java/mssqlserver/fast_insert_part2/>JDBC PreparedStatement</a> (Part 2)</td><td>1,873</td></tr><tr><td><a href=/post/java/mssqlserver/fast_insert_part2/>JdbcTemplate</a> (Part 2)</td><td>1,873</td></tr></tbody></table><p><strong>StatelessSession lands within ~1% of raw JDBC</strong> (1,850 vs 1,873) — ~14% faster than the fixed
-<code>saveAll</code> (2,140 ms) on the same rig. The small residual is Hibernate's SQL generation and parameter binding.</p><div class="quiz-card quiz-multi" id=quiz-ff7bd070a4470297b9b2091bd8c7b9de data-correct=0,1,2 data-multi=true data-waline=https://mmarko88githubio-waline.vercel.app><p class=quiz-card-q>What does StatelessSession drop vs a regular Session? <span class=quiz-card-hint>(select all that apply)</span></p><div class=quiz-card-options><label class=quiz-card-option><input type=checkbox name=quiz-ff7bd070a4470297b9b2091bd8c7b9de value=0>
+</span></span></span></code></pre></div><h3 id=results-1>Results</h3><table><thead><tr><th>Strategy</th><th>100k persons (median ms)</th></tr></thead><tbody><tr><td><a href=/post/java/mssqlserver/persist_vs_saveall/>saveAll</a> (original, Part 1)</td><td>26,545</td></tr><tr><td>saveAll + <a href=/post/java/mssqlserver/fast_insert_part5/#fix-implement-persistable>Persistable</a></td><td>2,140</td></tr><tr><td><strong>StatelessSession</strong></td><td><strong>1,850</strong></td></tr></tbody></table><p><strong>StatelessSession adds another ~14% on top of the Persistable fix</strong> (1,850 vs 2,140 ms) — ~14x
+faster than the <code>saveAll</code> we started with. No first-level cache, no dirty checking: the per-entity
+bookkeeping <code>Persistable</code> couldn't remove is gone.</p><div class="quiz-card quiz-multi" id=quiz-ff7bd070a4470297b9b2091bd8c7b9de data-correct=0,1,2 data-multi=true data-waline=https://mmarko88githubio-waline.vercel.app><p class=quiz-card-q>What does StatelessSession drop vs a regular Session? <span class=quiz-card-hint>(select all that apply)</span></p><div class=quiz-card-options><label class=quiz-card-option><input type=checkbox name=quiz-ff7bd070a4470297b9b2091bd8c7b9de value=0>
 <span>First-level cache</span>
 </label><label class=quiz-card-option><input type=checkbox name=quiz-ff7bd070a4470297b9b2091bd8c7b9de value=1>
 <span>Dirty checking at flush</span>
@@ -140,7 +141,11 @@ smallest one. <code>batch_size=10</code> is the cliff edge: 10,000 tiny bulk-cop
 ~20 s — <em>slower than <code>batch_size=1</code></em>, which skips batching (and bulk copy)
 entirely. <a href=/post/java/mssqlserver/fast_insert_part5/#the-killer-combo-statelesssession--usebulkcopyforbatchinsert>StatelessSession + bulkCopy</a> bottoms out at <strong>~10,000</strong> (633 ms), degrades sharply below ~1,000, and regresses at 50,000.</li></ul><p>One gotcha remains: don't leave <code>batch_size</code> unset or at 1 with the flag on —
 same <code>-1</code> row count, same failure. Set it to at least 1,000 — 5,000–10,000 is the
-optimum.</p><h2 id=the-one-thing-to-remember>The one thing to remember</h2><blockquote><p><strong>StatelessSession + <a href=/post/java/mssqlserver/fast_insert_part4/><code>useBulkCopyForBatchInsert=true</code></a> = 646 ms</strong> for 100k inserts — ~30% off
+optimum.</p><p><strong>How does all this stack against raw JDBC?</strong> StatelessSession lands within ~1% of the Part 2
+baselines — 1,850 ms next to 1,873 ms for both <a href=/post/java/mssqlserver/fast_insert_part2/>plain <code>PreparedStatement</code> and
+<code>JdbcTemplate</code></a>; the small residual is Hibernate's SQL
+generation and parameter binding. With the bulkCopy flag it actually pulls ahead of both — 646 ms vs
+712 and 786 — ORM convenience at better-than-JDBC speed.</p><h2 id=the-one-thing-to-remember>The one thing to remember</h2><blockquote><p><strong>StatelessSession + <a href=/post/java/mssqlserver/fast_insert_part4/><code>useBulkCopyForBatchInsert=true</code></a> = 646 ms</strong> for 100k inserts — ~30% off
 <a href=/post/java/mssqlserver/fast_insert_part2/>raw Bulk Copy</a> (499 ms), with ORM mapping metadata still working for you. If you need
 Hibernate's convenience without paying Hibernate's full price, that's the combination.</p></blockquote><p>If you can only make one change to speed up a <code>saveAll()</code> call: implement <a href=/post/java/mssqlserver/fast_insert_part5/#fix-implement-persistable><code>Persistable&lt;T></code></a> with
 <code>isNew = true</code>. It eliminates the pre-INSERT SELECTs and makes <code>saveAll</code> ~12x faster — a 10-line
