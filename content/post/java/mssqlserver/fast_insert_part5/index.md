@@ -174,7 +174,7 @@ median of 10, CPU locked at 3.5 GHz).
 
 | `jdbc.batch_size` | saveAll+Persistable | StatelessSession | saveAll+Persistable + bulkCopy | Stateless + bulkCopy |
 |------------------:|--------------------:|-----------------:|-------------------------------:|---------------------:|
-| 1                 |              fails |           fails |                         13,931 |                 fails |
+| 1                 |              14,400 |           14,240 |                         13,834 |                13,725 |
 | 10                |               3,542 |            3,236 |                         19,894 |               19,615 |
 | 50                |               2,705 |            2,402 |                          6,001 |                5,823 |
 | 100               |               2,418 |            2,106 |                          3,578 |                3,266 |
@@ -189,12 +189,13 @@ win before gains flatten or regress.
 
 Three takeaways:
 
-- **`batch_size=1` isn't broken — our `SET NOCOUNT ON` is.** NOCOUNT suppresses
-  SQL Server's row-count token, so the driver's `executeUpdate()` returns `-1`
-  and Hibernate's insert expectation (row count = 1) fails — `StaleStateException`.
+- **`batch_size=1` is ~7x slower, not broken.** An earlier sweep showed
+  `ObjectOptimisticLockingFailure` at bs=1 — our own `SET NOCOUNT ON` suppressed
+  the row-count token, the driver's `executeUpdate()` returned `-1`, and
+  Hibernate's insert expectation (row count = 1) threw `StaleStateException`.
   saveAll+Persistable only failed because the stateless test poisoned the pooled
-  connection first (it passes in isolation). Strip NOCOUNT and bs=1 just runs
-  unbatched at ~14 s.
+  connection first. The bs=1 numbers above are post-fix — NOCOUNT is removed
+  from the repo.
 - **Without the flag, batch size barely matters** once you're at ~500+. The plain
   paths sit at ~1.8–2.4 s; round-trips only hurt below ~100 (3.2–3.5 s at 10).
 - **With `useBulkCopyForBatchInsert`, batch size *is* the tuning knob.** Each
