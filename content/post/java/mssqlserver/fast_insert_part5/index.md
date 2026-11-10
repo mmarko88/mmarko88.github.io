@@ -225,9 +225,6 @@ Same rig, same 100k scale — the unflagged numbers sit within a few percent of
 Batch sizes are each post's large-batch optimum (~5,000–10,000); the Bulk API itself
 wobbles 360–500 ms across runs.
 
-- **Rankings held for three years — absolute times didn't.** The JDBC and Hibernate paths run
-  ~20–25% slower than the 2023 originals — environment drift (kernel mitigations, SQL Server 2025
-  on Linux).
 - **StatelessSession really is bare-metal Hibernate.** ~1% off JdbcTemplate means the
   entity-tracking tax is gone — what's left is SQL generation and parameter binding.
 - **`saveAll + Persistable` is `persist()`.** A ~4% gap on identical code is pure run-to-run
