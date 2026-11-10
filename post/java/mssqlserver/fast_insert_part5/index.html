@@ -144,16 +144,14 @@ same <code>-1</code> row count, same failure. Set it to at least 1,000 — 5,000
 optimum.</p><h2 id=how-do-these-times-compare-to-earlier-posts>How do these times compare to earlier posts?</h2><p>Same rig, same 100k scale — the unflagged numbers sit within a few percent of
 <a href=/post/java/mssqlserver/fast_insert_part2/>Part 2's October re-benchmark</a>:</p><table><thead><tr><th>Match-up (100k rows, large batch)</th><th>Earlier posts</th><th>Part 5</th><th>Verdict</th></tr></thead><tbody><tr><td>StatelessSession vs raw JDBC</td><td>JdbcTemplate 1,873 (<a href=/post/java/mssqlserver/fast_insert_part2/>Part 2 re-run</a>)</td><td><strong>1,850</strong></td><td>within ~1% — ORM tax gone</td></tr><tr><td><code>saveAll + Persistable</code> vs <code>persist()</code></td><td>Hibernate persist 2,064 (<a href=/post/java/mssqlserver/persist_vs_saveall/>Part 1 re-run</a>)</td><td>2,140</td><td>~4% apart — same code path, as expected</td></tr><tr><td>Hibernate + bulkCopy vs raw Bulk API</td><td>Bulk Copy API 499 (<a href=/post/java/mssqlserver/fast_insert_part2/>Part 2</a>)</td><td>646 / 1,078</td><td>~30% off for StatelessSession, ~2.2x for the regular session</td></tr></tbody></table><p>Batch sizes are each post's large-batch optimum (~5,000–10,000); the Bulk API itself
 wobbles 360–500 ms across runs.</p><ul><li><strong>Rankings held for three years — absolute times didn't.</strong> The JDBC and Hibernate paths run
-~20–25% slower than the 2023 originals, the environment drift Part 2's re-benchmark attributes
-to kernel mitigations and SQL Server 2025 on Linux.</li><li><strong>What actually moved is Hibernate.</strong> StatelessSession erases the ~10% ORM tax <code>persist()</code>
-carried in every earlier table (2,140 → 1,850), landing within ~1% of raw JDBC (1,873); the small
-residual is Hibernate's SQL generation and parameter binding. Add the flag and it beats every
-unflagged strategy, JDBC included — 646 vs 712 and 786.</li><li><strong>The flag speedup agrees with <a href=/post/java/mssqlserver/fast_insert_part4/>Part 4</a>.</strong> That post
-measured at 1M rows — scaled per-100k, JdbcTemplate came to ~520–590 ms vs 712 ms here; per-batch
-setup amortizes better at the larger scale, and the ratio is the same ~2–3x in both.</li><li><strong>One strategy from <a href=/post/java/mssqlserver/fast_insert_part3/>Part 3</a> still beats the ORM path:</strong>
-multi-value INSERT hit ~450 ms at 400 objects per statement in Part 2's re-run sweep — under
-StatelessSession + bulkCopy's 646, using nothing but plain JDBC. It costs you hand-written SQL;
-StatelessSession keeps the ORM mapping.</li></ul><h2 id=the-one-thing-to-remember>The one thing to remember</h2><blockquote><p><strong>StatelessSession + <a href=/post/java/mssqlserver/fast_insert_part4/><code>useBulkCopyForBatchInsert=true</code></a> = 646 ms</strong> for 100k inserts — ~30% off
+~20–25% slower than the 2023 originals — environment drift (kernel mitigations, SQL Server 2025
+on Linux), documented in Part 2's re-benchmark.</li><li><strong>StatelessSession really is bare-metal Hibernate.</strong> ~1% off JdbcTemplate means the
+entity-tracking tax is gone — what's left is SQL generation and parameter binding.</li><li><strong><code>saveAll + Persistable</code> is <code>persist()</code>.</strong> A ~4% gap on identical code is pure run-to-run
+noise — the delegation does exactly what it promises and nothing more.</li><li><strong>Raw Bulk API still wins — but barely for Hibernate.</strong> StatelessSession + flag comes within
+~30% (646 vs 499); the regular session path lands ~2.2x off (1,078). The flag's ~2–3x speedup
+also matches <a href=/post/java/mssqlserver/fast_insert_part4/>Part 4</a>, measured there at 1M rows.</li><li><strong><a href=/post/java/mssqlserver/fast_insert_part3/>Part 3</a>'s multi-value INSERT still beats the ORM
+path</strong> — ~450 ms at 400 objects per statement, under 646 and using nothing but plain JDBC.
+It costs you hand-written SQL; StatelessSession keeps the ORM mapping.</li></ul><h2 id=the-one-thing-to-remember>The one thing to remember</h2><blockquote><p><strong>StatelessSession + <a href=/post/java/mssqlserver/fast_insert_part4/><code>useBulkCopyForBatchInsert=true</code></a> = 646 ms</strong> for 100k inserts — ~30% off
 <a href=/post/java/mssqlserver/fast_insert_part2/>raw Bulk Copy</a> (499 ms), with ORM mapping metadata still working for you. If you need
 Hibernate's convenience without paying Hibernate's full price, that's the combination.</p></blockquote><p>If you can only make one change to speed up a <code>saveAll()</code> call: implement <a href=/post/java/mssqlserver/fast_insert_part5/#fix-implement-persistable><code>Persistable&lt;T></code></a> with
 <code>isNew = true</code>. It eliminates the pre-INSERT SELECTs and makes <code>saveAll</code> ~12x faster — a 10-line
