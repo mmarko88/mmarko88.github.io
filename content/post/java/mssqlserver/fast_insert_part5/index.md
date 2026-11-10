@@ -72,7 +72,7 @@ When `isNew()` returns `true`, Spring Data uses [`persist()`](/post/java/mssqlse
 (SELECT + INSERT). The `@PostPersist` and `@PostLoad` callbacks reset the flag after the entity is
 saved or loaded from the database.
 
-### Results
+### Results: saveAll ~12x faster
 
 | Strategy | 100k persons (median ms) |
 |----------|----------------------|
@@ -82,8 +82,8 @@ saved or loaded from the database.
 **Persistable makes saveAll ~12x faster.** The SELECT elimination is the single biggest win —
 `saveAll` now delegates straight to `persist()`. That also means the batched
 [`entityManager.persist()`](/post/java/mssqlserver/persist_vs_saveall/) loop from Part 1 (2,064 ms) is
-the *same* implementation — just a manual way to reach the identical code path — so it isn't listed
-separately in the comparisons below.
+the *same* implementation — just a manual way to reach the identical code path — so it's not
+listed separately below.
 
 {{< quiz question="Why does saveAll() fire a SELECT before each INSERT?" options="Hibernate validates each row before writing|The entity isn't marked new — merge() SELECTs first|saveAll prefetches rows for optimistic locking|The JDBC driver caches each row" correct="1" explanation="With a non-null assigned ID the entity isn't 'new', so saveAll delegates to merge() — which SELECTs to decide INSERT vs UPDATE. Persistable.isNew() = true routes to persist() instead." >}}
 
@@ -118,7 +118,7 @@ public class StatelessSessionInsertRepository {
 }
 ```
 
-### Results
+### Results: within ~1% of raw JDBC
 
 | Strategy | 100k persons (median ms) |
 |----------|----------------------|
@@ -171,7 +171,7 @@ with near-JDBC performance, this is the sweet spot.
 
 The knob that matters is `hibernate.jdbc.batch_size` — that's what controls the JDBC
 batch the driver actually sends. We swept it for every strategy above (100k inserts,
-median of 10, CPU locked at 3.5 GHz — comparable with the tables above).
+median of 10, CPU locked at 3.5 GHz).
 
 | `jdbc.batch_size` | saveAll+Persistable | StatelessSession | saveAll+Persistable + bulkCopy | Stateless + bulkCopy |
 |------------------:|--------------------:|-----------------:|-------------------------------:|---------------------:|
@@ -189,21 +189,18 @@ Three takeaways:
 
 - **`batch_size=1` is broken, not unbatched.** StatelessSession, saveAll+Persistable
   and Stateless+bulkCopy all die with `ObjectOptimisticLockingFailure` — Hibernate
-  verifies each row count, the driver reports `-1`, insert fails. (The
-  saveAll+Persistable + bulkCopy column was measured on the equivalent `persist()`
-  path, which happens not to check — so it "works" at ~14 s.)
+  verifies each row count, the driver reports `-1`, insert fails. Only the
+  saveAll+Persistable + bulkCopy column "works" (~14 s): it ran the equivalent
+  `persist()` flush, which skips the row-count check the repository path attaches.
 - **Without the flag, batch size barely matters** once you're at ~500+. The plain
-  paths sit at ~1.8–2.4 s — JDBC round-trips aren't their bottleneck until batches
-  get tiny (3.2–3.5 s at 10).
+  paths sit at ~1.8–2.4 s; round-trips only hurt below ~100 (3.2–3.5 s at 10).
 - **With `useBulkCopyForBatchInsert`, batch size *is* the tuning knob.** Each
-  `executeBatch()` becomes one bulk-copy stream — and the worst setting isn't the
-  smallest one. `batch_size=10` is the cliff edge: 10,000 tiny bulk-copy streams,
-  ~20 s — *slower than `batch_size=1`*, which skips batching (and bulk copy)
-  entirely. [StatelessSession + bulkCopy](#the-killer-combo-statelesssession--usebulkcopyforbatchinsert) bottoms out at **~10,000** (633 ms), degrades sharply below ~1,000, and regresses at 50,000.
+  `executeBatch()` becomes one bulk-copy stream, so `batch_size=10` is the cliff
+  edge: 10,000 tiny streams, ~20 s — *slower than `batch_size=1`*, which skips
+  batching entirely. [StatelessSession + bulkCopy](#the-killer-combo-statelesssession--usebulkcopyforbatchinsert) bottoms out at **~10,000** (633 ms).
 
-One gotcha remains: don't leave `batch_size` unset or at 1 with the flag on —
-same `-1` row count, same failure. Set it to at least 1,000 — 5,000–10,000 is the
-optimum.
+One gotcha remains: `batch_size` unset or 1 fails the same way — set it to
+5,000–10,000.
 
 ## How do these times compare to earlier posts?
 
@@ -221,7 +218,7 @@ wobbles 360–500 ms across runs.
 
 - **Rankings held for three years — absolute times didn't.** The JDBC and Hibernate paths run
   ~20–25% slower than the 2023 originals — environment drift (kernel mitigations, SQL Server 2025
-  on Linux), documented in Part 2's re-benchmark.
+  on Linux).
 - **StatelessSession really is bare-metal Hibernate.** ~1% off JdbcTemplate means the
   entity-tracking tax is gone — what's left is SQL generation and parameter binding.
 - **`saveAll + Persistable` is `persist()`.** A ~4% gap on identical code is pure run-to-run
