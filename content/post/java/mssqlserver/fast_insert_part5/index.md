@@ -187,24 +187,19 @@ median of 10, CPU locked at 3.5 GHz).
 **Bold** = diminishing-returns knee — the last batch size that still buys a significant
 win before gains flatten or regress.
 
-Three takeaways:
+Two takeaways:
 
-- **`batch_size=1` is ~7x slower, not broken.** An earlier sweep showed
-  `ObjectOptimisticLockingFailure` at bs=1 — our own `SET NOCOUNT ON` suppressed
-  the row-count token, the driver's `executeUpdate()` returned `-1`, and
-  Hibernate's insert expectation (row count = 1) threw `StaleStateException`.
-  saveAll+Persistable only failed because the stateless test poisoned the pooled
-  connection first. The bs=1 numbers above are post-fix — NOCOUNT is removed
-  from the repo.
 - **Without the flag, batch size barely matters** once you're at ~500+. The plain
   paths sit at ~1.8–2.4 s; round-trips only hurt below ~100 (3.2–3.5 s at 10).
 - **With `useBulkCopyForBatchInsert`, batch size *is* the tuning knob.** Each
   `executeBatch()` becomes one bulk-copy stream, so `batch_size=10` is the cliff
   edge: 10,000 tiny streams, ~20 s — *slower than `batch_size=1`*, which skips
-  batching entirely. [StatelessSession + bulkCopy](#the-killer-combo-statelesssession--usebulkcopyforbatchinsert) bottoms out at **~10,000** (633 ms).
+  batching entirely. And at bs=1 the flag never engages — no batch, no bulk copy —
+  so all four paths converge to ~14 s unbatched.
+  [StatelessSession + bulkCopy](#the-killer-combo-statelesssession--usebulkcopyforbatchinsert) bottoms out at **~10,000** (633 ms).
 
-One gotcha remains if you keep `SET NOCOUNT ON`: `batch_size` unset or 1 fails
-the same way — set it to 5,000–10,000.
+One gotcha remains if you keep `SET NOCOUNT ON`: `batch_size` unset or 1 throws
+`StaleStateException` — set it to 5,000–10,000.
 
 ## How do these times compare to earlier posts?
 
