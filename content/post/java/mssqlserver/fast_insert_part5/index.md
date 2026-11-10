@@ -210,14 +210,14 @@ optimum.
 Same rig, same 100k scale — the unflagged numbers sit within a few percent of
 [Part 2's October re-benchmark](/post/java/mssqlserver/fast_insert_part2/):
 
-| Strategy (100k rows, large batch) | Part 2 re-run | Part 5 |
-|-----------------------------------|---------------|--------|
-| Hibernate persist                 | 2,064         | 2,140* |
-| StatelessSession                  | —             | **1,850** |
-| Bulk Copy API                     | 364           | 499    |
+| Match-up (100k rows, large batch) | Earlier posts | Part 5 | Verdict |
+|-----------------------------------|---------------|--------|---------|
+| StatelessSession vs raw JDBC      | JdbcTemplate 1,873 ([Part 2 re-run](/post/java/mssqlserver/fast_insert_part2/)) | **1,850** | within ~1% — ORM tax gone |
+| `saveAll + Persistable` vs `persist()` | Hibernate persist 2,064 ([Part 1 re-run](/post/java/mssqlserver/persist_vs_saveall/)) | 2,140 | ~4% apart — same code path, as expected |
+| Hibernate + bulkCopy vs raw Bulk API | Bulk Copy API 499 ([Part 2](/post/java/mssqlserver/fast_insert_part2/)) | 646 / 1,078 | ~30% off for StatelessSession, ~2.2x for the regular session |
 
-\* measured as `saveAll + Persistable` — the same code path. Batch sizes are each post's
-large-batch optimum (~5,000–10,000); the Bulk API itself wobbles 360–500 ms across runs.
+Batch sizes are each post's large-batch optimum (~5,000–10,000); the Bulk API itself
+wobbles 360–500 ms across runs.
 
 - **Rankings held for three years — absolute times didn't.** The JDBC and Hibernate paths run
   ~20–25% slower than the 2023 originals, the environment drift Part 2's re-benchmark attributes
