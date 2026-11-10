@@ -7,7 +7,6 @@ usePageBundles: true
 description: "Your benchmark numbers are only as reliable as your environment. Hardware, OS, JVM flags, SQL Server config, and the warm-up protocol that makes the difference."
 tags: ["java", "ms sql server", "benchmarks", "performance"]
 categories: ["java", "sql"]
-series: ["Fastest Way to Insert Data in MS SQL"]
 featureImage: 'benchmarking-env-hero.svg' # Series-style card: SSD vs HDD comparison + 6-item quick-start checklist.
 featureImageAlt: 'Benchmarking environment checklist: NVMe SSD at 492 ms with 3% variability vs HDD 7200 RPM at 1,840 ms with 22% variability, 3.7x slower. Quick-start: SSD, 8 GB RAM, localhost, close SSMS, plugged in, run baseline first.'
 shareImage: 'share.png' # 1200x630 PNG for social crawlers.

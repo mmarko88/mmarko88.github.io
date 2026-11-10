@@ -6,7 +6,6 @@ usePageBundles: true
 description: "Three tools to see what your Java app sends to SQL Server: DMV connection stats, Extended Events, JDBC driver logging. Real data from 6 insert strategies."
 tags: ["java", "ms sql server", "jdbc", "monitoring", "tds"]
 categories: ["java", "sql"]
-series: ["Fastest Way to Insert Data in MS SQL"]
 featureImage: 'monitoring-jdbc.svg' # Series-style 1200x630 hero: 4 TDS reads vs 55 for the same elapsed time.
 featureImageAlt: 'Two SQL Server insert strategies finished in the same elapsed time, but the TVP insert made only 4 TDS network reads while the batched INSERT made 55 — surfaced via DMV connection stats, Extended Events, and JDBC driver logging.'
 shareImage: 'share.png' # Branded 1200x630 PNG social-share card.
