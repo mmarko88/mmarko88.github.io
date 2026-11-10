@@ -80,7 +80,10 @@ saved or loaded from the database.
 | **saveAll + [Persistable](#fix-implement-persistable)** | **2,140** |
 
 **Persistable makes saveAll ~12x faster.** The SELECT elimination is the single biggest win —
-`saveAll` now delegates straight to `persist()`.
+`saveAll` now delegates straight to `persist()`. That also means the batched
+[`entityManager.persist()`](/post/java/mssqlserver/persist_vs_saveall/) loop from Part 1 (2,064 ms) is
+the *same* implementation — just a manual way to reach the identical code path — so it isn't listed
+separately in the comparisons below.
 
 {{< quiz question="Why does saveAll() fire a SELECT before each INSERT?" options="Hibernate validates each row before writing|The entity isn't marked new — merge() SELECTs first|saveAll prefetches rows for optimistic locking|The JDBC driver caches each row" correct="1" explanation="With a non-null assigned ID the entity isn't 'new', so saveAll delegates to merge() — which SELECTs to decide INSERT vs UPDATE. Persistable.isNew() = true routes to persist() instead." >}}
 
@@ -119,13 +122,12 @@ public class StatelessSessionInsertRepository {
 
 | Strategy | 100k persons (median ms) |
 |----------|----------------------|
-| [Hibernate persist](/post/java/mssqlserver/persist_vs_saveall/) (Part 1) | 2,064 |
 | **StatelessSession** | **1,850** |
 | [JDBC PreparedStatement](/post/java/mssqlserver/fast_insert_part2/) (Part 2) | 1,873 |
 | [JdbcTemplate](/post/java/mssqlserver/fast_insert_part2/) (Part 2) | 1,873 |
 
-**StatelessSession lands within ~1% of raw JDBC** (1,850 vs 1,873) — roughly 10% faster than batched
-[`persist`](/post/java/mssqlserver/persist_vs_saveall/) on the same rig. The small residual is Hibernate's SQL generation and parameter binding.
+**StatelessSession lands within ~1% of raw JDBC** (1,850 vs 1,873) — ~14% faster than the fixed
+`saveAll` (2,140 ms) on the same rig. The small residual is Hibernate's SQL generation and parameter binding.
 
 {{< quiz question="What does StatelessSession drop vs a regular Session?" options="First-level cache|Dirty checking at flush|Automatic cascading|JDBC batching" correct="0,1,2" multi="true" explanation="StatelessSession skips the L1 cache, dirty checking and cascading — that's most of the overhead a regular Session carries. JDBC batching still works underneath." >}}
 
@@ -139,7 +141,6 @@ batches to SQL Server's [Bulk Copy protocol](/post/java/mssqlserver/fast_insert_
 
 | Strategy | Normal | bulkCopy=true | Speedup |
 |----------|--------|---------------|---------|
-| [Hibernate persist](/post/java/mssqlserver/persist_vs_saveall/) | 2,056 | 1,024 | 2.0x |
 | [StatelessSession](#statelesssession-bare-metal-hibernate) | 1,850 | **646** | **2.9x** |
 | [JdbcTemplate](/post/java/mssqlserver/fast_insert_part2/) | 1,852 | 712 | 2.6x |
 | [Plain JDBC](/post/java/mssqlserver/fast_insert_part2/) | 1,840 | 786 | 2.3x |
@@ -148,10 +149,10 @@ batches to SQL Server's [Bulk Copy protocol](/post/java/mssqlserver/fast_insert_
 {
   "type": "bar",
   "data": {
-    "labels": ["Hibernate persist", "StatelessSession", "JdbcTemplate", "Plain JDBC"],
+    "labels": ["StatelessSession", "JdbcTemplate", "Plain JDBC"],
     "datasets": [
-      { "label": "bulkCopy flag off (ms)", "data": [2056, 1850, 1852, 1840], "backgroundColor": "#8b9bb4" },
-      { "label": "bulkCopy flag on (ms)", "data": [1024, 646, 712, 786], "backgroundColor": "#1a5fb4" }
+      { "label": "bulkCopy flag off (ms)", "data": [1850, 1852, 1840], "backgroundColor": "#8b9bb4" },
+      { "label": "bulkCopy flag on (ms)", "data": [646, 712, 786], "backgroundColor": "#1a5fb4" }
     ]
   },
   "options": {
@@ -172,27 +173,28 @@ The knob that matters is `hibernate.jdbc.batch_size` — that's what controls th
 batch the driver actually sends. We swept it for every strategy above (100k inserts,
 median of 10, CPU locked at 3.5 GHz — comparable with the tables above).
 
-| `jdbc.batch_size` | persist | saveAll+Persistable | StatelessSession | persist + bulkCopy | Stateless + bulkCopy |
-|------------------:|--------:|--------------------:|-----------------:|-------------------:|---------------------:|
-| 1                 |  13,752 |           **fails** |        **fails** |             13,931 |              **fails** |
-| 10                |   3,408 |               3,542 |            3,236 |             19,894 |               19,615 |
-| 50                |   2,554 |               2,705 |            2,402 |              6,001 |                5,823 |
-| 100               |   2,308 |               2,418 |            2,106 |              3,578 |                3,266 |
-| 500               |   2,130 |               2,234 |            1,960 |              1,499 |                1,280 |
-| 1,000             |   2,070 |               2,198 |            1,896 |              1,074 |                  844 |
-| 5,000             |   2,060 |               2,146 |            1,846 |              1,078 |                  638 |
-| 10,000            |   2,055 |               2,140 |            1,846 |              1,096 |              **633** |
-| 50,000            |   2,060 |               2,302 |            1,882 |              1,080 |                  844 |
+| `jdbc.batch_size` | saveAll+Persistable | StatelessSession | saveAll+Persistable + bulkCopy | Stateless + bulkCopy |
+|------------------:|--------------------:|-----------------:|-------------------------------:|---------------------:|
+| 1                 |           **fails** |        **fails** |                         13,931 |              **fails** |
+| 10                |               3,542 |            3,236 |                         19,894 |               19,615 |
+| 50                |               2,705 |            2,402 |                          6,001 |                5,823 |
+| 100               |               2,418 |            2,106 |                          3,578 |                3,266 |
+| 500               |               2,234 |            1,960 |                          1,499 |                1,280 |
+| 1,000             |               2,198 |            1,896 |                          1,074 |                  844 |
+| 5,000             |               2,146 |            1,846 |                          1,078 |                  638 |
+| 10,000            |               2,140 |            1,846 |                          1,096 |              **633** |
+| 50,000            |               2,302 |            1,882 |                          1,080 |                  844 |
 
 Three takeaways:
 
 - **`batch_size=1` is broken, not unbatched.** StatelessSession, saveAll+Persistable
   and Stateless+bulkCopy all die with `ObjectOptimisticLockingFailure` — Hibernate
-  verifies each row count, the driver reports `-1`, insert fails. (persist and
-  persist+bulkCopy happen not to check, so they "work" at ~14 s.)
+  verifies each row count, the driver reports `-1`, insert fails. (The
+  saveAll+Persistable + bulkCopy column was measured on the equivalent `persist()`
+  path, which happens not to check — so it "works" at ~14 s.)
 - **Without the flag, batch size barely matters** once you're at ~500+. The plain
   paths sit at ~1.8–2.4 s — JDBC round-trips aren't their bottleneck until batches
-  get tiny (3.2–3.5 s at 10, ~13.8 s at 1).
+  get tiny (3.2–3.5 s at 10).
 - **With `useBulkCopyForBatchInsert`, batch size *is* the tuning knob.** Each
   `executeBatch()` becomes one bulk-copy stream — and the worst setting isn't the
   smallest one. `batch_size=10` is the cliff edge: 10,000 tiny bulk-copy streams,
