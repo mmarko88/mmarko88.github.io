@@ -142,6 +142,7 @@ batches to SQL Server's [Bulk Copy protocol](/post/java/mssqlserver/fast_insert_
 
 | Strategy | Normal | bulkCopy=true | Speedup |
 |----------|--------|---------------|---------|
+| saveAll + [Persistable](#fix-implement-persistable) | 2,140 | 1,078 | 2.0x |
 | [StatelessSession](#statelesssession-bare-metal-hibernate) | 1,850 | **646** | **2.9x** |
 | [JdbcTemplate](/post/java/mssqlserver/fast_insert_part2/) | 1,852 | 712 | 2.6x |
 | [Plain JDBC](/post/java/mssqlserver/fast_insert_part2/) | 1,840 | 786 | 2.3x |
@@ -150,10 +151,10 @@ batches to SQL Server's [Bulk Copy protocol](/post/java/mssqlserver/fast_insert_
 {
   "type": "bar",
   "data": {
-    "labels": ["StatelessSession", "JdbcTemplate", "Plain JDBC"],
+    "labels": ["saveAll+Persistable", "StatelessSession", "JdbcTemplate", "Plain JDBC"],
     "datasets": [
-      { "label": "bulkCopy flag off (ms)", "data": [1850, 1852, 1840], "backgroundColor": "#8b9bb4" },
-      { "label": "bulkCopy flag on (ms)", "data": [646, 712, 786], "backgroundColor": "#1a5fb4" }
+      { "label": "bulkCopy flag off (ms)", "data": [2140, 1850, 1852, 1840], "backgroundColor": "#8b9bb4" },
+      { "label": "bulkCopy flag on (ms)", "data": [1078, 646, 712, 786], "backgroundColor": "#1a5fb4" }
     ]
   },
   "options": {
