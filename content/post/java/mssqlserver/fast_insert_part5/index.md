@@ -210,13 +210,13 @@ optimum.
 Same rig, same 100k scale — the unflagged numbers sit within ~2% of
 [Part 2's October re-benchmark](/post/java/mssqlserver/fast_insert_part2/):
 
-| Strategy (100k rows, large batch) | Part 2 (2023) | Part 2 re-run | Part 5 |
-|-----------------------------------|---------------|---------------|--------|
-| JdbcTemplate                      | 1,509         | 1,873         | 1,852  |
-| PreparedStatement                 | 1,520         | 1,873         | 1,840  |
-| Hibernate persist                 | 1,732         | 2,064         | 2,140* |
-| StatelessSession                  | —             | —             | **1,850** |
-| Bulk Copy API                     | 314           | 364           | 499    |
+| Strategy (100k rows, large batch) | Part 2 re-run | Part 5 |
+|-----------------------------------|---------------|--------|
+| JdbcTemplate                      | 1,873         | 1,852  |
+| PreparedStatement                 | 1,873         | 1,840  |
+| Hibernate persist                 | 2,064         | 2,140* |
+| StatelessSession                  | —             | **1,850** |
+| Bulk Copy API                     | 364           | 499    |
 
 \* measured as `saveAll + Persistable` — the same code path. Batch sizes are each post's
 large-batch optimum (~5,000–10,000); the Bulk API itself wobbles 360–500 ms across runs.
