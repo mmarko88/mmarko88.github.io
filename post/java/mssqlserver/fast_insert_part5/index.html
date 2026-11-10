@@ -95,13 +95,13 @@ bookkeeping <code>Persistable</code> couldn't remove is gone.</p><div class="qui
 </label><label class=quiz-card-option><input type=radio name=quiz-96e8e4821a6756a6c47e65d022e21e0a value=3>
 <span>Rows needing cascades to related entities</span></label></div><button type=button class=quiz-card-submit disabled>Check answer</button><div class=quiz-card-result hidden><p class=quiz-card-verdict></p><p class=quiz-card-explanation>StatelessSession drops cascading — related entities need explicit insert() calls. Bulk volume is exactly what it's built for.</p></div></div><h2 id=the-killer-combo-statelesssession--usebulkcopyforbatchinsert>The Killer Combo: StatelessSession + useBulkCopyForBatchInsert</h2><p>Remember the <a href=/post/java/mssqlserver/fast_insert_part4/><code>useBulkCopyForBatchInsert=true</code></a> connection string parameter from
 Part 4? It transparently converts PreparedStatement
-batches to SQL Server's <a href=/post/java/mssqlserver/fast_insert_part2/>Bulk Copy protocol</a>. It works with <a href=/post/java/mssqlserver/fast_insert_part5/#statelesssession-bare-metal-hibernate>StatelessSession</a> too:</p><table><thead><tr><th>Strategy</th><th>Normal</th><th>bulkCopy=true</th><th>Speedup</th></tr></thead><tbody><tr><td>saveAll + <a href=/post/java/mssqlserver/fast_insert_part5/#fix-implement-persistable>Persistable</a></td><td>2,140</td><td>1,078</td><td>2.0x</td></tr><tr><td><a href=/post/java/mssqlserver/fast_insert_part5/#statelesssession-bare-metal-hibernate>StatelessSession</a></td><td>1,850</td><td><strong>646</strong></td><td><strong>2.9x</strong></td></tr><tr><td><a href=/post/java/mssqlserver/fast_insert_part2/>JdbcTemplate</a></td><td>1,852</td><td>712</td><td>2.6x</td></tr><tr><td><a href=/post/java/mssqlserver/fast_insert_part2/>Plain JDBC</a></td><td>1,840</td><td>786</td><td>2.3x</td></tr></tbody></table><div class=post-chart role=img aria-label=chart data-config='{
+batches to SQL Server's <a href=/post/java/mssqlserver/fast_insert_part2/>Bulk Copy protocol</a>. It works with <a href=/post/java/mssqlserver/fast_insert_part5/#statelesssession-bare-metal-hibernate>StatelessSession</a> too:</p><table><thead><tr><th>Strategy</th><th>Normal</th><th>bulkCopy=true</th><th>Speedup</th></tr></thead><tbody><tr><td>saveAll + <a href=/post/java/mssqlserver/fast_insert_part5/#fix-implement-persistable>Persistable</a></td><td>2,140</td><td>1,078</td><td>2.0x</td></tr><tr><td><a href=/post/java/mssqlserver/fast_insert_part5/#statelesssession-bare-metal-hibernate>StatelessSession</a></td><td>1,850</td><td><strong>646</strong></td><td><strong>2.9x</strong></td></tr></tbody></table><div class=post-chart role=img aria-label=chart data-config='{
   "type": "bar",
   "data": {
-    "labels": ["saveAll+Persistable", "StatelessSession", "JdbcTemplate", "Plain JDBC"],
+    "labels": ["saveAll+Persistable", "StatelessSession"],
     "datasets": [
-      { "label": "bulkCopy flag off (ms)", "data": [2140, 1850, 1852, 1840], "backgroundColor": "#8b9bb4" },
-      { "label": "bulkCopy flag on (ms)", "data": [1078, 646, 712, 786], "backgroundColor": "#1a5fb4" }
+      { "label": "bulkCopy flag off (ms)", "data": [2140, 1850], "backgroundColor": "#8b9bb4" },
+      { "label": "bulkCopy flag on (ms)", "data": [1078, 646], "backgroundColor": "#1a5fb4" }
     ]
   },
   "options": {
