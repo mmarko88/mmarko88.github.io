@@ -106,7 +106,6 @@ public class StatelessSessionInsertRepository {
 
         try (StatelessSession session = sf.openStatelessSession()) {
             session.getTransaction().begin();
-            session.doWork(conn -> conn.createStatement().execute("SET NOCOUNT ON"));
 
             for (int i = 0; i < people.size(); i++) {
                 session.insert(people.get(i));
