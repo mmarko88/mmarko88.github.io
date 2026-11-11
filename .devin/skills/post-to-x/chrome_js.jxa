@@ -1,0 +1,9 @@
+ObjC.import("Foundation");
+function run(argv) {
+	const path = argv[0];
+	const code = $.NSString.stringWithContentsOfFileEncodingError(path, $.NSUTF8StringEncoding, null).js;
+	const chrome = Application("Google Chrome");
+	const tab = chrome.windows[0].activeTab;
+	const result = tab.execute({javascript: code});
+	return result === undefined ? "(undefined)" : String(result);
+}
