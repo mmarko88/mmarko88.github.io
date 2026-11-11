@@ -6,8 +6,8 @@ Schedule a LinkedIn document (PDF carousel) post from the user's own logged-in C
 
 - `PDF` — path to carousel PDF (from /linkedin-carousel, usually `content/post/.../out/carousel.pdf`)
 - `TITLE` — document title (≤58 chars)
-- `BODY` — post body (arrow-list style, NO link, ends "Link in comments.")
-- `COMMENT` — pinned-comment text with UTM-tagged link (can't be scheduled — manual, ~15 min after go-live)
+- `BODY` — post body (arrow-list style; include the UTM-tagged link in the body — link-in-comments is now penalized ~80% and converts ~3.4× worse, mid-2026 data)
+- `COMMENT` — pinned-comment text: a discussion-seeding question, no bare URL (can't be scheduled — manual, ~15 min after go-live)
 - `WHEN` — local date/time; LinkedIn scheduler uses the browser's local timezone
 
 ## Prereqs

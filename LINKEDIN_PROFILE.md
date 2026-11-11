@@ -27,7 +27,7 @@ Senior Java Developer @ BlackRock — leading the Investment Cafe dev team | Jav
 ```
 Java backend engineer and team lead with 10+ years in enterprise fintech. I build and tune systems that push large amounts of data through MS SQL Server — and I write down what I measure, not what I guess.
 
-Currently leading a dev team on Investment Cafe (BlackRock, formerly eFront) — a multi-tenant document management and investor communication platform for BlackRock's alternative investments clients.
+Currently at BlackRock, leading a dev team on Investment Cafe (formerly eFront) — a multi-tenant document management and investor communication platform for BlackRock's alternative investments clients.
 
 Recent work:
 • Led the Spring Boot 3 migration — 148 commits, 2,483 files: javax→Jakarta, Hibernate 5→6, OpenAPI 3
@@ -46,21 +46,35 @@ I write at professionaldev.dev:
 
 Tech: Java 17, Spring Boot 3, Hibernate 6, MS SQL Server, Azure Pipelines, Terraform, AWS.
 
-Open to conversations about backend performance, JVM internals, and agentic developer tooling.
+Open to conversations about backend performance, JVM internals, and agentic developer tooling — start with the benchmarks at professionaldev.dev.
 ```
 
 ---
 
 ## 3. Experience
 
-### 3.1 Wiser Technologies (formerly Badin Soft)
+### 3.1 BlackRock — Investment Cafe
 **Title:** Senior Java Developer & Team Lead
-**Dates:** Sep 2018 – Present · Nis, Serbia
+**Dates:** Nov 2026 – Present · Niš, Serbia
+
+```
+Continuing to lead the Investment Cafe development team — now directly at BlackRock rather than via Wiser Technologies. Same platform, same team, new employer.
+
+Tech: Java 17, Spring Boot 3, Hibernate 6, MS SQL Server
+```
+
+> Adding this position may silently overwrite the headline with "<title> at BlackRock" — re-check the headline right after (see §7 gotcha). Option B becomes literally accurate now.
+
+### 3.2 Wiser Technologies (formerly Badin Soft)
+**Title:** Senior Java Developer & Team Lead
+**Dates:** Sep 2018 – Oct 2026 · Nis, Serbia
 
 ```
 Senior developer and team lead on Investment Cafe at BlackRock (formerly eFront) — a multi-tenant document management and investor communication system serving BlackRock's alternative investments clients globally.
 
 • Led a development team — coordinating work and mentoring team members
+• Built the REST API layer from scratch: FundInvestor, FundFamily, DocumentTypes services
+• Designed and implemented the MFA/TOTP authentication system — full lifecycle
 • Led Spring Boot 3 migration: 148 commits, 2,483 files — javax→Jakarta, Hibernate 5→6, OpenAPI 3
 • Built the deployment pipeline: Azure Pipelines + Terraform + AWS, blue-green deployments
 • Security hardening: 58 commits — SQL injection, SSRF, path traversal, AES/GCM encryption
@@ -71,7 +85,7 @@ Tech: Java 17, Spring Boot 3, Hibernate 6, Jakarta EE, MS SQL Server, Liquibase,
 
 > If Badin Soft and Wiser Technologies show as separate companies on LinkedIn, create two entries split at 2024 (Wiser acquired Badin Soft in October 2024) with the same title, or leave as one entry — the work was continuous.
 
-### 3.2 Badin Soft — CREALOGIX E-Banking
+### 3.3 Badin Soft — CREALOGIX E-Banking
 **Title:** Senior Java Developer & Tech Lead
 **Dates:** 2017 – 2018
 
@@ -85,9 +99,9 @@ E-banking application for major Swiss banks (TKB, BKB, AKB). Maintained version 
 Tech: Java 8, Spring Boot, React, JSF, Oracle DB, SVN→Git, Jenkins, Maven
 ```
 
-### 3.3 Tranxactor (merged junior + senior roles)
+### 3.4 Transactor HQ — Badin Soft (merged junior + senior roles)
 **Title:** Senior Java Developer
-**Dates:** Mar 2013 – Aug 2017 · Niš, Serbia
+**Dates:** 2014 – 2017 · Niš, Serbia
 
 ```
 Started as a junior developer and was quickly promoted to medior, then senior — on a three-layer fintech application (Oracle, Java Spring/MyBatis/Jersey API, Angular).
@@ -105,7 +119,7 @@ Later work:
 Environment: Java, Spring, MyBatis, Jersey, Oracle DB/PL/SQL, Angular, GWT.
 ```
 
-### 3.4 Freelance Developer
+### 3.5 Freelance Developer
 **Dates:** Dec 2011 – Apr 2014
 
 ```
@@ -126,6 +140,7 @@ Various projects in Java: Swing, GWT, JSP, JSF, Android, Apache CXF, Spring, RES
   https://github.com/mmarko88/blog-examples
 - Optional: **CV PDF**
   https://professionaldev.dev/files/Marko_Milenkovic_CV.pdf
+- Also pin your **best-performing native LinkedIn post** — external links belong in Featured (no feed penalty applies here), but a strong post adds engagement proof alongside them
 
 ---
 
@@ -151,9 +166,10 @@ Hibernate · REST APIs · SQL · Jakarta EE · Azure Pipelines · Terraform · D
 - **Gotcha:** adding a new role can silently overwrite the headline with "<title> at <company>" — re-check the headline after adding positions
 - **Banner image:** upload `linkedin-banner/linkedin-banner.png` ("Benchmarks, not vibes" — adaptive source at `static/images/benchmarks-banner.svg`, also shown on the about page)
 - **Location:** Nis, Serbia · **Industry:** Software Development
-- **Website button:** add "professionaldev.dev" as the profile link (shows under the headline in Creator mode)
+- **Website button:** add "professionaldev.dev" as the profile link (shows under the headline — available to all profiles)
 - **Languages:** Serbian (native), English (full professional)
-- **Creator mode:** consider enabling with hashtags #java #springboot #sqlserver #performance — you already have the content cadence to back it up
+- **Recommendations:** request 2–3 from team leads/members — LinkedIn's own profile checklist flags these as a credibility signal
+- **Creator mode:** retired in 2024 — the toggle no longer exists; follow-first layout, website button, newsletters and analytics are now default. Skip profile hashtags — LinkedIn matches audiences using headline/About keywords, which are already covered
 
 ---
 

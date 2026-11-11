@@ -13,7 +13,7 @@ Generate a set of PNG slides for a LinkedIn multi-image post (carousel). You are
 - 4–8 slides default (respect the user's count if given):
   1. **Hook slide** — a giant proof number or bold claim (e.g. struck-out baseline vs green result). This must stop the scroll on its own. Add a "swipe →" cue.
   2–N-1. **One idea + ONE visual anchor per slide** — prefer a bar chart, big number, or mini diagram over bullet lists. Benchmarks/data posts → real bars (red baseline, green result, accent reference). Never dump paragraphs.
-  - **CTA slide** — site domain (from site config, never guessed), repo, "link in comments".
+  - **CTA slide** — site domain (from site config, never guessed), repo — direct readers to the link in the post body (link-in-comments is penalized since mid-2026).
 - Consistent system across slides: same background, eyebrow tag, accent bar, footer with progress dots + domain.
 
 ## Design rules

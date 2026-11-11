@@ -31,7 +31,7 @@ Runnable code for posts lives in [blog-examples](https://github.com/mmarko88/blo
 
 ## Elsewhere
 
-- **LinkedIn**: [marko-milenkovic](https://www.linkedin.com/in/marko-milenkovic/)
+- **LinkedIn**: [mare-milenkovic](https://www.linkedin.com/in/mare-milenkovic/)
 - **X (Twitter)**: [@mare_milenkovic](https://x.com/mare_milenkovic)
 - **GitHub**: [mmarko88](https://github.com/mmarko88)
 - **dev.to**: [mmarko88](https://dev.to/mmarko88)
@@ -41,7 +41,7 @@ Runnable code for posts lives in [blog-examples](https://github.com/mmarko88/blo
 
 ## What I'm Doing Now
 
-*Last updated: October 2026*
+*Last updated: November 2026*
 
 ### Building an agentic development framework
 
@@ -57,7 +57,7 @@ and an eval harness that treats prompt changes like code changes.
 
 ### Day job
 
-- Java backend engineering on multi-tenant SQL Server workloads — Hibernate 6, Spring Boot 3, JDBC Bulk API
+- Java backend engineering at BlackRock (Investment Cafe) — multi-tenant SQL Server workloads, Hibernate 6, Spring Boot 3, JDBC Bulk API
 - Performance tuning: the [Fastest MS SQL Inserts](/post/java/mssqlserver/fast_insert_part8/) series grew out of a real bottleneck I shipped a fix for
 - Code review on security remediation and database migrations
 
@@ -83,7 +83,7 @@ and an eval harness that treats prompt changes like code changes.
 ### Employment History
 
 #### Senior Java Developer & Team Lead — Investment Cafe
-**Badin Soft (2018–2024) → Wiser Technologies (2024–Present)**
+**Badin Soft (2018–2024) → Wiser Technologies (2024–2026) → BlackRock (2026–Present)**
 *2018 — Present*
 
 Team lead and core maintainer of the **Investment Cafe** platform at **BlackRock** (formerly eFront) — a multi-tenant document management and investor communication system serving BlackRock's alternative investments clients globally.

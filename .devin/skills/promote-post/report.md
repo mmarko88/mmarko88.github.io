@@ -21,7 +21,7 @@ Research compiled for building a `promote-post` skill. Audience focus: **persona
 
 - [ ] **T-0 (publish):** Post goes live on own blog/site first (canonical source).
 - [ ] **T+0h:** X thread summarizing the post; link in final tweet only.
-- [ ] **T+0h:** LinkedIn post (native summary + image/GIF); link in first comment.
+- [ ] **T+0h:** LinkedIn post (native summary + image/GIF); link in post body — comment-links are now penalized (see §4).
 - [ ] **T+0h:** Share in relevant Slack/Discord communities where you're already a member.
 - [ ] **T+0–24h:** Submit to relevant subreddits (per subreddit rules — see §5) and/or Hacker News if genuinely interesting.
 - [ ] **T+1–2 days:** Cross-post to dev.to / Hashnode / Medium with canonical URL pointing at original (see §6).
@@ -68,7 +68,7 @@ Research compiled for building a `promote-post` skill. Audience focus: **persona
 
 **Tactics:**
 
-- **Link in comments:** Post native text + image/video; put the URL in a comment; optionally end with "link in comments". (Exception: keep link in body if you want saves/bookmarks on the post itself.)
+- **Links go in the body (2026 reversal):** the old link-in-comments workaround is now reach-penalized (up to ~80% reported) and converts ~3.4× worse than the same link in the post body. Either include the UTM-tagged link in the body, or omit it and keep the post fully native. Evidence and caveats: `RESEARCH-linkedin-best-practices.md` at repo root.
 - **One idea per post.** "If a post has two ideas, it's two posts."
 - **Proof in the first two lines:** a number, a screenshot, a real outcome — before any framing.
 - **Best formats for dev audiences:**
@@ -101,7 +101,7 @@ What actually worked:
 
 [One honest caveat or trade-off]
 
-Link to the full write-up in comments.
+Full write-up + code: [UTM-tagged link]
 ```
 
 ---
@@ -180,7 +180,7 @@ Given a post URL/title, the skill should:
 1. **Classify the post** — problem-solving tutorial / post-mortem / project launch / data findings → pick formats and channels accordingly.
 2. **Generate per-platform drafts** (never identical text):
    - X: hook tweet + 5–7 tweet thread, link only in final tweet, optional image suggestion.
-   - LinkedIn: proof-first post, whitespace formatting, "link in comments" note, pinned first comment draft.
+   - LinkedIn: proof-first post, whitespace formatting, UTM-tagged link in the body, pinned first comment (question only, no bare URL).
    - Reddit: conversational text-post rewrite + list of candidate subreddits with rule-check reminder.
    - HN: compliant title (strip site name, numbers) + submission timing suggestion.
 3. **Emit a timed checklist** — T+0 items, T+1d syndication with canonical-URL verification, +1mo/+3mo re-share reminders.

@@ -27,8 +27,8 @@ Promote the post the user provides (URL or local file). Reference the full resea
 ### LinkedIn post
 - First two lines: the concrete result/proof — before any framing.
 - Body: short whitespace-separated lines; context → what worked (arrow-list style `→`) → one honest caveat.
-- NO link in the post body. End with "Link in comments."
-- Draft a pinned first comment containing the UTM-tagged link + a question to seed discussion.
+- Put the UTM-tagged link IN the post body — since mid-2026, link-in-comment patterns are reach-penalized (~80% reported) and convert ~3.4× worse than in-body (see RESEARCH-linkedin-best-practices.md). If the post's only goal is raw reach, omit the link entirely rather than parking it in a comment.
+- Draft a pinned first comment with a discussion-seeding question — no bare URL (substantive comments only).
 
 ## Step 3 — Emit the launch checklist
 
@@ -38,5 +38,5 @@ Promote the post the user provides (URL or local file). Reference the full resea
 
 ## Step 4 — Verify before output
 
-- Links work and carry UTM params. No engagement-bait language. No link in LinkedIn body or tweet 1.
+- Links work and carry UTM params. No engagement-bait language. Link in LinkedIn body when the goal is clicks; still no link in tweet 1.
 - Offer: "Want a carousel too? I can run /linkedin-carousel to generate the images."
