@@ -97,9 +97,7 @@ def slide1():
     y += 250
     d.text((MARGIN, y), "3 settings close ~90% of the gap", font=font(FONT_REG, 44), fill=MUTED)
     y += 58
-    d.text((MARGIN, y), "to raw Bulk Copy — 100k inserts,", font=font(FONT_REG, 44), fill=MUTED)
-    y += 58
-    d.text((MARGIN, y), "median of 10 runs", font=font(FONT_REG, 44), fill=MUTED)
+    d.text((MARGIN, y), "to raw Bulk Copy — 100k inserts", font=font(FONT_REG, 44), fill=MUTED)
 
     d.text((W - MARGIN - 240, H - MARGIN - 120), "swipe →", font=font(FONT_BOLD, 40), fill=ACCENT)
     footer(d, 0, 6)
@@ -107,7 +105,7 @@ def slide1():
 
 
 # ---------- Slides 2-4: fix + bar comparison ----------
-def stat_slide(i, headline, lines, bars, callout):
+def stat_slide(i, headline, lines, bars, callout, note=None):
     img, d = new_slide()
     eyebrow(d, "HIBERNATE TUNING")
 
@@ -130,6 +128,14 @@ def stat_slide(i, headline, lines, bars, callout):
     for ln in wrap(callout, 40):
         d.text((MARGIN, y), ln, font=font(FONT_BOLD, 44), fill=GOOD)
         y += 56
+    if note:
+        y += 14
+        cx, cy = MARGIN + 14, y + 18
+        d.ellipse([cx - 15, cy - 15, cx + 15, cy + 15], outline=ACCENT, width=3)
+        d.text((cx - 4, cy - 14), "i", font=font(FONT_BOLD, 28), fill=ACCENT)
+        for ln in wrap(note, 56):
+            d.text((MARGIN + 48, y), ln, font=font(FONT_REG, 32), fill=MUTED)
+            y += 46
     footer(d, i, 6)
     return img
 
@@ -148,16 +154,16 @@ def slide5():
            font=font(FONT_REG, 36), fill=FG)
     y += 90
 
-    # sweep data: batch_size -> ms (1 = fails)
-    data = [("10", "19,615", 19615, BAD), ("100", "3,266", 3266, BAR_DIM),
-            ("500", "1,280", 1280, BAR_DIM), ("1,000", "844", 844, BAR_DIM),
-            ("5,000", "638", 638, BAR_DIM), ("10,000", "633", 633, GOOD),
-            ("50,000", "844", 844, BAR_DIM)]
+    # sweep data: batch_size -> ms
+    data = [("1", "13,725", 13725, BAR_DIM), ("10", "19,615", 19615, BAD),
+            ("100", "3,266", 3266, BAR_DIM), ("500", "1,280", 1280, BAR_DIM),
+            ("1,000", "844", 844, BAR_DIM), ("5,000", "638", 638, BAR_DIM),
+            ("10,000", "633", 633, GOOD), ("50,000", "844", 844, BAR_DIM)]
     fracs = scale_bars([v for _, _, v, _ in data])
     for (label, vt, _, color), fr in zip(data, fracs):
         y = hbar(d, MARGIN, y, label, vt, fr, color, label_w=170)
     y += 10
-    for ln in wrap("batch_size=1 fails outright — and 10 is the cliff: ~20 s, worse than not batching at all. Optimum: 5,000–10,000.", 46):
+    for ln in wrap("bs=1: no batch, no bulk copy — ~14 s. 10 is the cliff: ~20 s. Optimum: ~10,000.", 46):
         d.text((MARGIN, y), ln, font=font(FONT_REG, 36), fill=FG)
         y += 50
     footer(d, 4, 6)
@@ -191,16 +197,18 @@ def main():
         stat_slide(1, "1. Kill the pre-INSERT SELECTs",
                    ["saveAll() calls merge() — a SELECT", "before every INSERT (100k extra)"],
                    [("saveAll()", "26,545 ms", 26545, BAD),
-                    ("+ Persistable", "2,140 ms", 2140, GOOD)],
-                   "isNew() = true → ~12x faster. 10 lines of code."),
+                    ("saveAll+P", "2,140 ms", 2140, GOOD)],
+                   "isNew() = true → ~12x faster.",
+                   note="Only applicable when the app assigns the PK."),
         stat_slide(2, "2. StatelessSession = bare metal",
                    ["Drops L1 cache, dirty checking, cascading —", "constant memory, no entity tracking"],
-                   [("persist()", "2,064 ms", 2064, BAR_DIM),
+                   [("saveAll+P", "2,140 ms", 2140, BAR_DIM),
                     ("Stateless", "1,850 ms", 1850, GOOD),
                     ("raw JDBC", "1,873 ms", 1873, BAR_DIM)],
                    "Within ~1% of raw JDBC."),
         stat_slide(3, "3. Turn on the bulkCopy flag",
-                   ["useBulkCopyForBatchInsert=true —", "each executeBatch() = one Bulk Copy stream"],
+                   ["useBulkCopyForBatchInsert=true —", "each executeBatch() = one Bulk Copy stream",
+                    "Built for bulk payloads — small batches", "pay the per-stream setup cost"],
                    [("Stateless", "1,850 ms", 1850, BAR_DIM),
                     ("+ bulkCopy", "646 ms", 646, GOOD),
                     ("Bulk API", "499 ms", 499, ACCENT)],
