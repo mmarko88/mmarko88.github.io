@@ -105,7 +105,7 @@ def slide1():
 
 
 # ---------- Slides 2-4: fix + bar comparison ----------
-def stat_slide(i, headline, lines, bars, callout):
+def stat_slide(i, headline, lines, bars, callout, note=None):
     img, d = new_slide()
     eyebrow(d, "HIBERNATE TUNING")
 
@@ -128,6 +128,14 @@ def stat_slide(i, headline, lines, bars, callout):
     for ln in wrap(callout, 40):
         d.text((MARGIN, y), ln, font=font(FONT_BOLD, 44), fill=GOOD)
         y += 56
+    if note:
+        y += 14
+        cx, cy = MARGIN + 14, y + 18
+        d.ellipse([cx - 15, cy - 15, cx + 15, cy + 15], outline=ACCENT, width=3)
+        d.text((cx - 4, cy - 14), "i", font=font(FONT_BOLD, 28), fill=ACCENT)
+        for ln in wrap(note, 56):
+            d.text((MARGIN + 48, y), ln, font=font(FONT_REG, 32), fill=MUTED)
+            y += 46
     footer(d, i, 6)
     return img
 
@@ -190,7 +198,8 @@ def main():
                    ["saveAll() calls merge() — a SELECT", "before every INSERT (100k extra)"],
                    [("saveAll()", "26,545 ms", 26545, BAD),
                     ("+ Persistable", "2,140 ms", 2140, GOOD)],
-                   "isNew() = true → ~12x faster — only needed when the app assigns the PK."),
+                   "isNew() = true → ~12x faster.",
+                   note="Only applicable when the app assigns the PK."),
         stat_slide(2, "2. StatelessSession = bare metal",
                    ["Drops L1 cache, dirty checking, cascading —", "constant memory, no entity tracking"],
                    [("persist()", "2,064 ms", 2064, BAR_DIM),
