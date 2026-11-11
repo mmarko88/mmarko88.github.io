@@ -197,7 +197,7 @@ def main():
         stat_slide(1, "1. Kill the pre-INSERT SELECTs",
                    ["saveAll() calls merge() — a SELECT", "before every INSERT (100k extra)"],
                    [("saveAll()", "26,545 ms", 26545, BAD),
-                    ("+ Persistable", "2,140 ms", 2140, GOOD)],
+                    ("saveAll+P", "2,140 ms", 2140, GOOD)],
                    "isNew() = true → ~12x faster.",
                    note="Only applicable when the app assigns the PK."),
         stat_slide(2, "2. StatelessSession = bare metal",
