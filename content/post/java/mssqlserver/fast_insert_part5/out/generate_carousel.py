@@ -202,7 +202,7 @@ def main():
                    note="Only applicable when the app assigns the PK."),
         stat_slide(2, "2. StatelessSession = bare metal",
                    ["Drops L1 cache, dirty checking, cascading —", "constant memory, no entity tracking"],
-                   [("persist()", "2,064 ms", 2064, BAR_DIM),
+                   [("+Persistable", "2,140 ms", 2140, BAR_DIM),
                     ("Stateless", "1,850 ms", 1850, GOOD),
                     ("raw JDBC", "1,873 ms", 1873, BAR_DIM)],
                    "Within ~1% of raw JDBC."),
