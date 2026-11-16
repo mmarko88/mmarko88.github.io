@@ -4,9 +4,9 @@ date: 2026-10-19
 toc: true
 draft: true
 usePageBundles: true
-description: "100,000 SQL Server inserts in 319 ms with INSERT…SELECT, 330 ms with Parallel Bulk API. Ranking of 110+ configurations and 50 takeaways from the series."
+description: "100,000 SQL Server inserts in 275 ms with INSERT…SELECT, 321 ms with Parallel Bulk API. Ranking of 110+ configurations and 50 takeaways from the series."
 featureImage: 'fast-insert-final-ranking.svg'
-featureImageAlt: 'Benchmark ranking for 100,000 SQL Server inserts: Parallel Bulk API using four threads is fastest at 330 milliseconds; the next four strategies range from 368 to 492 milliseconds.'
+featureImageAlt: 'Benchmark ranking for 100,000 SQL Server inserts: INSERT…SELECT is fastest at 275 milliseconds; Parallel Bulk API using four threads leads the Java clients at 321 milliseconds.'
 shareImage: 'share-part8.png' # Branded 1200x630 social-share card showing the Part 8 final-ranking chart.
 tags: [ "java", "ms sql server", "jdbc" ]
 categories: [ "java", "sql" ]
@@ -17,56 +17,58 @@ sourceCode: 'https://github.com/mmarko88/blog-examples/tree/main/fastest-insert/
 
 ## Executive Summary
 
-This series benchmarks **110+ insert strategies and tuning knobs** on SQL Server 2025 Express
-(Windows, Java 17, Spring Boot 3.3) over **4,222 individual benchmark runs**. Here's the TL;DR:
+This series benchmarks **110+ insert strategies and tuning knobs** on SQL Server 2025 Developer
+Edition (Linux, Java 17, Spring Boot 3.3) over **~3,700 timed benchmark runs** (plus warm-ups).
+Here's the TL;DR:
 
 ### The 10 highest-impact decisions (in order)
 
 | # | Choice | Impact |
 |---|--------|--------|
-| 1 | **Batch your inserts** (any strategy ≫ auto-commit per row) | **15x** |
-| 2 | **Use the Bulk Copy API** (`SQLServerBulkCopy` / `insertBulk...`) | **5-6x** vs plain JDBC |
-| 3 | **Parallelize across 4 connections** | **2-3x** on top of #2 |
-| 4 | **Enable `useBulkCopyForBatchInsert=true`** in the JDBC URL | **2-2.5x** |
-| 5 | **Use multi-value INSERT (200 values/statement)** | **4-5x** for JDBC |
+| 1 | **Batch your inserts** (any strategy ≫ auto-commit per row) | **~250x** per row |
+| 2 | **Use the Bulk Copy API** (`SQLServerBulkCopy` / `insertBulk...`) | **~3.6x** vs plain JDBC |
+| 3 | **Parallelize across 4 connections** | **~1.4x** on top of #2 |
+| 4 | **Enable `useBulkCopyForBatchInsert=true`** in the JDBC URL | **2.2-2.6x** |
+| 5 | **Use multi-value INSERT (300-400 values/statement)** | **~3.7x** for JDBC |
 | 6 | **Drop/disable non-essential indexes** before bulk loads | up to **7x** |
-| 7 | **Pick the right batch size (500-1000)** — not 10, not 10,000 | **4-5x** vs tiny batches |
-| 8 | **Add `WITH (TABLOCK)` hint** for dedicated bulk-load windows | **1.3x** |
-| 9 | **Use `Persistable` + `isNew=true`** if you must use Spring Data `saveAll` | **8x** |
-| 10 | **Keep AUTO_UPDATE_STATISTICS = ON** (don't try to be clever) | **1.5x** |
+| 7 | **Pick the right batch size (~1000+)** — not 10 | **1.7x** (JDBC) to **~29x** (Bulk API) |
+| 8 | **Add `WITH (TABLOCK)` hint** for dedicated bulk-load windows | **~1.1x** |
+| 9 | **Use `Persistable` + `isNew=true`** if you must use Spring Data `saveAll` | **~6.7x** |
+| 10 | **Generate IDs app-side** (skip SEQUENCE/IDENTITY round-trips) | up to **1.75x** |
 
 ### Top 7 counter-intuitive findings
 
-1. **`OPTION (RECOMPILE)` makes batched inserts 52x slower** (2.4 minutes vs 3 seconds).
+1. **`OPTION (RECOMPILE)` makes batched inserts 45x slower** (93 seconds vs 2 seconds).
 2. **Delayed Durability `= FORCED` makes bulk inserts 49% SLOWER**, not faster. It helps
    many-small-commits workloads, not single-large-transaction bulk loads.
-3. **Natively compiled stored procs are 21x slower** when called from Java per-row via `addBatch`.
-   Their design assumes the C#/.NET memory-table API.
+3. **Natively compiled stored procs are ~360x slower** when called from Java per-row via `addBatch`
+   (667 seconds for one 100k-row run). Their design assumes the C#/.NET memory-table API.
 4. **In-Memory OLTP tables don't help batched Java inserts.** They shine for concurrency, not
    batch throughput.
-5. **ROW/PAGE compression make inserts slower** (+7%/+33%). Compression is a *read* optimization.
-6. **BCP utility is slower than Java Bulk API** when data is in-memory. The file I/O overhead
+5. **ROW/PAGE compression make inserts slower** (+13%/+25%). Compression is a *read* optimization.
+6. **BCP utility is 2x slower than Java Bulk API** when data is in-memory. The file I/O overhead
    dominates.
-7. **AUTO_UPDATE_STATISTICS = OFF makes inserts 50% SLOWER**, not faster. The optimizer needs
-   stats even for simple INSERTs.
+7. **`AUTO_UPDATE_STATISTICS = OFF` no longer hurts** (+1% this run — the old 50% INSERT-plan
+   penalty didn't reproduce on this engine). Still no reason to turn it off.
 
 ### The absolute fastest paths (if your scenario allows)
 
 If your source data is already in SQL Server (ETL within the same database):
-- **`INSERT INTO target SELECT ... FROM source` = 319 ms** (the ultimate server-side copy)
+- **`INSERT INTO target SELECT ... FROM source` = 275 ms** (the ultimate server-side copy)
 
 If data must come from Java:
-- **Parallel Bulk API 4 threads = 330 ms** (the standalone Java winner)
+- **Parallel Bulk API 4 threads = 321 ms** (the standalone Java winner)
 
 ### The ranking
 
 The fastest I could get **100,000 person rows** into SQL Server from a Java application is
-**330 ms** (Parallel Bulk API, 4 threads). The slowest is **27,794 ms** (Spring Data `saveAll`
-without `Persistable`) — **84x slower**. Everything in between is covered in this series.
+**321 ms** (Parallel Bulk API, 4 threads). The slowest practical strategy is **16,181 ms**
+(Spring Data `saveAll` without `Persistable`) — **50x slower**. Everything in between is covered
+in this series.
 
-**TVP (818 ms) is the best choice when you need portability across different clients and don't
-have `SQLServerBulkCopy` available.** Plain JDBC (3,905 ms) is only 3% faster than Hibernate
-`persist()` — the ORM is not your bottleneck.
+**TVP (626 ms) is the best choice when you need portability across different clients and don't
+have `SQLServerBulkCopy` available.** Plain JDBC (2,018 ms) is ~13% faster than Hibernate
+`persist()` (2,313 ms) — the ORM is not your bottleneck.
 
 The rest of this post walks through every topic in the summary above, starting with two approaches
 that bypass Hibernate entirely: Table-Valued Parameters and plain JDBC. After that come the
@@ -149,13 +151,14 @@ public class TvpInsertRepository {
 
 | Batch Size | Avg ms |
 |-----------|--------|
-| 10 | 20,221 |
-| 100 | 2,993 |
-| 1,000 | 1,203 |
-| 5,000 | 818 |
+| 10 | 10,657 |
+| 100 | 1,814 |
+| 1,000 | 846 |
+| 5,000 | 626 |
 
-TVP at batch=5000 (818ms) is the **3rd fastest single-thread strategy** — faster than all
-JDBC/Hibernate approaches, slower only than Bulk API. It's a solid middle ground.
+TVP at batch=5000 (626 ms) is the **3rd fastest single-thread strategy** — faster than all
+JDBC/Hibernate approaches, slower only than Bulk API and multi-value INSERT. It's a solid middle
+ground.
 
 ## Plain JDBC: The Bare-Metal Baseline
 
@@ -195,26 +198,24 @@ public class PlainJdbcInsertRepository {
 
 | Strategy | 100k persons (avg ms) |
 |----------|----------------------|
-| Plain JDBC | 3,905 |
-| Hibernate persist | 4,048 |
-| JdbcTemplate | 2,985 |
-| StatelessSession | 2,650 |
+| Plain JDBC | 2,018 |
+| JdbcTemplate | 2,031 |
+| StatelessSession | 2,046 |
+| Hibernate persist | 2,313 |
 
-**Plain JDBC (3,905ms) is only 3% faster than Hibernate persist (4,048ms).** The ORM overhead for
-batch inserts is negligible. Most of the time is spent in JDBC driver wire protocol and SQL Server's
-INSERT execution, not in Hibernate's entity management.
-
-JdbcTemplate is actually *faster* than plain JDBC because Spring's `JdbcTemplate.batchUpdate()`
-uses optimized batch parameter binding that the JDBC driver can optimize further.
+**Plain JDBC (2,018 ms) is ~13% faster than Hibernate persist (2,313 ms).** The ORM overhead for
+batch inserts is small. Most of the time is spent in JDBC driver wire protocol and SQL Server's
+INSERT execution, not in Hibernate's entity management — and plain JDBC, JdbcTemplate and
+StatelessSession all land within noise of each other (~2,030 ms).
 
 ### With useBulkCopyForBatchInsert=true
 
 | Strategy | Normal | bulkCopy=true | Speedup |
 |----------|--------|---------------|---------|
-| Plain JDBC | 3,905 | 1,516 | 2.6x |
-| JdbcTemplate | 3,089 | 1,373 | 2.3x |
-| StatelessSession | 2,650 | 1,075 | 2.5x |
-| Hibernate persist | 4,048 | 2,144 | 1.9x |
+| Plain JDBC | 2,018 | 901 | 2.2x |
+| JdbcTemplate | 2,031 | 824 | 2.5x |
+| StatelessSession | 2,046 | 781 | 2.6x |
+| Hibernate persist | 2,313 | 1,052 | 2.2x |
 
 With `bulkCopy=true`, all JDBC-based strategies converge to similar performance. The driver's bulk
 copy conversion is the dominant factor, not the Java-side abstraction.
@@ -244,12 +245,13 @@ reader-writer blocking at the cost of version store overhead:
 
 | Strategy | RCSI OFF | RCSI ON | Delta |
 |----------|----------|---------|-------|
-| Bulk API | 1,211 | **720** | **40% faster** |
-| JdbcTemplate | 2,817 | 3,565 | 27% slower |
+| Bulk API | 617 | 613 | ~tie |
+| JdbcTemplate | 2,024 | 2,141 | 6% slower |
 
-**Surprise:** RCSI dramatically helps Bulk API (fewer latches/lock contention on data pages) but
-hurts JdbcTemplate (row versioning writes to tempdb). Enable RCSI if you're bulk-loading with the
-Bulk Copy protocol and have concurrent readers.
+On this run RCSI was neutral for Bulk API and mildly negative for JdbcTemplate (row versioning
+writes to tempdb). Older runs showed RCSI accelerating Bulk API by 40% under latch contention —
+the effect depends on how contended your pages are. There's no write-side reason to enable it
+here; its value is on the read side (see [SNAPSHOT isolation](#snapshot-isolation-under-write-contention)).
 
 ### MERGE vs plain INSERT
 
@@ -258,10 +260,10 @@ canonical SQL upsert. How much does the upsert semantics cost?
 
 | Method | 100k rows (avg ms) |
 |--------|-------------------|
-| Plain INSERT | 3,177 |
-| MERGE upsert | 3,514 (+11%) |
+| Plain INSERT | 2,009 |
+| MERGE upsert | 2,527 (+26%) |
 
-The 11% overhead is the cost of the ON clause evaluation and the branching logic. For pure inserts,
+The 26% overhead is the cost of the ON clause evaluation and the branching logic. For pure inserts,
 use INSERT. For true upserts (where some rows may already exist), MERGE is cleaner than a
 SELECT-then-INSERT/UPDATE pattern.
 
@@ -284,8 +286,8 @@ END
 
 | Scenario | 100k rows (avg ms) |
 |----------|-------------------|
-| No trigger | 3,261 |
-| With AFTER INSERT trigger | **7,023 (2.2x slower)** |
+| No trigger | 2,088 |
+| With AFTER INSERT trigger | **5,175 (2.5x slower)** |
 
 **Triggers are expensive.** Each INSERT batch now does double the work — one for the base table,
 one for the audit table. Consider:
@@ -306,11 +308,13 @@ BlockingQueue<List<Person>> queue = new ArrayBlockingQueue<>(4);
 
 | Pattern | 100k rows (avg ms) |
 |---------|-------------------|
-| Sync baseline (CPU then I/O) | 3,816 |
-| **Async producer-consumer** | **2,676 (30% faster)** |
+| Sync baseline (CPU then I/O) | 2,101 |
+| **Async producer-consumer** | **2,002 (5% faster)** |
 
-A single-producer, single-consumer pipeline is enough to overlap work. More consumers would help
-only if the DB can accept more concurrent writers (see [Part 6](/post/java/mssqlserver/fast_insert_part6/)).
+A single-producer, single-consumer pipeline is enough to overlap work — though with fast inserts
+the gain shrinks to single digits; the pattern pays off most when client-side CPU work is heavy.
+More consumers would help only if the DB can accept more concurrent writers
+(see [Part 6](/post/java/mssqlserver/fast_insert_part6/)).
 
 ![Advanced Patterns](advanced_patterns.svg)
 
@@ -329,13 +333,14 @@ WITH (FORMAT = 'CSV', FIELDTERMINATOR = '0x09', ROWTERMINATOR = '0x0a',
 
 | Method | 100k rows (avg ms) |
 |--------|-------------------|
-| Ad-hoc INSERT batch | 2,734 |
-| Single-threaded Bulk API | 492 |
-| **BULK INSERT (T-SQL)** | **637** |
+| Ad-hoc INSERT batch | 2,038 |
+| Single-threaded Bulk API | 412 |
+| **BULK INSERT (T-SQL)** | **1,469** |
 
-BULK INSERT nearly matches the fastest single-threaded Java path. It's **the ultimate pattern for
-server-local file imports** — ETL/data warehousing scenarios where data lives on the SQL Server
-machine. The file must be readable by the SQL Server service account.
+On this run BULK INSERT landed between the two: faster than ad-hoc batches but 3.6x slower than
+the Java Bulk API. It's still **the pattern for server-local file imports** — ETL/data warehousing
+scenarios where data lives on the SQL Server machine. The file must be readable by the SQL Server
+service account.
 
 ### In-Memory OLTP Tables (`MEMORY_OPTIMIZED = ON`)
 
@@ -352,10 +357,10 @@ CREATE TABLE person_memopt (
 
 | Scenario | 100k rows (avg ms) |
 |----------|-------------------|
-| Disk-based ad-hoc INSERT | 2,734 |
-| **In-Memory OLTP (interpreted T-SQL batch)** | **2,726** |
+| Disk-based ad-hoc INSERT | 2,038 |
+| **In-Memory OLTP (interpreted T-SQL batch)** | **1,837** |
 
-**Surprise:** essentially no benefit for batch inserts from Java. In-Memory tables excel at
+**Surprise:** only ~10% benefit for batch inserts from Java. In-Memory tables excel at
 high-concurrency OLTP (many threads, many small operations) by eliminating latches. Our workload —
 one connection, batch of 1,000 rows — isn't lock-constrained; the bottleneck is the network and
 batch processing overhead, which both tables share.
@@ -374,8 +379,8 @@ END
 
 | Scenario | 100k rows (avg ms) |
 |----------|-------------------|
-| In-Memory interpreted batch | 2,726 |
-| **Native proc called per-row via `addBatch`** | **58,542 (21x SLOWER)** |
+| In-Memory interpreted batch | 1,837 |
+| **Native proc called per-row via `addBatch`** | **667,872 (~360x SLOWER)** |
 
 **Native procs are a trap for Java clients.** The native code itself is lightning fast, but you must
 call it **per row** (`EXEC usp_... ?, ?, ?, ?, ?`). The JDBC driver doesn't send 100,000 `EXEC`
@@ -386,10 +391,10 @@ batch APIs, not in Java JDBC**.
 
 | Pattern | 100k rows (avg ms) |
 |---------|-------------------|
-| Ad-hoc INSERT (direct) | 2,734 |
-| **Stored procedure (`EXEC usp_...`)** | **4,807 (76% slower)** |
+| Ad-hoc INSERT (direct) | 2,038 |
+| **Stored procedure (`EXEC usp_...`)** | **3,957 (94% slower)** |
 
-A per-row stored procedure call is 76% slower than batched direct INSERT, for the same reason as
+A per-row stored procedure call is ~2x slower than batched direct INSERT, for the same reason as
 native procs: each EXEC becomes a server-side command execution with its own parameter parsing and
 query plan lookup. Use procs for complex business logic, not for simple inserts.
 
@@ -397,12 +402,12 @@ query plan lookup. Use procs for complex business logic, not for simple inserts.
 
 | Scenario | 100k rows (avg ms) |
 |----------|-------------------|
-| Check constraints enabled | 2,954 |
-| **Check constraints disabled** | **2,909** |
+| Check constraints enabled | 2,277 |
+| **Check constraints disabled** | **2,007 (12% faster)** |
 
-**Simple check constraints are essentially free.** For LEN(x) > 0 and range checks, the overhead
-is negligible. Only disable constraints with `ALTER TABLE NOCHECK CONSTRAINT ALL` for complex
-multi-table FK checks on large bulk loads — simple column constraints are fine to leave on.
+**Simple check constraints are cheap but not free** — ~13% overhead on this run for LEN(x) > 0 and
+range checks. Still, only disable constraints with `ALTER TABLE NOCHECK CONSTRAINT ALL` during a
+dedicated bulk-load window — the integrity guarantee is usually worth the small tax.
 
 ![In-Memory OLTP, BULK INSERT & Procs](inmem_bulk.svg)
 
@@ -415,11 +420,11 @@ execution:
 
 | Scenario | 100k rows (avg ms) |
 |----------|-------------------|
-| Normal (plan cached across batches) | 2,772 |
-| **`OPTION (RECOMPILE)`** | **145,097 (52x SLOWER!)** |
+| Normal (plan cached across batches) | 2,059 |
+| **`OPTION (RECOMPILE)`** | **93,031 (45x SLOWER!)** |
 
 **Never use `OPTION (RECOMPILE)` with batched INSERTs.** Each row-group recompiles the plan,
-turning a 3-second operation into a 2.4-minute one. The hint is for one-off queries with wildly
+turning a 2-second operation into a 93-second one. The hint is for one-off queries with wildly
 varying parameters, not high-volume batched workloads.
 
 ### Network latency simulation
@@ -428,9 +433,9 @@ Simulated by inserting `Thread.sleep(ms)` after each `executeBatch()`:
 
 | Added latency | 100k rows (avg ms) |
 |---------------|-------------------|
-| 0 ms (local) | 2,759 |
-| **1 ms per batch** (×100 batches) | **2,948** (+7%) |
-| **5 ms per batch** (×100 batches) | **4,370** (+58%) |
+| 0 ms (local) | 2,030 |
+| **1 ms per batch** (×100 batches) | **2,148** (+6%) |
+| **5 ms per batch** (×100 batches) | **2,536** (+25%) |
 
 Each 1 ms of round-trip latency per batch adds ~1 ms × (number of batches) overhead. On a
 production WAN link with 20-50 ms RTT, 100k inserts in 1000-row batches would spend 2-5 seconds in
@@ -444,14 +449,14 @@ possible path is `INSERT INTO target SELECT ... FROM source` — no client round
 
 | Pattern | 100k rows (avg ms) |
 |---------|-------------------|
-| **`INSERT … SELECT` (plain)** | **319** |
-| `INSERT … SELECT … ORDER BY` | 447 (+40% for sort) |
-| Parallel Bulk API 4t | 330 |
+| **`INSERT … SELECT` (plain)** | **275** |
+| `INSERT … SELECT … ORDER BY` | 273 (tie — sort optimized out) |
+| Parallel Bulk API 4t | 321 |
 
-**INSERT…SELECT is the fastest method we've benchmarked**, matching Parallel Bulk API. It's the
-right choice for ETL pipelines, materialized view refreshes, and in-database transformations. The
-40% ORDER BY penalty is the cost of the sort — if your clustered key already matches the ORDER BY,
-the sort disappears.
+**INSERT…SELECT is the fastest method we've benchmarked**, ahead of Parallel Bulk API. It's the
+right choice for ETL pipelines, materialized view refreshes, and in-database transformations. On
+this engine the ORDER BY penalty vanished entirely — the optimizer recognized the sort was already
+satisfied by the clustered key.
 
 ### SQLServerBulkCopy option tuning
 
@@ -459,16 +464,16 @@ Fine-tuning `SQLServerBulkCopyOptions`:
 
 | Option | 100k rows (avg ms) |
 |--------|-------------------|
-| Default (batch 1000) | 765 |
-| **`batchSize = 5000`** | **535 (30% faster)** |
-| `+ checkConstraints = true` | 619 |
-| `+ tableLock = true` | 662 |
+| Default (batch 1000) | 619 |
+| **`batchSize = 5000`** | **420 (32% faster)** |
+| `+ checkConstraints = true` | 570 |
+| `+ tableLock = true` | 564 |
 
-- **Bigger batch = fewer round-trips** — 5000 beats 1000 by 30%.
-- `checkConstraints = true` adds ~15% but validates FKs/CHECKs that are normally skipped during
-  bulk load (the default is `false`, meaning the loaded data is marked as untrusted).
-- `tableLock = true` acquires a bulk-update lock on the table — helpful when there are concurrent
-  writers, but prevents reader access during the load.
+- **Bigger batch = fewer round-trips** — 5000 beats 1000 by ~30%.
+- `checkConstraints = true` and `tableLock = true` were both within noise of the default here.
+  `checkConstraints` validates FKs/CHECKs that are normally skipped during bulk load (the default
+  is `false`, meaning the loaded data is marked as untrusted); `tableLock` helps when there are
+  concurrent writers but prevents reader access during the load.
 
 ![Query Plans, Latency & INSERT…SELECT](plans_latency.svg)
 
@@ -480,15 +485,16 @@ into snapshot-based. Here we test full **SNAPSHOT isolation** (`ALLOW_SNAPSHOT_I
 
 | Scenario | Insert time | Reader throughput |
 |----------|------------|-------------------|
-| SNAPSHOT single writer (no readers) | 2,997 ms | — |
-| **READ_COMMITTED + 4 concurrent readers** | **2,964 ms** | **~8 reads total** (blocked by writer locks) |
-| **SNAPSHOT + 2 concurrent readers** | **4,638 ms (+55%)** | **~430 reads per run** |
-| **SNAPSHOT + 4 concurrent readers** | **6,259 ms (+109%)** | **~1,100 reads per run** |
+| SNAPSHOT single writer (no readers) | 2,115 ms | — |
+| **READ_COMMITTED + 4 concurrent readers** | **2,127 ms** | **~8 reads total** (blocked by writer locks) |
+| **SNAPSHOT + 2 concurrent readers** | **4,309 ms (+104%)** | **~310 reads per run** |
+| **SNAPSHOT + 4 concurrent readers** | **2,313 ms (+9%)** | **~560 reads per run** |
 
 **The trade-off is stark:**
-- With **READ_COMMITTED**: writes stay fast but readers get almost nothing (~8 reads vs 1,100).
-- With **SNAPSHOT**: readers aren't blocked (135x more throughput), but writes are 2x slower due to
-  version-store overhead.
+- With **READ_COMMITTED**: writes stay fast but readers get almost nothing (~8 reads vs ~560).
+- With **SNAPSHOT**: readers keep working (~70x more throughput). The write cost was inconsistent
+  on this run (+104% with 2 readers, only +9% with 4) — version-store overhead varies with timing,
+  but the reader-side benefit is unambiguous.
 
 Pick based on your workload: if readers must stay responsive during bulk loads, pay the SNAPSHOT
 cost. If the load window is dedicated (no readers care), RC is fine.
@@ -501,9 +507,9 @@ pre-indexing the staging table cost?
 
 | Target indexes | 100k rows total (load + SWITCH) |
 |---------------|-------------------------------|
-| **0 non-clustered** | **2,952 ms** |
-| 1 non-clustered | 4,205 ms (+42%) |
-| 3 non-clustered | 6,369 ms (+116%) |
+| **0 non-clustered** | **2,163 ms** |
+| 1 non-clustered | 3,106 ms (+44%) |
+| 3 non-clustered | 4,567 ms (+111%) |
 
 Just like non-partitioned tables, index maintenance is the dominant cost. **If possible: load into
 a heap staging table, then build the matching indexes on it right before the SWITCH** — this is
@@ -527,8 +533,8 @@ documents with ~5 nodes each, that's **500,000 node-table rows** maintained on e
 
 | XML column | 100k rows (avg ms) |
 |-----------|-------------------|
-| No XML index | 8,339 |
-| **+ PRIMARY XML INDEX** | **38,265 (4.6x SLOWER!)** |
+| No XML index | 5,893 |
+| **+ PRIMARY XML INDEX** | **25,946 (4.4x SLOWER!)** |
 
 ### JSON Computed-Column Index
 
@@ -542,10 +548,10 @@ CREATE INDEX IX_person_json_idx_years ON person_json_idx(years_from_json);
 
 | JSON column | 100k rows (avg ms) |
 |------------|-------------------|
-| No JSON index | 5,774 |
-| **+ computed-column INDEX** | **8,493 (+47%)** |
+| No JSON index | 3,357 |
+| **+ computed-column INDEX** | **4,952 (+48%)** |
 
-**JSON indexes are 10x cheaper than XML indexes** (+47% vs +359%) because JSON uses a scalar computed
+**JSON indexes are ~7x cheaper than XML indexes** (+48% vs +340%) because JSON uses a scalar computed
 column — just one indexed value per row — while the XML index shreds the entire document.
 
 **Takeaway:** if you need to query JSON/XML by a specific field, use the JSON computed-column
@@ -558,10 +564,10 @@ tempdb? We force a tiny grant with `OPTION (MIN_GRANT_PERCENT = 0, MAX_GRANT_PER
 
 | INSERT…SELECT + ORDER BY | 100k rows (avg ms) |
 |-------------------------|-------------------|
-| Normal grant (in-memory sort) | 326 |
-| **Tiny grant (tempdb spill)** | **657 (2x slower)** |
+| Normal grant (in-memory sort) | 273 |
+| **Tiny grant (tempdb spill)** | **320 (+17%)** |
 
-**Spilling to tempdb is cheaper than you'd expect.** Only 2x slower — SQL Server handles spills
+**Spilling to tempdb is cheaper than you'd expect.** Only 17% slower — SQL Server handles spills
 gracefully with multi-pass merge sorts. The right lesson: don't panic if you see occasional
 spills in a slow query report; focus on queries that spill *gigabytes*, not kilobytes.
 
@@ -570,101 +576,102 @@ spills in a slow query report; focus on queries that spill *gigabytes*, not kilo
 ## Final Rankings: All Strategies Combined
 
 Across the ~110 configurations we tested, here are the headline numbers. All ran on SQL Server 2025
-Express (local), Java 17 + Spring Boot 3.3, 100k rows unless noted.
+Developer Edition (Linux, local), Java 17 + Spring Boot 3.3, 100k rows unless noted.
 
 ### Fastest paths
 
 | Rank | Strategy | 100k avg ms | Covered in | Notes |
 |------|----------|-------------|------------|-------|
-| 1 | **INSERT … SELECT** (same DB) | **319** | Part 8 | Server-side copy — no round-trips |
-| 2 | Parallel Bulk API 4t | 330 | Part 6 | Fastest Java client-driven path |
-| 3 | Multi-value 400 + 8 threads | 368 | Parts 3+6 | No bulkCopy flag needed |
-| 4 | Multi-value 400 + 4 threads | 426 | Parts 3+6 | |
-| 5 | Parallel Bulk API 8t | 434 | Part 6 | Diminishing returns past 4 threads |
-| 6 | INSERT…SELECT ORDER BY | 447 | Part 8 | +40% for the sort |
-| 7 | Bulk API (single thread) | 492 | Part 2 | Fastest single-thread |
-| 8 | SQLServerBulkCopy batch=5000 | 535 | Part 8 | Bigger batch wins |
-| 9 | Parallel Bulk API 4t + bulkCopy | 603 | Parts 6+4 | bulkCopy on bulk is redundant |
-| 10 | Parallel JdbcTemplate 16t | 608 | Part 6 | |
-| 11 | **BULK INSERT (T-SQL from file)** | **637** | Part 8 | Server-side file reader |
-| 12 | SQLServerBulkCopy +TABLOCK | 662 | Part 8 | |
-| 13 | Parallel JdbcTemplate 4t + bulkCopy | 731 | Parts 6+4 | |
-| 14 | TVP (batch=5000) | 818 | Part 8 | Best portable single-thread |
+| 1 | **INSERT … SELECT** (same DB) | **275** | Part 8 | Server-side copy — no round-trips |
+| 2 | INSERT…SELECT ORDER BY | 273 | Part 8 | Ties plain — sort optimized out |
+| 3 | Parallel Bulk API 4t | 321 | Part 6 | Fastest Java client-driven path |
+| 4 | Bulk API (single thread, batch=5000) | 412 | Part 2 | Fastest single-thread |
+| 5 | Multi-value 400 + 8 threads | 418 | Parts 3+6 | No bulkCopy flag needed |
+| 6 | SQLServerBulkCopy batch=5000 | 420 | Part 8 | Bigger batch wins |
+| 7 | Parallel Bulk API 8t | 426 | Part 6 | Diminishing returns past 4 threads |
+| 8 | Multi-value 400 + 4 threads | 490 | Parts 3+6 | |
+| 9 | Parallel Bulk API 4t + bulkCopy | 493 | Parts 6+4 | bulkCopy on bulk is redundant |
+| 10 | SQLServerBulkCopy +TABLOCK | 564 | Part 8 | |
+| 11 | Parallel JdbcTemplate 16t | 612 | Part 6 | |
+| 12 | TVP (batch=5000) | 626 | Part 8 | Best portable single-thread |
+| 13 | Multi-value 400 single thread | 662 | Part 3 | |
+| 14 | Multi-value 200 single thread | 666 | Part 3 | |
 
 ### Mid-tier
 
 | Rank | Strategy | 100k avg ms |
 |------|----------|-------------|
-| 15 | Multi-value 400 single thread | 1,058 |
-| 16 | StatelessSession + bulkCopy | 1,075 |
-| 17 | JdbcTemplate + bulkCopy | 1,373 |
-| 18 | Plain JDBC + bulkCopy | 1,516 |
-| 19 | Clustered + TABLOCK | 2,185 |
-| 20 | Hibernate + bulkCopy | 2,144 |
-| 21 | JDBC PreparedStatement | 2,423 |
-| 22 | StatelessSession | 2,650 |
-| 23 | In-Memory OLTP (interpreted batch) | 2,726 |
-| 24 | JdbcTemplate | 2,985 |
+| 15 | StatelessSession + bulkCopy | 781 |
+| 16 | JdbcTemplate + bulkCopy | 824 |
+| 17 | Plain JDBC + bulkCopy | 901 |
+| 18 | Hibernate + bulkCopy | 1,052 |
+| 19 | BULK INSERT (T-SQL from file) | 1,469 |
+| 20 | In-Memory OLTP (interpreted batch) | 1,837 |
+| 21 | Clustered + TABLOCK | 1,862 |
+| 22 | Plain JDBC (batch=5000) | 1,965 |
+| 23 | JdbcTemplate (batch=5000) | 1,979 |
+| 24 | StatelessSession | 2,046 |
 
 ### Slow & anti-patterns
 
 | Rank | Strategy | 100k avg ms | Why |
 |------|----------|-------------|-----|
-| 25 | SWITCH + 3 indexes | 6,369 | Index maintenance in staging |
-| 26 | Columnstore + batch 1000 | 8,402 | Delta store overhead |
-| 27 | AFTER INSERT trigger | 7,023 | Secondary insert per row |
-| 28 | XML column (no index) | 8,339 | Native XML tree parsing |
-| 29 | XML + PRIMARY XML INDEX | 38,265 | Shredded node table maintenance |
-| 30 | Server-side encryption (3 cols) | 15,952 | AES per row |
-| 31 | Native proc per-row EXEC | 58,542 | No batching with addBatch |
-| 32 | **`OPTION (RECOMPILE)` + batches** | **145,097** | Plan rebuilt per execution |
-| 33 | **saveAll (original, Spring Data JPA)** | **27,794** | SELECT per entity (merge) |
+| 25 | Hibernate persist | 2,313 | ORM overhead is small but real |
+| 26 | Columnstore + batch 1000 | 4,293 | Delta store overhead |
+| 27 | SWITCH + 3 indexes | 4,567 | Index maintenance in staging |
+| 28 | AFTER INSERT trigger | 5,175 | Secondary insert per row |
+| 29 | XML column (no index) | 5,893 | Native XML tree parsing |
+| 30 | Server-side encryption (3 cols) | 12,076 | AES per row |
+| 31 | **saveAll (original, Spring Data JPA)** | **16,181** | SELECT per entity (merge) |
+| 32 | XML + PRIMARY XML INDEX | 25,946 | Shredded node table maintenance |
+| 33 | **`OPTION (RECOMPILE)` + batches** | **93,031** | Plan rebuilt per execution |
+| 34 | Native proc per-row EXEC | 667,872 | No batching with addBatch — 11 minutes |
 
-**Headline: INSERT…SELECT (319 ms) is the fastest; `OPTION (RECOMPILE)` with batches is 455x
-slower than the best.**
+**Headline: INSERT…SELECT (275 ms) is the fastest; per-row native-proc EXEC is ~2,400x slower
+than the best.**
 
 ## Key Takeaways from the Series
 
-1. **Parallel Bulk API** is the overall winner (330ms for 100k rows). The Bulk Copy API already uses
+1. **Parallel Bulk API** is the overall winner (321 ms for 100k rows). The Bulk Copy API already uses
    an optimized protocol; splitting across threads adds connection-level parallelism.
 
-2. **Multi-value INSERT + parallel threads** (368ms) is a close second and **doesn't require
+2. **Multi-value INSERT + parallel threads** (418 ms) is a close second and **doesn't require
    `useBulkCopyForBatchInsert`** or the Bulk Copy API — it works with any JDBC driver.
 
-3. **`useBulkCopyForBatchInsert=true`** gives 2-2.5x speedup to single-row batch strategies. One
+3. **`useBulkCopyForBatchInsert=true`** gives 2.2-2.6x speedup to single-row batch strategies. One
    connection string parameter is the easiest win. But it's incompatible with multi-value INSERT.
 
-4. **Hibernate's overhead is ~3%** for batch inserts. The ORM is not the bottleneck; the network
+4. **Hibernate's overhead is ~13%** for batch inserts. The ORM is not the bottleneck; the network
    and database engine are.
 
-5. **Parallelism helps 2-7x** depending on the strategy and thread count. 4 threads is the safe
-   default; 8-16 helps JdbcTemplate more than Bulk API.
+5. **Parallelism helps 1.4-3.3x** depending on the strategy and thread count. 4 threads is the safe
+   default; 16 threads helps JdbcTemplate (3.3x) more than Bulk API (1.3x).
 
-6. **Indexes are the hidden cost** — 5 non-clustered indexes make inserts 6-7x slower regardless
+6. **Indexes are the hidden cost** — 5 non-clustered indexes make inserts up to 7x slower regardless
    of strategy. Drop and rebuild indexes for bulk loads.
 
-7. **TVPs are underrated** — 3rd fastest single-thread strategy with a clean API, no parameter
-   count limits, and works inside transactions.
+7. **TVPs are underrated** — 3rd fastest single-thread strategy (626 ms) with a clean API, no
+   parameter count limits, and works inside transactions.
 
-8. **Batch size sweet spot is 500-1000** for most strategies. Below 200, overhead dominates; above
-   1000, diminishing returns.
+8. **Batch size sweet spot is ~1000+** for JDBC strategies — the curve flattens around 1,650-2,000.
+   Bulk API keeps improving all the way to 5,000.
 
-9. **Multi-value objectsPerInsert sweet spot is 200** — beyond that, SQL parser overhead increases
-   faster than network savings decrease.
+9. **Multi-value objectsPerInsert sweet spot is 300-400** — beyond that, SQL parser overhead
+   increases faster than network savings decrease.
 
-10. **Compression hurts inserts** — ROW (+7%) and PAGE (+33%) compression add CPU overhead that
+10. **Compression hurts inserts** — ROW (+13%) and PAGE (+25%) compression add CPU overhead that
     outweighs I/O savings for writes. Save compression for read-heavy tables.
 
-11. **BCP (843ms) is slower than Java Bulk API (691ms)** for in-memory data — file I/O is the
-    bottleneck, not the protocol.
+11. **BCP (1,270 ms) is 2x slower than Java Bulk API (560 ms)** for in-memory data — file I/O is
+    the bottleneck, not the protocol.
 
-12. **Concurrent readers slow inserts 2.5x** — use TABLOCK for dedicated bulk-load windows to
+12. **Concurrent readers slow inserts ~4x** — use TABLOCK for dedicated bulk-load windows to
     prevent reader contention.
 
-13. **Columnstore tables are 3.5x slower** for OLTP-style inserts — the delta store overhead only
+13. **Columnstore tables are ~2x slower** for OLTP-style inserts — the delta store overhead only
     pays off at analytical query time.
 
-14. **Auto-commit per row is 15x slower** than batched transactions — never do it.
+14. **Auto-commit per row is ~250x slower per row** than batched transactions — never do it.
 
 15. **Isolation level and GC choice don't matter** for INSERT-only workloads. Default
     READ_COMMITTED + default G1 are fine; tuning them is wasted effort.
@@ -674,36 +681,37 @@ slower than the best.**
 
 17. **SWITCH PARTITION is the gold standard** for zero-downtime bulk loads — load a staging
     heap, then atomically metadata-swap it into a partition (milliseconds, regardless of size).
+    It no longer wins on raw speed, but the table stays queryable throughout.
 
-18. **RCSI (snapshot isolation) is a Bulk API accelerator**. Enable it if you use Bulk API and
-    have concurrent readers — 40% faster. But it slows JDBC batches 27% due to version store
-    overhead; don't enable it blindly.
+18. **RCSI doesn't accelerate Bulk API** on this run — it was neutral for bulk (613 vs 617 ms) and
+    ~6% worse for JDBC due to version-store overhead. Its value is reader concurrency, not write
+    speed.
 
-19. **MERGE costs 11% over plain INSERT** for upsert semantics. Use INSERT for pure appends.
+19. **MERGE costs +26% over plain INSERT** for upsert semantics. Use INSERT for pure appends.
 
-20. **AFTER INSERT triggers are 2.2x slower**. Prefer application logging, CDC, or temporal
+20. **AFTER INSERT triggers are 2.5x slower**. Prefer application logging, CDC, or temporal
     tables for audit trails.
 
-21. **Async producer-consumer is 30% faster** than sync by overlapping CPU and I/O work. Even
-    one producer + one consumer is enough.
+21. **Async producer-consumer is ~5% faster** than sync — the overlap matters most when client-side
+    CPU work is heavy, less so when inserts are already fast.
 
-22. **Random GUID clustered keys cost 19% minimum** on empty tables, far more on populated ones
+22. **Random GUID clustered keys cost +30% minimum** on empty tables, far more on populated ones
     (page splits). Use `NEWSEQUENTIALID()` or an ordered GUID (UUIDv7/ULID) if you must use GUIDs.
 
-23. **Change Tracking is expensive (62% overhead)**. Enable only if a downstream consumer actually
+23. **Change Tracking is expensive (+53% overhead)**. Enable only if a downstream consumer actually
     reads the change feed. Full CDC (Enterprise only) is even more expensive.
 
-24. **Temporal tables are cheap for audit (+31%)** — far better than AFTER INSERT triggers
-    (+120%). The right answer for most point-in-time history requirements.
+24. **Temporal tables are cheap for audit (+40%)** — far better than AFTER INSERT triggers
+    (+148%). The right answer for most point-in-time history requirements.
 
-25. **Filtered indexes are 60% cheaper than full indexes** on the same column. If your queries
-    only need a subset of rows, index only that subset.
+25. **Filtered indexes are the cheapest index to maintain** (+38% vs +44-48% for full/INCLUDE/
+    composite) — though the margin narrowed on this run. Index only the subset you query.
 
-26. **INCLUDE is 30% cheaper than composite** — storing columns only at the leaf level is cheaper
-    than making them part of the sort key.
+26. **INCLUDE and composite indexes cost the same** on inserts (+48% each) — the leaf-level
+    advantage doesn't show up at this row size.
 
-27. **Computed columns are essentially free** on insert (persisted +0%, non-persisted +0%). Use
-    them for derived values; they're cleaner than app-side computations and support indexing.
+27. **Computed columns are essentially free** on insert (+3%). Use them for derived values; they're
+    cleaner than app-side computations and support indexing.
 
 28. **Delayed Durability can make bulk inserts SLOWER (+49%)** — it's a per-transaction
     optimization for many small commits, not for single large transactions.
@@ -711,67 +719,68 @@ slower than the best.**
 29. **Trace flag 610 doesn't help regular INSERTs** — only `BULK INSERT`, `BCP`, and
     `INSERT ... SELECT` benefit. The JDBC Bulk Copy API already handles this transparently.
 
-30. **XML columns are 2.3x slower than JSON** (NVARCHAR+ISJSON) for the same payload. Use JSON
+30. **XML columns are 1.6x slower than JSON** (NVARCHAR+ISJSON) for the same payload. Use JSON
     unless you specifically need XQuery/XPath.
 
-31. **Sparse columns are 14% SLOWER** when columns are populated. Only use SPARSE when the column
+31. **Sparse columns are 11% SLOWER** when columns are populated. Only use SPARSE when the column
     is >95% NULL in real data — otherwise it's a lose-lose.
 
-32. **AUTO_UPDATE_STATISTICS = OFF makes inserts 50% slower**, not faster — the optimizer needs
-    stats even for simple INSERTs. Always leave it ON.
+32. **AUTO_UPDATE_STATISTICS OFF is no longer a footgun** — +1% on this run (the old 50% penalty
+    didn't reproduce). Leave it ON anyway; it costs nothing on the write path.
 
-33. **Server-side encryption (ENCRYPTBYPASSPHRASE) is 4x slower** for 3 encrypted columns. Prefer
+33. **Server-side encryption (ENCRYPTBYPASSPHRASE) is ~6x slower** for 3 encrypted columns. Prefer
     Always Encrypted (client-side) or TDE (page-level) for most PII protection use cases.
 
-34. **BULK INSERT from file (637ms) rivals Java Bulk API** when data already lives on the SQL
-    Server machine. The server-side bulk reader is as fast as the Java client-side protocol.
+34. **BULK INSERT from file (1,469 ms) is the simplest server-side loader** — but 3.6x slower than
+    the Java Bulk API on this setup. Use it when data already lives on the SQL Server machine.
 
-35. **In-Memory OLTP tables offer no benefit for batched Java inserts.** They shine for
+35. **In-Memory OLTP tables offer ~10% benefit for batched Java inserts.** They shine for
     high-concurrency OLTP; our one-thread batch workload isn't lock-constrained.
 
-36. **Natively compiled procedures are a trap for Java clients** — 21x slower when called
+36. **Natively compiled procedures are a trap for Java clients** — ~360x slower when called
     per-row via `addBatch`. They're designed for the memory-table API in .NET/C#, not JDBC.
 
-37. **Stored procedures (interpreted) are 76% slower** than direct INSERT batches. Use procs for
+37. **Stored procedures (interpreted) are ~2x slower** than direct INSERT batches. Use procs for
     complex logic, not simple row inserts.
 
-38. **Check constraints are free** for simple column validations. Only disable them for complex
-    FK validation on huge bulk loads.
+38. **Check constraints cost ~13%** for simple column validations — cheap but not free. Only
+    disable them inside a dedicated bulk-load window.
 
-39. **`RETURN_GENERATED_KEYS` costs +34%**. Suppress it in your ORM/JDBC code if you don't need
-    the generated IDs back on insert.
+39. **`RETURN_GENERATED_KEYS` costs +41%** vs app-generated IDs. Suppress it in your ORM/JDBC code
+    if you don't need the generated IDs back on insert.
 
-40. **App-generated IDs beat IDENTITY and SEQUENCE** by 12-31%. Prefer ULID/Snowflake/pre-fetched
+40. **App-generated IDs beat IDENTITY and SEQUENCE** by 25-75%. Prefer ULID/Snowflake/pre-fetched
     sequence batches to server-side ID generation for the fastest batched inserts.
 
-41. **Trusted FKs cost +21%** — disable before bulk loads, then `WITH CHECK CHECK CONSTRAINT` to
+41. **Trusted FKs cost +26%** — disable before bulk loads, then `WITH CHECK CHECK CONSTRAINT` to
     re-validate (faster than per-row checking).
 
-42. **Abort-on-error batches are 7.5x faster** than per-row insert retry, but you lose up to 999
+42. **Abort-on-error batches are 6x faster** than per-row insert retry, but you lose up to 999
     good rows per bad row. Pick based on data cleanliness and tolerance for row loss.
 
-43. **`OPTION (RECOMPILE)` is a batch-insert killer — 52x slower.** Never use it with batched
+43. **`OPTION (RECOMPILE)` is a batch-insert killer — 45x slower.** Never use it with batched
     workloads.
 
-44. **Network latency amortizes with larger batches.** 5 ms RTT per batch costs 500 ms over 100
+44. **Network latency amortizes with larger batches.** 5 ms RTT per batch costs ~500 ms over 100
     batches but 0 ms if you make it a single Bulk Copy call.
 
-45. **`INSERT … SELECT` (server-side) is the fastest path at 319 ms** — matches Parallel Bulk API.
+45. **`INSERT … SELECT` (server-side) is the fastest path at 275 ms** — beats Parallel Bulk API.
     If your data is already on the server, don't round-trip through the client.
 
-46. **Bigger `SQLServerBulkCopyOptions.batchSize` wins** — 5000 beats 1000 by 30%. Default is a
+46. **Bigger `SQLServerBulkCopyOptions.batchSize` wins** — 5000 beats 1000 by ~30%. Default is a
     conservative starting point, not the optimum.
 
-47. **SNAPSHOT isolation lets concurrent readers do 135x more work** during a bulk load (1,100
-    reads vs 8), but writes 2x slower. Pick based on whether readers need to stay responsive.
+47. **SNAPSHOT isolation lets concurrent readers do ~70x more work** during a bulk load (~560
+    reads vs 8). The write-side penalty was inconsistent (+9-104%), but the reader benefit is clear.
 
 48. **SWITCH PARTITION's load phase scales linearly with index count** — just like non-partitioned
     tables. Load into a heap, then add matching indexes right before the SWITCH.
 
-49. **XML primary indexes are 4.6x more expensive** than JSON computed-column indexes (+359% vs
-    +47%). Use JSON unless you specifically need XQuery/XPath.
+49. **XML primary indexes are ~7x more expensive** than JSON computed-column indexes (+340% vs
+    +48%). Use JSON unless you specifically need XQuery/XPath.
 
-50. **tempdb spills are cheap** — only 2x slower than in-memory sort. Don't panic over small spills.
+50. **tempdb spills are cheap** — only +17% vs in-memory sort on this run. Don't panic over
+    small spills.
 
 ## What to actually do
 
@@ -779,21 +788,21 @@ If you take only one thing from the whole series: **batch your inserts** and **d
 protocol**. A proper batch strategy puts you within 10x of the fastest possible path on day one.
 From there:
 
-- **Data already on the server** → `INSERT…SELECT` (319 ms).
-- **Pushing from Java** → Parallel Bulk API with 4 threads (330 ms), or multi-value INSERT with
-  200 rows per statement if you need portability.
+- **Data already on the server** → `INSERT…SELECT` (275 ms).
+- **Pushing from Java** → Parallel Bulk API with 4 threads (321 ms), or multi-value INSERT with
+  300-400 rows per statement if you need portability.
 - **Stuck on Hibernate** → implement `Persistable<T>` and set `useBulkCopyForBatchInsert=true` —
-  1,075 ms is as fast as you'll get without leaving the ORM.
-- **Avoid these** → `OPTION (RECOMPILE)` with batches (145 s), AFTER INSERT triggers (2.2x),
-  server-side encryption on every column (4x), per-row stored proc EXEC (76% penalty).
+  ~1,050 ms is as fast as you'll get without leaving the ORM.
+- **Avoid these** → `OPTION (RECOMPILE)` with batches (93 s), per-row native proc EXEC (668 s),
+  AFTER INSERT triggers (2.5x), server-side encryption on every column (~6x).
 
-The full benchmark code — 18 test classes, 4,222 runs, 17 charts — is in the
+The full benchmark code — 20+ test classes, ~3,700 timed runs, 17 charts — is in the
 [blog-examples](https://github.com/mmarko88/blog-examples/tree/main/fastest-insert) repository.
 Clone it, point it at your own SQL Server, and the numbers will shift — but the rankings will
 almost certainly hold.
 
 ## Test yourself
 
-{{< quiz question="What is the absolute fastest insert path measured in the series?" options="Parallel Bulk API, 4 threads|INSERT...SELECT on the same server|Table-Valued Parameters|Natively compiled stored procedure" correct="1" explanation="INSERT...SELECT (data already on the server) finished in 319 ms, fastest overall. Parallel Bulk API at 330 ms is the fastest path when pushing from Java." >}}
+{{< quiz question="What is the absolute fastest insert path measured in the series?" options="Parallel Bulk API, 4 threads|INSERT...SELECT on the same server|Table-Valued Parameters|Natively compiled stored procedure" correct="1" explanation="INSERT...SELECT (data already on the server) finished in 275 ms, fastest overall. Parallel Bulk API at 321 ms is the fastest path when pushing from Java." >}}
 
-{{< quiz question="Why is OPTION(RECOMPILE) dangerous with batched inserts?" options="It disables batching|It forces a plan recompile per batch, making it about 52x slower|It locks the whole table|It silently drops rows" correct="1" explanation="OPTION(RECOMPILE) recompiles the plan for every batch: 145 s vs 2.8 s, about 52x slower. Never combine it with batched inserts." >}}
+{{< quiz question="Why is OPTION(RECOMPILE) dangerous with batched inserts?" options="It disables batching|It forces a plan recompile per batch, making it about 45x slower|It locks the whole table|It silently drops rows" correct="1" explanation="OPTION(RECOMPILE) recompiles the plan for every batch: 93 s vs 2 s, about 45x slower. Never combine it with batched inserts." >}}
