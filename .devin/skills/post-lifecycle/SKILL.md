@@ -8,6 +8,7 @@ description: Manage post lifecycle — draft in content/drafts/, publish to cont
 Usage:
 - `/post-lifecycle new <slug>` — scaffold a new draft post
 - `/post-lifecycle publish <slug>` — move a draft to its final `content/post/` location
+- `/post-lifecycle idea <slug>` — park a draft/post in `content/ideas/` (renders at `/ideas/`, invisible to nav/feeds)
 - `/post-lifecycle delete <slug>` — park a draft or published post in `deleted/`
 - `/post-lifecycle restore <slug>` — bring a parked post back to `content/drafts/`
 
@@ -15,6 +16,7 @@ Usage:
 
 | Location | Purpose | Built? |
 |----------|---------|--------|
+| `content/ideas/` | Idea parking lot — not being worked on | Always, at `/ideas/` — hidden page: excluded from menus, post lists, RSS, search index and sitemap via `noindex` + `sitemap.disable` cascade |
 | `content/drafts/` | Work in progress | Only with `hugo server -D`, at `/drafts/<slug>/` |
 | `content/post/` | Published posts | Always |
 | `deleted/` (repo root, outside `content/`) | Parked/abandoned | Never — Hugo can't see it under any flag |
@@ -48,6 +50,13 @@ Usage:
 2. `git mv content/drafts/<slug> content/post/<topic>/<slug>`
 3. Ensure no stale `draft: true` in front matter; set `date` to publish date.
 4. `hugo --quiet` → verify the post renders at `/post/<topic>/<slug>/` and appears in section lists.
+
+### idea
+
+`git mv` the post bundle into `content/ideas/` — from `content/drafts/` (stalled draft) or
+`content/post/...` (post you want public-but-hidden). The section cascade adds `noindex` +
+`sitemap.disable` automatically. Verify `find public -path "*ideas*"` shows it and it's absent
+from `public/index.json`, `public/sitemap.xml`, and post lists.
 
 ### delete
 
