@@ -1,9 +1,9 @@
 ---
 name: post-lifecycle
-description: Manage post lifecycle — draft in content/drafts/, publish to content/post/, park abandoned posts in deleted/
+description: Manage post lifecycle — ideas in content/ideas/ (hidden page), drafts in content/drafts/, publish to content/post/, park abandoned posts in deleted/
 ---
 
-# Post lifecycle: drafts → published → deleted
+# Post lifecycle: ideas → drafts → published → deleted
 
 Usage:
 - `/post-lifecycle new <slug>` — scaffold a new draft post
@@ -60,7 +60,7 @@ from `public/index.json`, `public/sitemap.xml`, and post lists.
 
 ### delete
 
-- Unfinished draft: `git mv content/drafts/<slug> deleted/<slug>`
+- Unfinished draft or abandoned idea: `git mv content/drafts/<slug> deleted/<slug>` or `git mv content/ideas/<slug> deleted/<slug>`
 - Retired published post: `git mv content/post/<topic>/<slug> deleted/<slug>` — its URL will 404;
   grep inbound links first: `grep -rn "<slug>" content/`, and note them so they can be fixed or
   redirected later.
@@ -69,11 +69,13 @@ from `public/index.json`, `public/sitemap.xml`, and post lists.
 ### restore
 
 `git mv deleted/<slug> content/drafts/<slug>` (or straight to its `content/post/` path to
-republish directly). Re-check front matter (`date`, `draft`) after the move.
+republish directly). From `content/ideas/` back to active work: `git mv content/ideas/<slug> content/drafts/<slug>`.
+Re-check front matter (`date`, `draft`) after the move.
 
 ## Verification
 
 - `hugo --quiet` exits clean.
 - `find public -path "*deleted*"` is always empty — production and `-D` alike.
 - `find public -path "*drafts*"` is empty after `hugo`, populated after `hugo -D`.
+- `find public -path "*ideas*"` renders after plain `hugo`; `grep ideas public/sitemap.xml public/index.json` stays empty.
 - `git status` shows renames (`R`), not delete+add — history stays attached to moved files.
