@@ -1,6 +1,6 @@
 ---
 name: linkedin-carousel
-description: Generate a multi-image LinkedIn carousel post (PNG slides) from post content
+description: Generate PNG slide images for a LinkedIn multi-image carousel from a post's content. Use when promoting a post on LinkedIn in carousel format; use linkedin-post to schedule it.
 argument-hint: "<post-url-or-file> [num-slides]"
 subagent: true
 ---
@@ -10,9 +10,10 @@ Generate a set of PNG slides for a LinkedIn multi-image post (carousel). You are
 ## What to produce
 
 - **Portrait 1080×1350 PNGs + a combined `carousel.pdf`.** Upload guidance: PDF document posts render as native swipeable carousels and each swipe counts as dwell time (LinkedIn's top signal). Portrait 4:5 fills the mobile viewport — square is second-best, landscape worst.
-- 4–8 slides default (respect the user's count if given):
+- 11–15 slides default (respect the user's count if given). Documents under 11 pages underperform the author's own average (~−4%); 11–15 is the payoff band, 16+ best — `RESEARCH-linkedin-post-carousel-qualities.md` [1]. If the content can't fill 11 slides, recommend the single-image genre instead of padding:
   1. **Hook slide** — a giant proof number or bold claim (e.g. struck-out baseline vs green result). This must stop the scroll on its own. Add a "swipe →" cue.
-  2–N-1. **One idea + ONE visual anchor per slide** — prefer a bar chart, big number, or mini diagram over bullet lists. Benchmarks/data posts → real bars (red baseline, green result, accent reference). Never dump paragraphs.
+  2–N-2. **One idea + ONE visual anchor per slide** — prefer a bar chart, big number, or mini diagram over bullet lists. Benchmarks/data posts → real bars (red baseline, green result, accent reference). Never dump paragraphs.
+  - **Cheat-sheet slide** — the saveable takeaway: a settings table, checklist, or config block a reader screenshots. Saves are the carousel engagement metric.
   - **CTA slide** — site domain (from site config, never guessed), repo — direct readers to the link in the post body (link-in-comments is penalized since mid-2026).
 - Consistent system across slides: same background, eyebrow tag, accent bar, footer with progress dots + domain.
 

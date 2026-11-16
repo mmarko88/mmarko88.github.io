@@ -1,3 +1,9 @@
+---
+name: post-to-x
+description: Post an X (Twitter) thread through the user's logged-in Chrome via AppleScript-injected JavaScript. Use when promotion copy is ready to post to X; CDP/Playwright do not work on the default profile.
+argument-hint: "<thread-text-file or inline thread>"
+---
+
 # post-to-x
 
 Post an X (Twitter) thread from the user's logged-in Chrome via AppleScript-injected JavaScript. Built 2026-11-11 after CDP and synthetic-event approaches both failed.

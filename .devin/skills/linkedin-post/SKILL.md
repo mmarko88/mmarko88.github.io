@@ -1,3 +1,9 @@
+---
+name: linkedin-post
+description: Schedule a LinkedIn document (PDF carousel) post through the user's logged-in Chrome via CDP + Playwright. Use when a carousel PDF is ready to post to LinkedIn.
+argument-hint: "<path-to-carousel.pdf> [title] [time]"
+---
+
 # linkedin-post
 
 Schedule a LinkedIn document (PDF carousel) post from the user's own logged-in Chrome via CDP + Playwright. Proven end-to-end 2026-11-11.
@@ -18,7 +24,7 @@ python3 -m venv /tmp/pw-venv && /tmp/pw-venv/bin/pip -q install playwright
 
 ## Flow
 
-1. **Restart Chrome with CDP.** Chrome ≥136 ignores `--remote-debugging-port` on the default profile — symlink the profile dir to bypass:
+1. **Restart Chrome with CDP.** ⚠️ Retest before trusting this — Chrome 157 ignores the port even via the symlink trick below (`learnings/tooling/chrome-157-ignores-remote-debugging-port.md`). Chrome ≥136 ignores `--remote-debugging-port` on the default profile — symlink the profile dir to bypass:
 
    ```sh
    osascript -e 'tell application "Google Chrome" to quit'; sleep 5

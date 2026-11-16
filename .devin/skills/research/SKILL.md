@@ -1,6 +1,7 @@
 ---
 name: research
-description: Research a question online and produce a cited report
+description: Research a question online and produce a cited report saved as RESEARCH-<topic>.md. Use before drafting on an unfamiliar topic or to ground a claim; learnings/ records what doing later taught.
+argument-hint: "<question or topic>"
 ---
 
 # Research a question online

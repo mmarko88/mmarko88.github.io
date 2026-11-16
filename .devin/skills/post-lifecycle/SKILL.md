@@ -1,6 +1,7 @@
 ---
 name: post-lifecycle
-description: Manage post lifecycle — ideas in content/ideas/ (hidden page), drafts in content/drafts/, publish to content/post/, park abandoned posts in deleted/
+description: Move post bundles between lifecycle states — new draft, park as idea, publish, delete, restore — via git mv so history follows. Use whenever a post changes state; not for drafting content (write-post).
+argument-hint: "new|publish|idea|delete|restore <slug>"
 ---
 
 # Post lifecycle: ideas → drafts → published → deleted

@@ -1,6 +1,6 @@
 ---
 name: promote-post
-description: Generate LinkedIn + X promotion drafts and a timed launch checklist for a post
+description: Draft LinkedIn + X promotion copy and a timed launch checklist for a post. Use after publish when a post needs cross-channel promotion; linkedin-carousel/post-to-x do the actual posting.
 argument-hint: "<post-url-or-file>"
 allowed-tools:
   - read
@@ -15,6 +15,7 @@ Promote the post the user provides (URL or local file). Reference the full resea
 
 - If given a URL, fetch it; if a file, read it. Extract: title, the single strongest proof point (number/result/surprising finding), 3–5 key takeaways, any visuals.
 - Classify the post: problem-solving tutorial / post-mortem / project launch / data findings / opinion. This determines the hook style.
+- Classify the reach: broad-accessible (a pain every reader in the niche recognizes) vs. deep-niche reference (benchmark, tuning deep-dive, internals). Broad → LinkedIn genre A (single image + emoji-list); deep-niche → genre B (PDF carousel via /linkedin-carousel). Rationale: `learnings/promotion/linkedin-genre-per-post-type.md`.
 
 ## Step 2 — Generate drafts (output for user approval — never auto-post)
 
@@ -26,9 +27,13 @@ Promote the post the user provides (URL or local file). Reference the full resea
 
 ### LinkedIn post
 - First two lines: the concrete result/proof — before any framing.
-- Body: short whitespace-separated lines; context → what worked (arrow-list style `→`) → one honest caveat.
+- Body: short whitespace-separated lines; context → what worked (arrow-list `→` for reference posts; ✅ emoji benefit list for broad posts) → one honest caveat → an opinionated closer (a take, not just a CTA).
+- **Discussion question goes IN the body** — last line, e.g. "Are you using X in your projects?" The pinned comment is a backup, not the mechanism (proven: 0 comments when seeding lived only in the pin).
 - Put the UTM-tagged link IN the post body — since mid-2026, link-in-comment patterns are reach-penalized (~80% reported) and convert ~3.4× worse than in-body (see RESEARCH-linkedin-best-practices.md). If the post's only goal is raw reach, omit the link entirely rather than parking it in a comment.
-- Draft a pinned first comment with a discussion-seeding question — no bare URL (substantive comments only).
+- 0–2 hashtags — 1–2 measure neutral, 3+ cost ~7% (RESEARCH-linkedin-post-carousel-qualities.md). A personal brand tag is the defensible exception.
+- Genre A (broad): offer a single hero image — one slide from /linkedin-carousel's generator suffices.
+- Genre B (reference): offer the full carousel — saves are its metric, include a cheat-sheet slide.
+- Draft a pinned first comment anyway — a substantive observation or extra data point, no bare URL.
 
 ## Step 3 — Emit the launch checklist
 

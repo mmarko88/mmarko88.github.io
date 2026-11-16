@@ -1,6 +1,7 @@
 ---
 name: quiz
-description: Generate quiz questions for a post from its content
+description: Generate quiz questions for a post from its content and insert the quiz shortcode. Use when a post should get interactive checkpoints; check-standards verifies placement and distractor quality.
+argument-hint: "<slug or path>"
 ---
 
 # Quiz questions for a post

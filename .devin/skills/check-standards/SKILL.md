@@ -1,15 +1,23 @@
 ---
 name: check-standards
-description: Check a blog post against ARTICLE_WRITING_STANDARDS.md
+description: Verify a blog post against ARTICLE_WRITING_STANDARDS.md and report PASS/WARN/FAIL per rule, plus sentence-level AI-slop tells. Use when a draft or published post needs a pre-publish quality check; use write-post to draft, post-lifecycle to move it.
+argument-hint: "<slug or path> [mode:deep]"
 ---
 
 # Check post against writing standards
 
-Usage: `/check-standards <post>` where `<post>` is a path, directory name, or slug under `content/post/` (e.g. `check-standards data_to_functions`).
+Usage: `/check-standards <post>` where `<post>` is a path, directory name, or slug
+inside `content/` — drafts, ideas, and published posts all resolve (e.g.
+`check-standards data_to_functions`). `mode:deep` additionally dispatches the
+reviewer personas in `references/personas/`.
+
+**Done when:** every standard has a verdict with evidence, prose-tell findings carry
+quoted lines, mode:deep personas (if requested) have returned or are named as failed,
+and the report below is emitted. The check is read-only — it never edits the post.
 
 ## Steps
 
-1. **Resolve the post.** If the argument isn't an existing path, search `content/post/` for a directory or `index.md`/`.md` file whose name contains the argument (`find_by_name` with pattern `*<arg>*` or a directory listing). If ambiguous, ask which post.
+1. **Resolve the post.** If the argument isn't an existing path, search `content/post/`, `content/drafts/`, and `content/ideas/` for a directory or `index.md`/`.md` file whose name contains the argument. If ambiguous, ask which post.
 
 2. **Read the standards.** Read `ARTICLE_WRITING_STANDARDS.md` at the repo root — it is the source of truth. Do not rely on memory of it; the doc may have changed.
 
@@ -46,6 +54,9 @@ Usage: `/check-standards <post>` where `<post>` is a path, directory name, or sl
    - **NOCAY**: personal voice only where it serves content; no self-important padding.
    - **Internal links**: ≥1 link to a related post, placed where the reader would want it.
    - **Publishing checklist**: cross-check `ARTICLE_IDEAS.md` checklist items relevant to the post — PNG/JPG shareImage, `sourceCode` link, `toc: true` for long posts, `series:` if applicable, dev.to cover image + all 4 tags when cross-posting.
+   - **Prose tells**: read `references/slop-patterns.md` and check the body against it. Apply the false-positive floor — one device is a choice, three or more distinct rules in a passage or one repeated across sections is a finding. Report each finding as rule number + quoted line + fix in a few words. Never flag quoted text, code, headings, or domain terms.
+
+4b. **Deep mode (`mode:deep` in the arguments).** Dispatch the three personas in `references/personas/` — `skimmer.md`, `skeptical-reader.md`, `practitioner.md` — as parallel subagents, each handed the post path and its persona file. Their findings are evidence, not verdicts: check each claim against the post before keeping it. Fold retained findings into the report as `Change` (demonstrated gap), `Verify` (concrete risk needing a check), or `Consider` (plausible enhancement). A persona that cannot run is named as failed, not silently dropped.
 
 5. **Output format** — terse report, no preamble:
 
@@ -59,4 +70,4 @@ Usage: `/check-standards <post>` where `<post>` is a path, directory name, or sl
 Verdict: N/N passed, M warnings, K fails. Top fix: <single highest-impact change>.
 ```
 
-6. **Do not edit the post** unless the user explicitly asks after seeing the report. The check is read-only.
+6. **Do not edit the post** unless the user explicitly asks after seeing the report.

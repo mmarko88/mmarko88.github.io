@@ -1,6 +1,7 @@
 ---
 name: write-post
-description: Draft a blog post conforming to ARTICLE_WRITING_STANDARDS.md
+description: Draft a blog post in content/drafts/ conforming to ARTICLE_WRITING_STANDARDS.md, with human gates on evidence and outline. Use to write a new post; check-standards verifies the draft, post-lifecycle moves it.
+argument-hint: "<topic or slug> [notes, links, benchmark output]"
 ---
 
 # Draft a post to writing standards
@@ -41,14 +42,15 @@ each run (step 2), so the skill can't drift stale.
 
    Do not draft until the user approves the outline.
 
-5. **Draft the post.** Create `content/post/<slug>/index.md` (kebab-case slug, keyword-rich,
-   no dates). Front matter template:
+5. **Draft the post.** Create `content/drafts/<slug>/index.md` (kebab-case slug,
+   keyword-rich, no dates). The drafts section cascade supplies `draft: true` — do not
+   set it in front matter (`learnings/hugo/draft-front-matter-beats-section-cascade.md`).
+   Front matter template:
 
    ```yaml
    ---
    title: "<approved title>"
    date: <today>
-   draft: true
    usePageBundles: true
    description: "<140–160 chars, keyword + benefit>"
    tags: ["<tag1>", "<tag2>"]
@@ -80,7 +82,8 @@ each run (step 2), so the skill can't drift stale.
 
 ## What this workflow is not
 
-- **Not a publisher.** It creates `draft: true` bundles. Measuring TODOs, cover image
+- **Not a publisher.** It creates bundles in `content/drafts/` — moving to
+  `content/post/` is `/post-lifecycle publish`. Measuring TODOs, cover image
   (`/cover-image`), quiz (`/quiz`), and publishing are separate steps.
 - **Not a standards copy.** All rule authority lives in `ARTICLE_WRITING_STANDARDS.md`; this
   file only encodes process order and the rules that must hold at generation time.

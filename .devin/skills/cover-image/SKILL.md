@@ -1,6 +1,7 @@
 ---
 name: cover-image
-description: Design a branded cover image (featureImage hero + share.png) for a post
+description: Design a branded cover image for a post — persona-driven featureImage hero plus crawler-safe PNG share.png. Use when a post needs its cover before publishing or cross-posting.
+argument-hint: "<slug or path>"
 ---
 
 # Cover image for a post
