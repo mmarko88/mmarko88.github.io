@@ -1,8 +1,10 @@
 ---
 title: "Agentic Development: What Actually Works in Legacy Java"
-date: 2026-10-19
+date: 2026-11-17
 usePageBundles: true
-description: "Six months of coding agents on a 4,000-file Java 17 codebase, measured by session cost and completion rate. What stuck, what I killed, in a 10-part series."
+series: ["Agentic Development"]
+seriesWeight: 1
+description: "Six months of coding agents on a 4,000-file Java 17 codebase, measured by session cost and completion rate. What stuck, what I killed, in an 11-part series."
 tags: ["agents", "ai", "java", "productivity"]
 categories: ["agents"]
 featureImage: 'hero.svg' # Series-branded 1200x630 hero (matches MS SQL series design).
@@ -80,6 +82,6 @@ and I'll aim the next post at it.
 > **The one thing to take from this post:** every pattern in this series started as a cost line
 > on a token bill or a session that didn't complete. Measure first; opine later.
 
-**Up next:** [Why your coding agent needs a different critic](/post/agentic/different-critic/) —
-the research on intrinsic self-correction, and the A/B results from running the same workload
-with and without a separate-context adversarial pass.
+**Up next:** Why your coding agent needs a different critic — the research on intrinsic
+self-correction, and the A/B results from running the same workload with and without a
+separate-context adversarial pass (coming soon).

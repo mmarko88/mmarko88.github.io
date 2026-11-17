@@ -14,15 +14,19 @@ The largest body of incomplete work. All posts below are `draft: true`, so none 
 
 Hero + share images **are present** (`hero.svg` / `share.png` per bundle). Remaining blockers:
 
-- **Missing inline diagrams/screenshots** — 6 posts carry a `<!-- TODO: diagram … -->` / `<!-- TODO: screenshot … -->` marker:
-  - `context-budget` (screenshot of the context-budget report)
-  - `different-critic` (diagram: handoff → separate-context critic → verdict)
-  - `eval-harness` (screenshot of a pass-rate trend line)
-  - `read-only-subagents` (diagram: delegate → subagent in own context)
-  - `rule-layering` (diagram: three-layer conflict resolution)
-  - `specialist-checkpoints` (diagram: PR → trigger → parallel specialists → merge)
-- **"(coming soon)" cross-links** between posts resolve to nothing until the series is published — they must be wired up (or removed) at publish time.
-- **Publish decision + order** — 18 posts is a series launch; needs a sequencing/`seriesWeight` pass (same ordering concern we hit on the MS SQL series), plus a `series` taxonomy if they should render as a set.
+- ~~**Missing inline diagrams/screenshots**~~ ✅ **Done** — all 6 now have SVGs referenced in the
+  markdown: `context-budget` (`budget-report.svg`), `different-critic` (`critic-flow.svg`),
+  `eval-harness` (`pass-rate.svg`), `read-only-subagents` (`subagent-flow.svg`),
+  `rule-layering` (`layering.svg`), `specialist-checkpoints` (`checkpoints.svg`).
+- **"(coming soon)" cross-links** — drip-publish convention: each post's "Up next" stays
+  unlinked until its successor ships, then gets wired to `/post/agentic/<slug>/`.
+- **Publish decision + order** — ✅ **Decided [2026-11-17]: drip-publish in the "Up next" chain
+  order.** `intro` (seriesWeight 1) shipped first; `series: ["Agentic Development"]` and
+  `seriesWeight` are set on each post at publish time — never earlier, or parked ideas would
+  inflate the series-nav "Part X of N" count (the taxonomy term page counts them).
+  ⚠️ Order conflict to resolve at publish time: `intro`'s numbered list puts `rule-layering`
+  at #3, but the "Up next" chain goes `context-budget` → `eval-harness` (skipping it) and
+  `rule-layering` also points "up next" to `two-retry-limit`. Pick one before publishing #3–#5.
 - ~~**Cleanup**: 4 posts still have dead commented `# featureImageAlt: 'TODO'` / `# shareImage: 'TODO.png'` lines in front matter.~~ ✅ **Done [2026-10-20]** — removed from `intro`, `eval-harness`, `context-budget`, `different-critic`.
 
 Full post list (title): intro, getting-started, llms-for-developers, prompt-engineering, one-topic-per-session, two-retry-limit, rule-layering, rule-violation-postmortem, read-only-subagents, specialist-checkpoints, different-critic, multi-agent, context-budget, eval-harness, measuring-roi, security-trust, devin-desktop, six-month-retrospective.
